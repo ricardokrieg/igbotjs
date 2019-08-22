@@ -5,6 +5,7 @@
     "inquirer": "^6.5.1",
     "instagram-private-api": "^1.24.0",
     "lodash": "^4.17.15",
+    "node-resque": "^5.5.5",
     "puppeteer": "^1.19.0"
   },
   "scripts": {
