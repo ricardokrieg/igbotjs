@@ -2,6 +2,7 @@ const { IgApiClient } = require('instagram-private-api');
 const { sample, filter, some, values, map, random } = require('lodash');
 const { MongoClient } = require('mongodb');
 const assert = require('assert').strict;
+const moment = require('moment');
 
 
 class Bot {
@@ -9,8 +10,8 @@ class Bot {
     this.username = username;
     this.proxy = proxy;
 
-    console.log('Username: ' + this.username);
-    console.log('Proxy   : ' + this.proxy);
+    this.log('Username: ' + this.username);
+    this.log('Proxy   : ' + this.proxy);
 
     this.ig = new IgApiClient();
     this.ig.state.proxyUrl = proxy;
@@ -20,6 +21,10 @@ class Bot {
 
     this.cookies = null;
     this.state = null;
+  }
+
+  log(message) {
+    console.log(`[${moment().format('LTS')}] ${JSON.stringify(message)}`);
   }
 
   async requestSubscription() {
@@ -41,15 +46,15 @@ class Bot {
     const client = new MongoClient('mongodb://wolf:xxx123xxx@ds243963.mlab.com:43963/igbotjs', { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
     this.col = client.db('igbotjs').collection('accounts');
-    console.log('Connected to database');
+    this.log('Connected to database');
 
-    console.log('Login Start');
+    this.log('Login Start');
     await this.login();
-    console.log('Login End');
+    this.log('Login End');
 
-    console.log('Follow Start');
+    this.log('Follow Start');
     await this.follow(sourceUsername);
-    console.log('Follow End');
+    this.log('Follow End');
   };
 
   async saveCookies(cookies) {
@@ -57,12 +62,12 @@ class Bot {
   }
 
   async loadCookies() {
-    console.log('Loading cookies...');
+    this.log('Loading cookies...');
 
     this.cookies = (await this.col.findOne({ _id: this.username })).cookies;
 
-    console.log('==> cookies');
-    console.log(JSON.stringify(this.cookies));
+    this.log('==> cookies');
+    this.log(JSON.stringify(this.cookies));
 
     await this.ig.state.deserializeCookieJar(JSON.stringify(this.cookies));
   }
@@ -72,12 +77,12 @@ class Bot {
   }
 
   async loadState() {
-    console.log('Loading state...');
+    this.log('Loading state...');
 
     this.state = (await this.col.findOne({ _id: this.username })).state;
 
-    console.log('==> state');
-    console.log(this.state);
+    this.log('==> state');
+    this.log(this.state);
 
     this.ig.state.deviceString = this.state.deviceString;
     this.ig.state.deviceId = this.state.deviceId;
@@ -91,56 +96,65 @@ class Bot {
     await this.loadCookies();
     await this.loadState();
 
-    console.log('Simulating pre login flow...');
+    this.log('Simulating pre login flow...');
     await this.ig.simulate.preLoginFlow();
 
-    console.log('Simulating post login flow...');
+    this.log('Simulating post login flow...');
     this.ig.simulate.postLoginFlow();
   }
 
   async follow(sourceUsername) {
-    const source = await this.ig.user.searchExact(sourceUsername);
-    console.log('Source:');
-    console.log(source);
+    const source = await this.call((params) => { return this.ig.user.searchExact(params[0]) }, sourceUsername);
+    this.log('Source:');
+    this.log(source);
 
-    console.log(`Fetching ${source.username}'s followers...`);
-    const followersFeed = this.ig.feed.accountFollowers(source.pk);
+    this.log(`Fetching ${source.username}'s followers...`);
+    const followersFeed = await this.call((params) => { return this.ig.feed.accountFollowers(params[0].pk) }, source);
 
     let page = 1;
     let followCount = 0;
-    const followLimit = 10;
+    const followLimit = random(2, 5);
+
+    this.log(`Going to follow ${followLimit} users`);
+
     while (true) {
       if (followCount >= followLimit) {
         break;
       }
 
-      console.log(`Page #${page}`);
+      this.log(`Page #${page}`);
 
-      const items = await followersFeed.items();
+      const items = await this.call((params) => { return params[0].items() }, followersFeed);
 
       const validUsers = filter(items, { 'is_private': false, 'is_verified': false, 'has_anonymous_profile_picture': false });
-      console.log(`Fetched: ${items.length} users (valid: ${validUsers.length})`);
+      this.log(`Fetched: ${items.length} users (valid: ${validUsers.length})`);
 
-      const friendship = await this.ig.friendship.showMany(map(validUsers, 'pk'));
+      const friendship = await this.call((params) => { return this.ig.friendship.showMany(map(params[0], 'pk')) }, validUsers);
 
       for (const user of validUsers) {
+        this.log(`User: ${user.username}`);
+
         if (some(values(friendship[user.pk]))) {
+          this.log(`Rejected (friendship status)`);
           continue;
         }
 
         await this.sleep(random(5000, 20000));
 
-        const userInfo = await this.ig.user.info(user.pk);
+        const userInfo = await this.call((params) => { return this.ig.user.info(params[0].pk) }, user);
         if (userInfo.is_business) {
+          this.log(`Rejected (business)`);
           continue;
         }
 
-        console.log(`Following ${user.username}...`);
-        console.log(userInfo);
-        console.log(friendship[user.pk]);
+        this.log(`Following ${user.username}...`);
+        this.log(userInfo);
 
-        this.ig.friendship.create(user.pk);
+        await this.call((params) => { return this.ig.friendship.create(params[0].pk) }, user);
         followCount++;
+        this.log(`Followed ${user.username}`);
+
+        this.log(`Follows: ${followCount}/${followLimit}`);
 
         if (followCount >= followLimit) {
           break;
@@ -149,35 +163,38 @@ class Bot {
 
     }
 
-    console.log(`Followed ${followCount} users`);
+    this.log(`Followed ${followCount} users`);
   }
 
   sleep(ms) {
+    this.log(`Sleeping ${ms}`);
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  call(command) {
-    let tries = 0;
+  async call(command, ...params) {
+    return new Promise(async (resolve, reject) => {
+      let r;
+      let tries = 0;
+      while (true) {
+        try {
+          tries++;
 
-    while (true) {
-      try {
-        tries++;
+          r = command(params);
 
-        command();
+          break;
+        } catch (err) {
+          this.log(`Error: ${err}`);
 
-        break;
-      } catch (err) {
-        console.log(`Error: ${err}`);
-
-        if (tries < 5) {
-          const sleepTime = random(5000, 10000);
-          console.log(`Command failed on try #${tries}. Sleep ${sleepTime} seconds`);
-          sleep(sleepTime);
-        } else {
-          throw err;
+          if (tries < 5) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          } else {
+            throw err;
+          }
         }
       }
-    }
+
+      resolve(r);
+    });
   }
 }
 
