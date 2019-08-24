@@ -42,7 +42,7 @@ class Bot {
     this.saveState(state);
   }
 
-  async start(sourceUsername) {
+  async start(sourceUsername, follows) {
     const client = new MongoClient('mongodb://wolf:xxx123xxx@ds243963.mlab.com:43963/igbotjs', { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
     this.col = client.db('igbotjs').collection('accounts');
@@ -53,7 +53,7 @@ class Bot {
     this.log('Login End');
 
     this.log('Follow Start');
-    await this.follow(sourceUsername);
+    await this.follow(sourceUsername, follows);
     this.log('Follow End');
   };
 
@@ -103,17 +103,17 @@ class Bot {
     this.ig.simulate.postLoginFlow();
   }
 
-  async follow(sourceUsername) {
+  async follow(sourceUsername, follows) {
     const source = await this.call((params) => { return this.ig.user.searchExact(params[0]) }, sourceUsername);
     this.log('Source:');
     this.log(source);
 
     this.log(`Fetching ${source.username}'s followers...`);
-    const followersFeed = await this.call((params) => { return this.ig.feed.accountFollowers(params[0].pk) }, source);
+    const followersFeed = this.ig.feed.accountFollowers(source.pk);
 
     let page = 1;
     let followCount = 0;
-    const followLimit = random(2, 5);
+    const followLimit = Math.round(random(follows - (follows * 0.5), follows + (follows * 0.5)));
 
     this.log(`Going to follow ${followLimit} users`);
 
@@ -179,7 +179,7 @@ class Bot {
         try {
           tries++;
 
-          r = command(params);
+          r = await command(params);
 
           break;
         } catch (err) {
