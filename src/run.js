@@ -1,4 +1,7 @@
 const Bot = require('./bot');
+const logger = require('./utils').logger;
+
+const log = (message) => logger('Run', message);
 
 const username = 'charliespears302';
 const proxy = 'http://daenerys_insta:alphaxxxpass123@alpha.mobileproxy.network:11727';
@@ -7,12 +10,20 @@ const sourceUsername = 'alinemonaretto';
 const follows = 10;
 
 (async () => {
-  console.log('Start');
+  log('Start');
 
-  await (new Bot(username, proxy)).doFollow(follows);
+  await (new Bot(username, proxy)).start({ follows });
 
-  console.log('End');
+  log('End');
 })();
+
+// (async () => {
+//   console.log('Start');
+//
+//   await (new Bot(username, proxy)).doFollow(follows);
+//
+//   console.log('End');
+// })();
 
 // (async () => {
 //   console.log('Start');
