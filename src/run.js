@@ -8,11 +8,12 @@ const proxy = 'http://daenerys_insta:alphaxxxpass123@alpha.mobileproxy.network:1
 const sourceUsername = 'alinemonaretto';
 // const sourceUsername = 'ronald.r1985';
 const follows = 10;
+const likes = 2;
 
 (async () => {
   log('Start');
 
-  await (new Bot(username, proxy)).start({ follows });
+  await (new Bot(username, proxy)).start({ follows, likes });
 
   log('End');
 })();

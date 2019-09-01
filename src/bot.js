@@ -5,6 +5,7 @@ const assert = require('assert').strict;
 const moment = require('moment');
 
 const { logger } = require('./utils');
+const { feed } = require('./actions/feed');
 const { follow } = require('./actions/follow');
 
 const log = (message) => logger('Bot', message);
@@ -29,15 +30,17 @@ class Bot {
     this.state = null;
   }
 
-  async start({ follows }) {
+  async start({ follows, likes }) {
     log('Start');
     log(`Follows: ${follows}`);
+    log(`Likes: ${likes}`);
 
     await this.setup();
 
     const { ig, targetsCol } = this;
 
-    await follow({ ig, targetsCol, follows });
+    await feed({ ig, likes });
+    // await follow({ ig, targetsCol, follows });
 
     log('End');
   }
