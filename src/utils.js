@@ -6,7 +6,7 @@ const logger = (origin, message) => {
 };
 
 const sleep = (ms) => {
-  logger('Sleep', `Sleeping ${Math.round(ms / 1000)}`);
+  logger('Sleep', `Sleeping ${Math.round(ms / 1000)}s`);
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 

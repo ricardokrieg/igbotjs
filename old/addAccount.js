@@ -1,6 +1,6 @@
-import { IgApiClient, IgCheckpointError } from 'instagram-private-api';
-import Bluebird from 'bluebird';
-import inquirer from 'inquirer';
+const { IgApiClient, IgCheckpointError } = require('instagram-private-api');
+const Bluebird = require('bluebird');
+const inquirer = require('inquirer');
 
 
 const username = 'charliespears302';
@@ -13,7 +13,7 @@ console.log('Proxy   : ' + proxy);
 
 const ig = new IgApiClient();
 
-ig.state.generateDevice(username);
+ig.state.generateDevice(username + 'reset');
 ig.state.proxyUrl = proxy;
 
 ig.request.end$.subscribe(async () => {

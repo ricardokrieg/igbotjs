@@ -40,7 +40,7 @@ class Bot {
     const { ig, targetsCol } = this;
 
     await feed({ ig, likes });
-    // await follow({ ig, targetsCol, follows });
+    await follow({ ig, targetsCol, follows });
 
     log('End');
   }

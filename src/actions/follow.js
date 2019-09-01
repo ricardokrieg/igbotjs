@@ -23,8 +23,8 @@ async function follow({ ig, targetsCol, follows }) {
 
       await sleep(random(5000, 20000));
 
-      const user = await call((params) => { return ig.user.searchExact(params[0]) }, target._id);
-      const userInfo = await call((params) => { return ig.user.info(params[0].pk) }, user);
+      const user = await call(() => { return ig.user.searchExact(target._id) });
+      const userInfo = await call(() => { return ig.user.info(user.pk) });
 
       if (some(values(user.friendship_status))) {
         await targetsCol.updateOne({ _id: target._id }, { $set: { followed: true } });
@@ -43,7 +43,7 @@ async function follow({ ig, targetsCol, follows }) {
 
       log(`Following ${user.username}...`);
 
-      await call((params) => { return ig.friendship.create(params[0].pk) }, user);
+      await call(() => { return ig.friendship.create(user.pk) });
       await targetsCol.updateOne({ _id: target._id }, { $set: { followed: true } });
 
       followCount++;

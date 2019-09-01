@@ -13,12 +13,16 @@ async function feed({ ig, likes }) {
 
   const timeline = ig.feed.timeline({ reason: 'pull_to_refresh' });
 
+  let likesCount = 0;
+  let page = 0;
   while (true) {
+    page++;
+    log(`Fetching page #${page}...`);
     const items = await call(() => { return timeline.items() });
 
     const mediaIds = sampleSize(map(filter(items, { comment_likes_enabled: true, has_liked: false }), 'id'), likeLimit);
+    log(`Fetched ${items.length} posts (${mediaIds.length} are valid)`);
 
-    let likesCount = 0;
     for (let mediaId of mediaIds) {
       log(`Liking ${mediaId}`);
       await sleep(random(5000, 20000));
@@ -34,6 +38,7 @@ async function feed({ ig, likes }) {
       });
 
       likesCount++;
+      log(`Likes: ${likesCount}/${likeLimit}`);
     }
 
     if (likesCount >= likeLimit) {
