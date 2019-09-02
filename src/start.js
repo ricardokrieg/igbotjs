@@ -34,3 +34,16 @@ const spinner = new Spinner(
 
   log('End');
 })();
+
+
+// fullname	username	password	yahoomail	password	phone	recoverymail
+// CharlieSpears	charliespears302	MaxSmithM	charliespears302@yahoo.com	MaxSmithM	77077895214	WilliamKidd@mailnesia.com
+// JohnCox	coxjohn243	TeresaCal	coxjohn243@yahoo.com	TeresaCal	77077030428	GraceAlexander@mailnesia.com
+// CourtneyStafford	courtneystafford371	FrankSipp	courtneystafford371@yahoo.com	FrankSipp	77077030428	LeeBennett@mailnesia.com
+// WesleyMolina	wesleymolina166	WilliamAl	wesleymolina166@yahoo.com	WilliamAl	77078261020	JamesWright@mailnesia.com
+// WalterDiaz	walterdiaz5161	DorothyNall	walterdiaz516@yahoo.com	DorothyNall	77078261020	AshleyPack@mailnesia.com
+// MariaJust	maria.just1	AnnLugoMi	maria.just@yahoo.com	AnnLugoMi	77077901148	WandaTurner@mailnesia.com
+// StephenRiley	stephenriley9181	JosephRya	stephenriley918@yahoo.com	JosephRya	77077901148	SandraHall@mailnesia.com
+// ElaineWatanabe	elainewatanabe1	MichaelRenfro	elainewatanabe@yahoo.com	MichaelRenfro	77075546290	BrendaLee@mailnesia.com
+// ChristopherBerry	christopherberry4061	SergioWor	christopherberry406@yahoo.com	SergioWor	77075546290	JamesCyr@mailnesia.com
+// LarryRamirez	larryramirez440	RobertChapman	larryramirez440@yahoo.com	RobertChapman	77077024309	AnnaStembridge@mailnesia.com

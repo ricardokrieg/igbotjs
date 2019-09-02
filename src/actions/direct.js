@@ -14,8 +14,6 @@ async function dmFollowers({ ig, igUsername, dmsCol, dms, spinner }) {
   log(`Going to DM ${dmLimit} followers`);
 
   const blacklist = map(await dmsCol.find().toArray(), 'pk');
-  log('Blacklist');
-  log(blacklist);
 
   const followersFeed = ig.feed.accountFollowers();
 
@@ -27,12 +25,11 @@ async function dmFollowers({ ig, igUsername, dmsCol, dms, spinner }) {
     const followers = await call(() => { return followersFeed.items(); });
 
     for (const follower of followers) {
-      log(`User: ${follower.username}`);
-
       if (includes(blacklist, follower.pk)) {
-        log('Skip');
         continue;
       }
+
+      log(`DMing ${follower.username}`);
 
       await sleep(random(5000, 20000));
 
@@ -44,7 +41,6 @@ async function dmFollowers({ ig, igUsername, dmsCol, dms, spinner }) {
       await dmsCol.insertOne({ _id: follower.username, pk: follower.pk, account: igUsername, message: message });
 
       dmCount++;
-      log(`DMed ${follower.username}`);
 
       log(`DMs: ${dmCount}/${dmLimit}`);
 
