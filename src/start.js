@@ -3,12 +3,11 @@ const Spinner = require('node-spintax');
 const Bot = require('./bot');
 const logger = require('./utils').logger;
 
-const log = (message) => logger('Run', message);
+const log = (message) => logger('Start', message);
 
 const username = 'charliespears302';
 const proxy = 'http://daenerys_insta:alphaxxxpass123@alpha.mobileproxy.network:11727';
 const sourceUsername = 'alinemonaretto';
-// const sourceUsername = 'ronald.r1985';
 const follows = 20;
 const likes = 10;
 const dms = 2;

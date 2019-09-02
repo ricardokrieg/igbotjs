@@ -42,7 +42,7 @@ class Bot {
 
     const { ig, targetsCol, dmsCol } = this;
 
-    // await feed({ ig, likes });
+    await feed({ ig, likes });
     // await follow({ ig, targetsCol, follows });
     await dmFollowers({ ig, dmsCol, dms, spinner, igUsername: this.username });
 
