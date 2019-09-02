@@ -19,7 +19,7 @@ const username = 'charliespears302';
 const proxy = 'http://daenerys_insta:alphaxxxpass123@alpha.mobileproxy.network:11727';
 const sourceUsername = 'alinemonaretto';
 const follows = 20;
-const likes = 10;
+const likes = 4;
 const dms = 2;
 //======================================================================================================================
 
@@ -62,7 +62,7 @@ const dms = 2;
           log('End');
 
           // enqueue in 40~80 mins
-          const enqueueTime = random(4 * 60 * 1000, 8 * 60 * 1000);
+          const enqueueTime = random(40 * 60 * 1000, 80 * 60 * 1000);
           log(`Scheduling to ${Math.round((enqueueTime / 1000) / 60)}min`);
           await queue.enqueueIn(enqueueTime, 'bot-queue', 'actions-job', { username, proxy, follows, likes, dms });
         })();
