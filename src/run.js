@@ -9,14 +9,22 @@ const sourceUsername = 'alinemonaretto';
 // const sourceUsername = 'ronald.r1985';
 const follows = 20;
 const likes = 10;
+const dms = 2;
 
 (async () => {
   log('Start');
 
-  await (new Bot(username, proxy)).start({ follows, likes });
+  await (new Bot(username, proxy)).start({ follows, likes, dms });
 
   log('End');
-})();
+})().catch(e => {
+  console.log('XXXXX');
+  console.log(e);
+  console.log('XXXXX');
+  throw e;
+});
+
+return;
 
 // (async () => {
 //   console.log('Start');

@@ -6,6 +6,7 @@ const moment = require('moment');
 
 const { logger } = require('./utils');
 const { feed } = require('./actions/feed');
+const { dmFollowers } = require('./actions/direct');
 const { follow } = require('./actions/follow');
 
 const log = (message) => logger('Bot', message);
@@ -25,22 +26,25 @@ class Bot {
 
     this.col = null;
     this.targetsCol = null;
+    this.dmsCol = null;
 
     this.cookies = null;
     this.state = null;
   }
 
-  async start({ follows, likes }) {
+  async start({ follows, likes, dms }) {
     log('Start');
     log(`Follows: ${follows}`);
     log(`Likes: ${likes}`);
+    log(`DMs: ${dms}`);
 
     await this.setup();
 
-    const { ig, targetsCol } = this;
+    const { ig, targetsCol, dmsCol } = this;
 
-    await feed({ ig, likes });
-    await follow({ ig, targetsCol, follows });
+    // await feed({ ig, likes });
+    // await follow({ ig, targetsCol, follows });
+    await dmFollowers({ ig, dmsCol, dms, igUsername: this.username });
 
     log('End');
   }
@@ -65,6 +69,7 @@ class Bot {
     await client.connect();
     this.col = client.db('igbotjs').collection('accounts');
     this.targetsCol = client.db('igbotjs').collection('targets');
+    this.dmsCol = client.db('igbotjs').collection('direct');
     log('Connected to database');
 
     log('Login Start');

@@ -60,6 +60,7 @@ async function follow({ ig, targetsCol, follows }) {
   log(`Followed ${followCount} users`);
 }
 
+
 module.exports = { follow };
 
 /*async function followOld({ sourceUsername, follows, blacklist }) {
@@ -130,17 +131,4 @@ module.exports = { follow };
   }
 
   this.log(`Followed ${followCount} users`);
-}*/
-
-/*async followers() {
-  await this.setup();
-
-  this.log('Followers Start');
-
-  const followersFeed = this.ig.feed.accountFollowers();
-
-  const followers = await this.call((params) => { return params[0].items(); }, followersFeed);
-  this.log(`Followers: ${map(followers, 'username')}`);
-
-  this.log('Followers End');
 }*/

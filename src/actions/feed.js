@@ -39,6 +39,10 @@ async function feed({ ig, likes }) {
 
       likesCount++;
       log(`Likes: ${likesCount}/${likeLimit}`);
+
+      if (likesCount >= likeLimit) {
+        break;
+      }
     }
 
     if (likesCount >= likeLimit) {
