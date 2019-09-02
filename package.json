@@ -10,10 +10,12 @@
     "moment": "^2.24.0",
     "mongodb": "^3.3.1",
     "node-resque": "^5.5.5",
+    "node-spintax": "^1.0.4",
     "puppeteer": "^1.19.0",
     "redis": "^2.8.0"
   },
   "scripts": {
-    "start": "npx @babel/node src/run.js"
+    "start": "npx @babel/node src/start.js",
+    "inbox": "npx @babel/node src/inbox.js"
   }
 }

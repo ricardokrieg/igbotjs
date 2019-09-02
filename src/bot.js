@@ -6,7 +6,7 @@ const moment = require('moment');
 
 const { logger } = require('./utils');
 const { feed } = require('./actions/feed');
-const { dmFollowers } = require('./actions/direct');
+const { dmFollowers, inbox, sendMessage } = require('./actions/direct');
 const { follow } = require('./actions/follow');
 
 const log = (message) => logger('Bot', message);
@@ -32,7 +32,7 @@ class Bot {
     this.state = null;
   }
 
-  async start({ follows, likes, dms }) {
+  async start({ follows, likes, dms, spinner }) {
     log('Start');
     log(`Follows: ${follows}`);
     log(`Likes: ${likes}`);
@@ -44,7 +44,7 @@ class Bot {
 
     // await feed({ ig, likes });
     // await follow({ ig, targetsCol, follows });
-    await dmFollowers({ ig, dmsCol, dms, igUsername: this.username });
+    await dmFollowers({ ig, dmsCol, dms, spinner, igUsername: this.username });
 
     log('End');
   }
@@ -121,6 +121,16 @@ class Bot {
 
     log('Simulating post login flow...');
     await this.ig.simulate.postLoginFlow();
+  }
+
+  async checkInbox() {
+    await this.setup();
+    await inbox({ ig: this.ig });
+  }
+
+  async sendDM({ target, message }) {
+    await this.setup();
+    await sendMessage({ ig: this.ig, target, message });
   }
 }
 

@@ -1263,7 +1263,7 @@ lodash.flatten@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.flatten/-/lodash.flatten-4.4.0.tgz#f31c22225a9632d2bbf8e4addbef240aa765a61f"
 
-lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.17.5:
+lodash@^4.11.1, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
 
@@ -1362,6 +1362,12 @@ node-resque@^5.5.5:
   resolved "https://registry.yarnpkg.com/node-resque/-/node-resque-5.5.5.tgz#e0ce3490c97ff4bac8a7aa5f411da3a60fff6fdd"
   dependencies:
     ioredis "^4.11.1"
+
+node-spintax@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/node-spintax/-/node-spintax-1.0.4.tgz#bf6823cedcac9f4ebf13c61ca56320e6469c5e6c"
+  dependencies:
+    lodash "^4.11.1"
 
 oauth-sign@~0.9.0:
   version "0.9.0"
