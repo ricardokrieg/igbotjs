@@ -2,26 +2,12 @@ const NodeResque = require('node-resque');
 const moment = require('moment');
 const { random } = require('lodash');
 
-const { sleep } = require('./utils');
-
 moment.locale('pt-br');
 
-
-//======================================================================================================================
-const Spinner = require('node-spintax');
-
 const Bot = require('./bot');
-const logger = require('./utils').logger;
+const { sleep, logger } = require('./utils');
 
 const log = (message) => logger('Worker', message);
-
-const username = 'charliespears302';
-const proxy = 'http://daenerys_insta:alphaxxxpass123@alpha.mobileproxy.network:11727';
-const sourceUsername = 'alinemonaretto';
-const follows = 20;
-const likes = 4;
-const dms = 2;
-//======================================================================================================================
 
 
 (async () => {
@@ -37,19 +23,13 @@ const dms = 2;
 
   const jobs = {
     'actions-job': {
-      perform: ({ username, proxy, follows, likes, dms }) => {
+      perform: ({ username }) => {
         (async () => {
           log('Start');
 
-          const spinner = new Spinner(
-            "Que tal {comprar |}{um suplemento|uma vitamina} {pra|para} reforçar o treino, hein? rsrs\n" +
-            "Dá uma olhada na minha loja. Acessando com esse link ganha R$30 de desconto na primeira compra. {bjs|beijinhos}\n" +
-            "{http://bit.ly/DescontoBiovea}"
-          );
-
           while(true) {
             try {
-              await (new Bot(username, proxy)).start({ follows, likes, dms, spinner });
+              await (new Bot({ username })).start();
               break;
             } catch (e) {
               console.log(e);
@@ -64,13 +44,16 @@ const dms = 2;
           // enqueue in 40~80 mins
           const enqueueTime = random(40 * 60 * 1000, 80 * 60 * 1000);
           log(`Scheduling to ${Math.round((enqueueTime / 1000) / 60)}min`);
-          await queue.enqueueIn(enqueueTime, 'bot-queue', 'actions-job', { username, proxy, follows, likes, dms });
+          await queue.enqueueIn(enqueueTime, 'bot-queue', 'actions-job', { username });
         })();
 
         return true;
       }
     }
   };
+
+  queue = new NodeResque.Queue({ connection: connectionDetails }, jobs);
+  queue.on('error', function (error) { log(error) });
 
   const worker = new NodeResque.Worker({ connection: connectionDetails, queues: ['bot-queue'] }, jobs);
   await worker.connect();
@@ -101,9 +84,6 @@ const dms = 2;
   scheduler.on('workingTimestamp', (timestamp) => { log(`scheduler working timestamp ${moment.unix(timestamp).format('LTS')}`) });
   scheduler.on('transferredJob', (timestamp, job) => { log(`scheduler enquing job ${moment.unix(timestamp).format('LTS')} >> ${JSON.stringify(job)}`) });
 
-  queue = new NodeResque.Queue({ connection: connectionDetails }, jobs);
-  queue.on('error', function (error) { log(error) });
-
   await queue.connect();
-  await queue.enqueue('bot-queue', 'actions-job', { username, proxy, follows, likes, dms });
+  await queue.enqueue('bot-queue', 'actions-job', { username: 'charliespears302' });
 })();

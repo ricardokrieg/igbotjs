@@ -13,38 +13,35 @@ const log = (message) => logger('Bot', message);
 
 
 class Bot {
-  constructor(username, proxy) {
+  constructor({ username }) {
     this.username = username;
-    this.proxy = proxy;
 
     log('Username: ' + this.username);
-    log('Proxy   : ' + this.proxy);
 
     this.ig = new IgApiClient();
-    this.ig.state.proxyUrl = proxy;
     this.ig.request.end$.subscribe(this.requestSubscription.bind(this));
 
-    this.col = null;
+    this.accountsCol = null;
     this.targetsCol = null;
     this.dmsCol = null;
+
+    this.accountDetails = null;
 
     this.cookies = null;
     this.state = null;
   }
 
-  async start({ follows, likes, dms, spinner }) {
+  async start() {
     log('Start');
-    log(`Follows: ${follows}`);
-    log(`Likes: ${likes}`);
-    log(`DMs: ${dms}`);
 
     await this.setup();
 
     const { ig, targetsCol, dmsCol } = this;
+    const accountDetails = this.accountDetails;
 
-    await feed({ ig, likes });
+    await feed({ ig, accountDetails });
     // await follow({ ig, targetsCol, follows });
-    await dmFollowers({ ig, dmsCol, dms, spinner, igUsername: this.username });
+    await dmFollowers({ ig, accountDetails, dmsCol });
 
     log('End');
   }
@@ -64,27 +61,34 @@ class Bot {
     this.saveState(state);
   }
 
-  async setup() {
+  async connectToDatabase() {
     const client = new MongoClient('mongodb://wolf:xxx123xxx@ds243963.mlab.com:43963/igbotjs', { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
-    this.col = client.db('igbotjs').collection('accounts');
+    this.accountsCol = client.db('igbotjs').collection('accounts');
     this.targetsCol = client.db('igbotjs').collection('targets');
     this.dmsCol = client.db('igbotjs').collection('direct');
     log('Connected to database');
 
-    log('Login Start');
+    this.accountDetails = await this.accountsCol.findOne({ _id: this.username });
+    log(this.accountDetails);
+
+    this.ig.state.proxyUrl = this.accountDetails.proxy;
+    log('Proxy: ' + this.accountDetails.proxy);
+  }
+
+  async setup() {
+    await this.connectToDatabase();
     await this.login();
-    log('Login End');
   }
 
   async saveCookies(cookies) {
-    await this.col.updateOne({ _id: this.username }, { $set: { cookies: cookies } }, { upsert: true });
+    await this.accountsCol.updateOne({ _id: this.username }, { $set: { cookies: cookies } }, { upsert: true });
   }
 
   async loadCookies() {
     log('Loading cookies...');
 
-    this.cookies = (await this.col.findOne({ _id: this.username })).cookies;
+    this.cookies = (await this.accountsCol.findOne({ _id: this.username })).cookies;
 
     log('==> cookies');
     log(this.cookies);
@@ -93,13 +97,13 @@ class Bot {
   }
 
   async saveState(state) {
-    await this.col.updateOne({ _id: this.username }, { $set: { state: state } }, { upsert: true });
+    await this.accountsCol.updateOne({ _id: this.username }, { $set: { state: state } }, { upsert: true });
   }
 
   async loadState() {
     log('Loading state...');
 
-    this.state = (await this.col.findOne({ _id: this.username })).state;
+    this.state = (await this.accountsCol.findOne({ _id: this.username })).state;
 
     log('==> state');
     log(this.state);
@@ -113,6 +117,8 @@ class Bot {
   }
 
   async login() {
+    log('Login Start');
+
     await this.loadCookies();
     await this.loadState();
 
@@ -121,6 +127,8 @@ class Bot {
 
     log('Simulating post login flow...');
     await this.ig.simulate.postLoginFlow();
+
+    log('Login End');
   }
 
   async checkInbox() {

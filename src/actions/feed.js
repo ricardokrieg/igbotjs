@@ -1,14 +1,14 @@
-const { filter, map, random, sample, sampleSize } = require('lodash');
+const { filter, map, sample, sampleSize } = require('lodash');
 
-const { logger, sleep, call } = require('../utils');
+const { logger, quickSleep, call, randomLimit } = require('../utils');
 
 const log = (message) => logger('Feed', message);
 
 
-async function feed({ ig, likes }) {
+async function feed({ ig, accountDetails }) {
   log('Start');
 
-  const likeLimit = Math.round(random(likes - (likes * 0.5), likes + (likes * 0.5)));
+  const likeLimit = randomLimit(accountDetails.likeLimit / accountDetails.activeHours);
   log(`Going to like ${likeLimit} posts`);
 
   const timeline = ig.feed.timeline({ reason: 'pull_to_refresh' });
@@ -25,7 +25,7 @@ async function feed({ ig, likes }) {
 
     for (let mediaId of mediaIds) {
       log(`Liking ${mediaId}`);
-      await sleep(random(5000, 20000));
+      await quickSleep();
 
       await call(() => {
         return ig.media.like({

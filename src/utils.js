@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { random } = require('lodash');
 
 
 const logger = (origin, message) => {
@@ -8,6 +9,18 @@ const logger = (origin, message) => {
 const sleep = (ms) => {
   logger('Sleep', `Sleeping ${Math.round(ms / 1000)}s`);
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+const quickSleep = () => {
+  return sleep(random(5000, 20000));
+};
+
+const longSleep = () => {
+  return sleep(random(30000, 60000));
+};
+
+const randomLimit = (limit) => {
+  return Math.round(random(limit - (limit * 0.5), limit + (limit * 0.5)));
 };
 
 async function call(command, ...params) {
@@ -35,6 +48,8 @@ async function call(command, ...params) {
     resolve(r);
   });
 }
+
+module.exports = { logger, sleep, quickSleep, longSleep, randomLimit, call };
 
 /*async scrape(sourceUsername, limit) {
   await this.setup();
@@ -119,5 +134,3 @@ async function call(command, ...params) {
 
   this.log('Scrape End');
 }*/
-
-module.exports = { logger, sleep, call };

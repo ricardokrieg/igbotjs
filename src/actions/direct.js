@@ -1,20 +1,22 @@
 const { includes, filter, map, random, sample, sampleSize } = require('lodash');
 const moment = require('moment');
+const Spinner = require('node-spintax');
 
-const { logger, sleep, call } = require('../utils');
+const { logger, longSleep, call, randomLimit } = require('../utils');
 
 const log = (message) => logger('Direct', message);
 
 
-async function dmFollowers({ ig, igUsername, dmsCol, dms, spinner }) {
+async function dmFollowers({ ig, accountDetails, dmsCol }) {
   log('Start');
+
+  const spinner = new Spinner(accountDetails.message);
   log(`Spinner total variations: ${spinner.countVariations()}`);
 
-  const dmLimit = Math.round(random(dms - (dms * 0.5), dms + (dms * 0.5)));
+  const dmLimit = randomLimit(accountDetails.dmLimit / accountDetails.activeHours);
   log(`Going to DM ${dmLimit} followers`);
 
   const blacklist = map(await dmsCol.find().toArray(), 'pk');
-
   const followersFeed = ig.feed.accountFollowers();
 
   let dmCount = 0;
@@ -31,14 +33,14 @@ async function dmFollowers({ ig, igUsername, dmsCol, dms, spinner }) {
 
       log(`DMing ${follower.username}`);
 
-      await sleep(random(5000, 20000));
+      await longSleep();
 
       const thread = ig.entity.directThread([follower.pk.toString()]);
 
       const message = spinner.unspinRandom(1)[0];
       await call(() => { thread.broadcastText(message) });
 
-      await dmsCol.insertOne({ _id: follower.username, pk: follower.pk, account: igUsername, message: message });
+      await dmsCol.insertOne({ _id: follower.username, pk: follower.pk, account: accountDetails._id, message: message });
 
       dmCount++;
 
@@ -57,7 +59,7 @@ async function dmFollowers({ ig, igUsername, dmsCol, dms, spinner }) {
   log(`DMed ${dmCount} followers`);
 }
 
-async function inbox({ ig, userId }) {
+async function inbox({ ig }) {
   log('Start');
 
   const inboxFeed = ig.feed.directInbox();
