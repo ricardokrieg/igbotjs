@@ -39,8 +39,8 @@ class Bot {
     const accountDetails = this.accountDetails;
 
     await feed({ ig, accountDetails });
-    // await follow({ ig, accountDetails, targetsCol });
-    // await dmFollowers({ ig, accountDetails, dmsCol });
+    await follow({ ig, accountDetails, targetsCol });
+    await dmFollowers({ ig, accountDetails, dmsCol });
 
     log('End');
   }
