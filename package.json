@@ -16,7 +16,8 @@
   },
   "scripts": {
     "addAccount": "npx @babel/node src/addAccount.js",
-    "worker": "redis-cli flushall && npx @babel/node src/worker.js",
+    "startAccount": "npx @babel/node src/startAccount.js",
+    "worker": "npx @babel/node src/worker.js",
     "inbox": "npx @babel/node src/inbox.js"
   }
 }

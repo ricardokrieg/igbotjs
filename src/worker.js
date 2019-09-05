@@ -1,7 +1,6 @@
 const NodeResque = require('node-resque');
 const moment = require('moment');
 const { random } = require('lodash');
-const inquirer = require('inquirer');
 
 moment.locale('pt-br');
 
@@ -12,14 +11,6 @@ const log = (message) => logger('Worker', message);
 
 
 (async () => {
-  const { username } = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'username',
-      message: 'Username',
-    },
-  ]);
-
   const connectionDetails = {
     pkg: 'ioredis',
     host: '127.0.0.1',
@@ -56,7 +47,7 @@ const log = (message) => logger('Worker', message);
           await queue.enqueueIn(enqueueTime, 'bot-queue', 'actions-job', { username });
         })();
 
-        return true;
+        return `Bot started for ${username}`;
       }
     }
   };
@@ -94,5 +85,4 @@ const log = (message) => logger('Worker', message);
   scheduler.on('transferredJob', (timestamp, job) => { log(`scheduler enquing job ${moment.unix(timestamp).format('LTS')} >> ${JSON.stringify(job)}`) });
 
   await queue.connect();
-  await queue.enqueue('bot-queue', 'actions-job', { username });
 })();
