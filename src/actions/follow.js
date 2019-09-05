@@ -1,11 +1,85 @@
-const { includes, filter, some, values, map, random } = require('lodash');
+const { includes, filter, some, values, map, random, sample } = require('lodash');
 
-const { logger, sleep, call } = require('../utils');
+const { logger, quickSleep, call, randomLimit } = require('../utils');
 
 const log = (message) => logger('Follow', message);
 
 
-async function follow({ ig, targetsCol, follows }) {
+async function follow({ ig, accountDetails, targetsCol }) {
+  const followLimit = randomLimit(accountDetails.followLimit / accountDetails.activeHours);
+  log(`Going to follow ${followLimit} users`);
+
+  const sourceUsername = sample(accountDetails.sources);
+
+  const source = await call(() => { return ig.user.searchExact(sourceUsername) }, );
+  log('Source:');
+  log(source);
+
+  const blacklist = map(await targetsCol.find().toArray(), 'pk');
+
+  log(`Fetching ${source.username}'s followers...`);
+  const followersFeed = ig.feed.accountFollowers(source.pk);
+
+  let followCount = 0;
+  let page = 0;
+  while (true) {
+    page++;
+    log(`Fetching page #${page}...`);
+    const followers = await call(() => { return followersFeed.items(); });
+    const friendship = await call(() => { return ig.friendship.showMany(map(followers, 'pk')) });
+
+    const validUsers = filter(followers, { 'is_private': false, 'is_verified': false, 'has_anonymous_profile_picture': false });
+    log(`Fetched: ${followers.length} users (valid: ${validUsers.length})`);
+
+    for (const follower of validUsers) {
+      const followerPk = follower.pk;
+      const followerUsername = follower.username;
+
+      if (includes(blacklist, followerPk)) {
+        continue;
+      }
+
+      log(`User: ${followerUsername}`);
+
+      if (some(values(friendship[followerPk]))) {
+        await targetsCol.insertOne({ _id: followerUsername, pk: followerPk, followed: false, blacklisted: true, account: accountDetails._id });
+        log(`Rejected (friendship status)`);
+        continue;
+      }
+
+      await quickSleep();
+
+      const userInfo = await call(() => { return ig.user.info(followerPk) });
+      if (userInfo.is_business) {
+        await targetsCol.insertOne({ _id: followerUsername, pk: followerPk, followed: false, blacklisted: true, account: accountDetails._id });
+        log(`Rejected (business)`);
+        continue;
+      }
+
+      log(`Following ${followerUsername}...`);
+      log(userInfo);
+
+      await call(() => { return ig.friendship.create(followerPk) });
+      await targetsCol.insertOne({ _id: followerUsername, pk: followerPk, followed: true, blacklisted: false, account: accountDetails._id });
+
+      followCount++;
+      log(`Followed ${followerUsername}`);
+      log(`Follows: ${followCount}/${followLimit}`);
+
+      if (followCount >= followLimit) {
+        break;
+      }
+    }
+
+    if (followCount >= followLimit) {
+      break;
+    }
+  }
+
+  log(`Followed ${followCount} users`);
+}
+
+async function followFromList({ ig, targetsCol, follows }) {
   let followCount = 0;
   const followLimit = Math.round(random(follows - (follows * 0.5), follows + (follows * 0.5)));
 
@@ -62,73 +136,3 @@ async function follow({ ig, targetsCol, follows }) {
 
 
 module.exports = { follow };
-
-/*async function followOld({ sourceUsername, follows, blacklist }) {
-  const source = await this.call((params) => { return this.ig.user.searchExact(params[0]) }, sourceUsername);
-  this.log('Source:');
-  this.log(source);
-
-  this.log(`Fetching ${source.username}'s followers...`);
-  const followersFeed = this.ig.feed.accountFollowers(source.pk);
-
-  let page = 0;
-  let followCount = 0;
-  const followLimit = Math.round(random(follows - (follows * 0.5), follows + (follows * 0.5)));
-
-  this.log(`Going to follow ${followLimit} users`);
-
-  while (true) {
-    page++;
-
-    if (followCount >= followLimit) {
-      break;
-    }
-
-    this.log(`Page #${page}`);
-
-    const items = await this.call((params) => { return params[0].items() }, followersFeed);
-
-    const validUsers = filter(items, { 'is_private': false, 'is_verified': false, 'has_anonymous_profile_picture': false });
-    this.log(`Fetched: ${items.length} users (valid: ${validUsers.length})`);
-
-    const friendship = await this.call((params) => { return this.ig.friendship.showMany(map(params[0], 'pk')) }, validUsers);
-
-    for (const user of validUsers) {
-      if (includes(blacklist, user.username)) {
-        continue;
-      }
-
-      this.log(`User: ${user.username}`);
-
-      if (some(values(friendship[user.pk]))) {
-        await this.addFollowerBlacklist(user.username);
-        this.log(`Rejected (friendship status)`);
-        continue;
-      }
-
-      await this.sleep(random(5000, 20000));
-
-      const userInfo = await this.call((params) => { return this.ig.user.info(params[0].pk) }, user);
-      if (userInfo.is_business) {
-        await this.addFollowerBlacklist(user.username);
-        this.log(`Rejected (business)`);
-        continue;
-      }
-
-      this.log(`Following ${user.username}...`);
-      this.log(userInfo);
-
-      await this.call((params) => { return this.ig.friendship.create(params[0].pk) }, user);
-      followCount++;
-      this.log(`Followed ${user.username}`);
-
-      this.log(`Follows: ${followCount}/${followLimit}`);
-
-      if (followCount >= followLimit) {
-        break;
-      }
-    }
-  }
-
-  this.log(`Followed ${followCount} users`);
-}*/
