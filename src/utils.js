@@ -56,7 +56,14 @@ function greetingMessage() {
   return spinner.unspinRandom(1)[0];
 }
 
-module.exports = { logger, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage };
+function randomLocation() {
+  return {
+    latitude: random(-23999999, -22000001) / 1000000.0,
+    longitude: random(-46999999, -45000001) / 1000000.0,
+  };
+}
+
+module.exports = { logger, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage, randomLocation };
 
 /*async scrape(sourceUsername, limit) {
   await this.setup();

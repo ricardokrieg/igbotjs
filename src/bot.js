@@ -7,6 +7,7 @@ const { logger } = require('./utils');
 const { feed } = require('./actions/feed');
 const { dmFollowers, inbox, sendMessage } = require('./actions/direct');
 const { follow } = require('./actions/follow');
+const { publish } = require('./actions/publish');
 
 const log = (message) => logger('Bot', message);
 
@@ -23,6 +24,7 @@ class Bot {
     this.accountsCol = null;
     this.targetsCol = null;
     this.dmsCol = null;
+    this.uploadsCol = null;
 
     this.accountDetails = null;
 
@@ -35,12 +37,13 @@ class Bot {
 
     await this.setup();
 
-    const { ig, targetsCol, dmsCol } = this;
+    const { ig, targetsCol, dmsCol, uploadsCol } = this;
     const accountDetails = this.accountDetails;
 
     await feed({ ig, accountDetails });
     await follow({ ig, accountDetails, targetsCol });
     await dmFollowers({ ig, accountDetails, dmsCol });
+    await publish({ ig, accountDetails, uploadsCol });
 
     log('End');
   }
@@ -65,6 +68,7 @@ class Bot {
     this.accountsCol = client.db('igbotjs').collection('accounts');
     this.targetsCol = client.db('igbotjs').collection('targets');
     this.dmsCol = client.db('igbotjs').collection('direct');
+    this.uploadsCol = client.db('igbotjs').collection('uploads');
     log('Connected to database');
 
     this.accountDetails = await this.accountsCol.findOne({ _id: this.username });
