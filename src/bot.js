@@ -1,7 +1,6 @@
 const { IgApiClient } = require('instagram-private-api');
 const { includes, filter, some, values, map, random } = require('lodash');
 const { MongoClient } = require('mongodb');
-const assert = require('assert').strict;
 const moment = require('moment');
 
 const { logger } = require('./utils');
@@ -57,8 +56,7 @@ class Bot {
       build: this.ig.state.build,
     };
 
-    this.saveCookies(cookies);
-    this.saveState(state);
+    await this.accountsCol.updateOne({ _id: this.username }, { $set: { cookies: cookies, state: state } }, { upsert: true });
   }
 
   async connectToDatabase() {

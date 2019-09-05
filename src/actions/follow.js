@@ -28,6 +28,11 @@ async function follow({ ig, accountDetails, targetsCol }) {
     const followers = await call(() => { return followersFeed.items(); });
     const friendship = await call(() => { return ig.friendship.showMany(map(followers, 'pk')) });
 
+    if (isEmpty(followers)) {
+      log(`Reached end of feed.`);
+      break;
+    }
+
     const validUsers = filter(followers, { 'is_private': false, 'is_verified': false, 'has_anonymous_profile_picture': false });
     log(`Fetched: ${followers.length} users (valid: ${validUsers.length})`);
 

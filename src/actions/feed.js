@@ -1,4 +1,4 @@
-const { filter, map, sample, sampleSize } = require('lodash');
+const { filter, map, sample, sampleSize, isEmpty } = require('lodash');
 
 const { logger, quickSleep, call, randomLimit } = require('../utils');
 
@@ -19,6 +19,11 @@ async function feed({ ig, accountDetails }) {
     page++;
     log(`Fetching page #${page}...`);
     const items = await call(() => { return timeline.items() });
+
+    if (isEmpty(items)) {
+      log(`Reached end of feed.`);
+      break;
+    }
 
     const mediaIds = sampleSize(map(filter(items, { comment_likes_enabled: true, has_liked: false }), 'id'), likeLimit);
     log(`Fetched ${items.length} posts (${mediaIds.length} are valid)`);

@@ -26,6 +26,11 @@ async function dmFollowers({ ig, accountDetails, dmsCol }) {
     log(`Fetching page #${page}...`);
     const followers = await call(() => { return followersFeed.items(); });
 
+    if (isEmpty(followers)) {
+      log(`Reached end of feed.`);
+      break;
+    }
+
     for (const follower of followers) {
       if (includes(blacklist, follower.pk)) {
         continue;
