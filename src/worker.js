@@ -41,8 +41,14 @@ const log = (message) => logger('Worker', message);
 
           log('End');
 
-          // enqueue in 40~80 mins
-          const enqueueTime = random(40 * 60 * 1000, 80 * 60 * 1000);
+          let enqueueTime = null;
+          if (moment().hour() >= 22) {
+            // Sleep. enqueue in 6~8 hours
+            enqueueTime = random(6 * 60 * 60 * 1000, 8 * 60 * 60 * 1000);
+          } else {
+            // enqueue in 40~80 mins
+            enqueueTime = random(40 * 60 * 1000, 80 * 60 * 1000);
+          }
           log(`Scheduling to ${Math.round((enqueueTime / 1000) / 60)}min`);
           await queue.enqueueIn(enqueueTime, 'bot-queue', 'actions-job', { username });
         })();
