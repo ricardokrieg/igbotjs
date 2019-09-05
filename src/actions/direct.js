@@ -2,7 +2,7 @@ const { includes, filter, map, random, sample, sampleSize, isEmpty } = require('
 const moment = require('moment');
 const Spinner = require('node-spintax');
 
-const { logger, longSleep, call, randomLimit } = require('../utils');
+const { logger, quickSleep, longSleep, call, randomLimit, greetingMessage } = require('../utils');
 
 const log = (message) => logger('Direct', message);
 
@@ -41,6 +41,9 @@ async function dmFollowers({ ig, accountDetails, dmsCol }) {
       await longSleep();
 
       const thread = ig.entity.directThread([follower.pk.toString()]);
+
+      await call(() => { thread.broadcastText(greetingMessage()) });
+      await quickSleep();
 
       const message = spinner.unspinRandom(1)[0];
       await call(() => { thread.broadcastText(message) });

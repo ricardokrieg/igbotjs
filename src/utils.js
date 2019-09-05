@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { random } = require('lodash');
+const Spinner = require('node-spintax');
 
 
 const logger = (origin, message) => {
@@ -49,7 +50,13 @@ async function call(command, ...params) {
   });
 }
 
-module.exports = { logger, sleep, quickSleep, longSleep, randomLimit, call };
+function greetingMessage() {
+  const greeting = moment().hour() < 12 ? 'bom dia' : (moment().hour() < 18 ? 'boa tarde' : 'boa noite');
+  const spinner = new Spinner(`{Oi|Oie|Olá|Oii}, ${greeting}`);
+  return spinner.unspinRandom(1)[0];
+}
+
+module.exports = { logger, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage };
 
 /*async scrape(sourceUsername, limit) {
   await this.setup();
