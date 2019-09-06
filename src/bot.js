@@ -1,5 +1,5 @@
 const { IgApiClient } = require('instagram-private-api');
-const { includes, filter, some, values, map, random } = require('lodash');
+const { sampleSize, includes, filter, some, values, map, random } = require('lodash');
 const { MongoClient } = require('mongodb');
 const moment = require('moment');
 
@@ -8,6 +8,7 @@ const { feed } = require('./actions/feed');
 const { dmFollowers, inbox, sendMessage } = require('./actions/direct');
 const { follow } = require('./actions/follow');
 const { publish } = require('./actions/publish');
+const { stories } = require('./actions/stories');
 
 const log = (message) => logger('Bot', message);
 
@@ -40,10 +41,25 @@ class Bot {
     const { ig, targetsCol, dmsCol, uploadsCol } = this;
     const accountDetails = this.accountDetails;
 
-    await feed({ ig, accountDetails });
-    await follow({ ig, accountDetails, targetsCol });
-    await dmFollowers({ ig, accountDetails, dmsCol });
-    await publish({ ig, accountDetails, uploadsCol });
+    for (let n of sampleSize([1, 2, 3, 4, 5], 100)) {
+      switch(n) {
+        case 1:
+          await feed({ ig, accountDetails });
+          break;
+        case 2:
+          await follow({ ig, accountDetails, targetsCol });
+          break;
+        case 3:
+          await dmFollowers({ ig, accountDetails, dmsCol });
+          break;
+        case 4:
+          await publish({ ig, accountDetails, uploadsCol });
+          break;
+        case 5:
+          await stories({ ig });
+          break;
+      }
+    }
 
     log('End');
   }
