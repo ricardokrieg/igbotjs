@@ -1,4 +1,4 @@
-const { sampleSize, random, isEmpty } = require('lodash');
+const { random, isEmpty } = require('lodash');
 
 const { logger, call } = require('../utils');
 
@@ -16,7 +16,7 @@ async function stories({ ig }) {
     log(`No stories to watch`);
   }
 
-  const storiesToWatch = sampleSize(items, random(5, 20));
+  const storiesToWatch = items.slice(0, random(5, 20));
   log(`Watching ${storiesToWatch.length} stories...`);
 
   const result = await ig.story.seen(storiesToWatch);
