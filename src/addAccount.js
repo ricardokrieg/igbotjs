@@ -86,6 +86,7 @@ async function performLogin(username, password) {
         message: 'Enter code',
       },
     ]);
+    log(`Sending code ${code}...`);
 
     log(await ig.challenge.sendSecurityCode(code));
 

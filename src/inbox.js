@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 
 const Bot = require('./bot');
-const logger = require('./utils').logger;
+const { logger, sleep } = require('./utils');
 
 const log = (message) => logger('Inbox', message);
 
@@ -29,6 +29,7 @@ const log = (message) => logger('Inbox', message);
     }
 
     console.log('Try again...');
+    await sleep(20000);
   }
 
   log('End');

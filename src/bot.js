@@ -2,8 +2,9 @@ const { IgApiClient } = require('instagram-private-api');
 const { sampleSize, includes, filter, some, values, map, random } = require('lodash');
 const { MongoClient } = require('mongodb');
 const moment = require('moment');
+const Spinner = require('node-spintax');
 
-const { logger } = require('./utils');
+const { call, logger, greetingMessage, quickSleep } = require('./utils');
 const { feed } = require('./actions/feed');
 const { dmFollowers, inbox, sendMessage } = require('./actions/direct');
 const { follow } = require('./actions/follow');
@@ -154,9 +155,23 @@ class Bot {
     await inbox({ ig: this.ig });
   }
 
-  async sendDM({ target, message }) {
+  async sendDM({ target }) {
     await this.setup();
-    await sendMessage({ ig: this.ig, target, message });
+    const spinner = new Spinner(this.accountDetails.message);
+
+    log(`DMing ${target}`);
+
+    const targetPk = await this.ig.user.getIdByUsername(target);
+
+    const thread = this.ig.entity.directThread([targetPk.toString()]);
+
+    await call(() => { thread.broadcastText(greetingMessage()) });
+    await quickSleep();
+
+    const message = spinner.unspinRandom(1)[0];
+    await call(() => { thread.broadcastText(message) });
+
+    log('Done');
   }
 }
 
