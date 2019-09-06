@@ -24,10 +24,6 @@ async function publish({ ig, accountDetails, uploadsCol }) {
   const blacklist = map(await uploadsCol.find().toArray(), '_id');
   const validImages = difference(images, blacklist);
 
-  log(`Images: ${images}`);
-  log(`Blacklist: ${blacklist}`);
-  log(`Valid Images: ${validImages}`);
-
   if (isEmpty(validImages)) {
     log('There is no image to publish.');
     return;
