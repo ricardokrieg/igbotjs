@@ -173,6 +173,28 @@ class Bot {
 
     log('Done');
   }
+
+  async editProfile({ bio, url }) {
+    await this.setup();
+
+    const currentUser = await this.ig.account.currentUser();
+
+    let options = {
+      external_url: url,
+      gender: currentUser.gender,
+      phone_number: currentUser.phone_number,
+      username: currentUser.username,
+      first_name: currentUser.first_name,
+      biography: bio,
+      email: currentUser.email,
+    };
+    log(options);
+
+    const result = await call(() => { return this.ig.account.editProfile(options) });
+    log(result);
+
+    log('Done');
+  }
 }
 
 module.exports = Bot;

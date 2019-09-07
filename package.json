@@ -19,6 +19,7 @@
     "startAccount": "npx @babel/node src/startAccount.js",
     "worker": "npx @babel/node src/worker.js",
     "sendDM": "npx @babel/node src/sendDM.js",
-    "inbox": "npx @babel/node src/inbox.js"
+    "inbox": "npx @babel/node src/inbox.js",
+    "editProfile": "npx @babel/node src/editProfile.js"
   }
 }
