@@ -1,11 +1,11 @@
 const { filter, map, sample, sampleSize, isEmpty } = require('lodash');
 
-const { logger, quickSleep, call, randomLimit } = require('../utils');
+const { stats, logger, quickSleep, call, randomLimit } = require('../utils');
 
 const log = (message) => logger('Feed', message);
 
 
-async function feed({ ig, accountDetails }) {
+async function feed({ ig, accountDetails, statsCol }) {
   log('Start');
 
   const likeLimit = randomLimit(accountDetails.likeLimit / accountDetails.activeHours);
@@ -41,6 +41,8 @@ async function feed({ ig, accountDetails }) {
           d: sample([0, 1]),
         });
       });
+
+      await stats(statsCol, accountDetails._id, 'like', mediaId);
 
       likesCount++;
       log(`Likes: ${likesCount}/${likeLimit}`);

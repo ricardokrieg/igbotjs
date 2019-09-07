@@ -1,11 +1,11 @@
 const { random, isEmpty } = require('lodash');
 
-const { logger, call } = require('../utils');
+const { stats, logger, call } = require('../utils');
 
 const log = (message) => logger('Stories', message);
 
 
-async function stories({ ig }) {
+async function stories({ ig, statsCol }) {
   log('Start');
 
   const reelsTray = ig.feed.reelsTray({ reason: 'pull_to_refresh' });
@@ -21,6 +21,7 @@ async function stories({ ig }) {
 
   const result = await ig.story.seen(storiesToWatch);
   log(result);
+  //await stats(statsCol, accountDetails._id, 'stories', followerUsername);
 
   log(`Watched ${storiesToWatch.length} stories`);
   log('End');

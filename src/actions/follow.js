@@ -1,11 +1,11 @@
 const { includes, filter, some, values, map, random, sample, isEmpty } = require('lodash');
 
-const { logger, quickSleep, call, randomLimit } = require('../utils');
+const { stats, logger, quickSleep, call, randomLimit } = require('../utils');
 
 const log = (message) => logger('Follow', message);
 
 
-async function follow({ ig, accountDetails, targetsCol }) {
+async function follow({ ig, accountDetails, targetsCol, statsCol }) {
   const followLimit = randomLimit(accountDetails.followLimit / accountDetails.activeHours);
   log(`Going to follow ${followLimit} users`);
 
@@ -66,6 +66,7 @@ async function follow({ ig, accountDetails, targetsCol }) {
 
       await call(() => { return ig.friendship.create(followerPk) });
       await targetsCol.insertOne({ _id: followerUsername, pk: followerPk, followed: true, blacklisted: false, account: accountDetails._id });
+      await stats(statsCol, accountDetails._id, 'follow', followerUsername);
 
       followCount++;
       log(`Followed ${followerUsername}`);
@@ -84,7 +85,7 @@ async function follow({ ig, accountDetails, targetsCol }) {
   log(`Followed ${followCount} users`);
 }
 
-async function followFromList({ ig, targetsCol, follows }) {
+async function followFromList({ ig, targetsCol, follows, statsCol }) {
   let followCount = 0;
   const followLimit = Math.round(random(follows - (follows * 0.5), follows + (follows * 0.5)));
 
@@ -124,6 +125,7 @@ async function followFromList({ ig, targetsCol, follows }) {
 
       await call(() => { return ig.friendship.create(user.pk) });
       await targetsCol.updateOne({ _id: target._id }, { $set: { followed: true } });
+      await stats(statsCol, accountDetails.username, 'follows', { username: user.username, pk: user.pk, timestamp: moment() });
 
       followCount++;
       log(`Followed ${user.username}`);

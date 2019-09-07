@@ -63,7 +63,11 @@ function randomLocation() {
   };
 }
 
-module.exports = { logger, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage, randomLocation };
+async function stats(col, account, type, reference) {
+  await col.insertOne({ account, type, reference, timestamp: new Date() }); 
+}
+
+module.exports = { stats, logger, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage, randomLocation };
 
 /*async scrape(sourceUsername, limit) {
   await this.setup();

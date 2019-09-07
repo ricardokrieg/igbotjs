@@ -27,6 +27,7 @@ class Bot {
     this.targetsCol = null;
     this.dmsCol = null;
     this.uploadsCol = null;
+    this.statsCol = null;
 
     this.accountDetails = null;
 
@@ -39,25 +40,25 @@ class Bot {
 
     await this.setup();
 
-    const { ig, targetsCol, dmsCol, uploadsCol } = this;
+    const { ig, targetsCol, dmsCol, uploadsCol, statsCol } = this;
     const accountDetails = this.accountDetails;
 
     for (let n of sampleSize([1, 2, 3, 4, 5], 100)) {
       switch(n) {
         case 1:
-          await feed({ ig, accountDetails });
+          await feed({ ig, accountDetails, statsCol });
           break;
         case 2:
-          await follow({ ig, accountDetails, targetsCol });
+          await follow({ ig, accountDetails, targetsCol, statsCol });
           break;
         case 3:
-          await dmFollowers({ ig, accountDetails, dmsCol });
+          await dmFollowers({ ig, accountDetails, dmsCol, statsCol });
           break;
         case 4:
-          await publish({ ig, accountDetails, uploadsCol });
+          await publish({ ig, accountDetails, uploadsCol, statsCol });
           break;
         case 5:
-          await stories({ ig });
+          await stories({ ig, statsCol });
           break;
       }
     }
@@ -86,6 +87,7 @@ class Bot {
     this.targetsCol = client.db('igbotjs').collection('targets');
     this.dmsCol = client.db('igbotjs').collection('direct');
     this.uploadsCol = client.db('igbotjs').collection('uploads');
+    this.statsCol = client.db('igbotjs').collection('stats');
     log('Connected to database');
 
     this.accountDetails = await this.accountsCol.findOne({ _id: this.username });

@@ -5,12 +5,12 @@ const util = require('util');
 
 const readdir = util.promisify(fs.readdir);
 
-const { logger, quickSleep, call, randomLocation } = require('../utils');
+const { stats, logger, quickSleep, call, randomLocation } = require('../utils');
 
 const log = (message) => logger('Publish', message);
 
 
-async function publish({ ig, accountDetails, uploadsCol }) {
+async function publish({ ig, accountDetails, uploadsCol, statsCol }) {
   log('Start');
 
   log(`Publish Percentage: ${accountDetails.publishPercentage}%`);
@@ -44,6 +44,7 @@ async function publish({ ig, accountDetails, uploadsCol }) {
   });
 
   await uploadsCol.insertOne({ _id: image, account: accountDetails._id });
+  await stats(statsCol, accountDetails._id, 'publish', image);
 
   log(publishResult);
   log('End');

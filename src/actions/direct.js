@@ -2,12 +2,12 @@ const { includes, filter, map, random, sample, sampleSize, isEmpty } = require('
 const moment = require('moment');
 const Spinner = require('node-spintax');
 
-const { logger, quickSleep, longSleep, call, randomLimit, greetingMessage } = require('../utils');
+const { stats, logger, quickSleep, longSleep, call, randomLimit, greetingMessage } = require('../utils');
 
 const log = (message) => logger('Direct', message);
 
 
-async function dmFollowers({ ig, accountDetails, dmsCol }) {
+async function dmFollowers({ ig, accountDetails, dmsCol, statsCol }) {
   log('Start');
 
   const spinner = new Spinner(accountDetails.message);
@@ -49,6 +49,7 @@ async function dmFollowers({ ig, accountDetails, dmsCol }) {
       await call(() => { thread.broadcastText(message) });
 
       await dmsCol.insertOne({ _id: follower.username, pk: follower.pk, account: accountDetails._id, message: message });
+      await stats(statsCol, accountDetails._id, 'dm', follower.username);
 
       dmCount++;
 
