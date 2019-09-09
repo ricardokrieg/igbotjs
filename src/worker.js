@@ -5,7 +5,7 @@ const { random } = require('lodash');
 moment.locale('pt-br');
 
 const Bot = require('./bot');
-const { sleep, logger } = require('./utils');
+const { stats, sleep, logger } = require('./utils');
 
 const log = (message) => logger('Worker', message);
 
@@ -27,16 +27,38 @@ const log = (message) => logger('Worker', message);
         (async () => {
           log('Start');
 
+          const bot = new Bot({ username });
+
           while(true) {
             try {
-              await (new Bot({ username })).start();
+              await bot.start();
               break;
             } catch (e) {
-              console.log(e);
-            }
+              if (bot.errorsCol !== null) {
+                await stats(bot.errorsCol, username, e.name, e.message);
+              } else {
+                console.error('XXXXXXX');
+                console.error(e.name);
+                console.error(e.message);
+                console.error(e);
+                console.error('XXXXXXX');
+                console.log('Waiting 60s...');
+                await sleep(60000);
+                continue;
+              }
 
-            console.log('Try again...');
-            await sleep(20000);
+              if (e.name === 'RequestError' && e.message.includes('socket')) {
+                console.error(`${e.name}: ${e.message}. Waiting 60s...`);
+                await sleep(60000);
+              } else {
+                console.error('XXXXXXX');
+                console.error(e.name);
+                console.error(e.message);
+                console.error(e);
+                console.error('XXXXXXX');
+                break;
+              }
+            }
           }
 
           log('End');

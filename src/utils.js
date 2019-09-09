@@ -28,6 +28,7 @@ async function call(command, ...params) {
   return new Promise(async (resolve, reject) => {
     let r;
     let tries = 0;
+    let error = null;
     while (true) {
       try {
         tries++;
@@ -36,17 +37,27 @@ async function call(command, ...params) {
 
         break;
       } catch (err) {
-        logger('Call', `Error: ${err}`);
+        console.error(`[${moment().format('LTS')}][Call] ${err}`);
 
-        if (tries < 5) {
-          await new Promise(resolve => setTimeout(resolve, 5000));
+        if (err.name === 'IgActionSpamError') {
+          error = err;
+          break;
         } else {
-          throw err;
+          if (tries < 5) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          } else {
+            error = err;
+            break;
+          }
         }
       }
     }
 
-    resolve(r);
+    if (error === null) {
+      resolve(r);
+    } else {
+      reject(error);
+    }
   });
 }
 
@@ -64,7 +75,7 @@ function randomLocation() {
 }
 
 async function stats(col, account, type, reference) {
-  await col.insertOne({ account, type, reference, timestamp: new Date() }); 
+  await col.insertOne({ account, type, reference, timestamp: new Date() });
 }
 
 module.exports = { stats, logger, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage, randomLocation };

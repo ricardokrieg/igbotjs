@@ -10,6 +10,11 @@ const log = (message) => logger('Direct', message);
 async function dmFollowers({ ig, accountDetails, dmsCol, statsCol }) {
   log('Start');
 
+  if (accountDetails.disableDM) {
+    log(`DM is disabled for this account`);
+    return;
+  }
+
   const spinner = new Spinner(accountDetails.message);
   log(`Spinner total variations: ${spinner.countVariations()}`);
 

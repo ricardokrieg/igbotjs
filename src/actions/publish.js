@@ -13,6 +13,11 @@ const log = (message) => logger('Publish', message);
 async function publish({ ig, accountDetails, uploadsCol, statsCol }) {
   log('Start');
 
+  if (accountDetails.disablePublish) {
+    log(`Publish is disabled for this account`);
+    return;
+  }
+
   log(`Publish Percentage: ${accountDetails.publishPercentage}%`);
   log(`Path: ${accountDetails.path}`);
   if (random(1, 100) > accountDetails.publishPercentage) {

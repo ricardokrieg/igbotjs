@@ -28,6 +28,7 @@ class Bot {
     this.dmsCol = null;
     this.uploadsCol = null;
     this.statsCol = null;
+    this.errorsCol = null;
 
     this.accountDetails = null;
 
@@ -40,25 +41,25 @@ class Bot {
 
     await this.setup();
 
-    const { ig, targetsCol, dmsCol, uploadsCol, statsCol } = this;
+    const { ig, targetsCol, dmsCol, uploadsCol, statsCol, errorsCol } = this;
     const accountDetails = this.accountDetails;
 
     for (let n of sampleSize([1, 2, 3, 4, 5], 100)) {
       switch(n) {
         case 1:
-          await feed({ ig, accountDetails, statsCol });
+          await feed({ ig, accountDetails, statsCol, errorsCol });
           break;
         case 2:
-          await follow({ ig, accountDetails, targetsCol, statsCol });
+          await follow({ ig, accountDetails, targetsCol, statsCol, errorsCol });
           break;
         case 3:
-          await dmFollowers({ ig, accountDetails, dmsCol, statsCol });
+          await dmFollowers({ ig, accountDetails, dmsCol, statsCol, errorsCol });
           break;
         case 4:
-          await publish({ ig, accountDetails, uploadsCol, statsCol });
+          await publish({ ig, accountDetails, uploadsCol, statsCol, errorsCol });
           break;
         case 5:
-          await stories({ ig, statsCol });
+          await stories({ ig, statsCol, errorsCol });
           break;
       }
     }
@@ -88,6 +89,7 @@ class Bot {
     this.dmsCol = client.db('igbotjs').collection('direct');
     this.uploadsCol = client.db('igbotjs').collection('uploads');
     this.statsCol = client.db('igbotjs').collection('stats');
+    this.errorsCol = client.db('igbotjs').collection('errors');
     log('Connected to database');
 
     this.accountDetails = await this.accountsCol.findOne({ _id: this.username });
@@ -180,11 +182,12 @@ class Bot {
     await this.setup();
 
     const currentUser = await this.ig.account.currentUser();
+    log(currentUser);
 
     let options = {
       external_url: url,
       gender: currentUser.gender,
-      phone_number: currentUser.phone_number,
+      phone_number: '',
       username: currentUser.username,
       first_name: currentUser.first_name,
       biography: bio,
