@@ -1,15 +1,17 @@
 const { IgApiClient } = require('instagram-private-api');
-const { sampleSize, includes, filter, some, values, map, random } = require('lodash');
+const { sampleSize, sample, includes, filter, some, values, map, random } = require('lodash');
 const { MongoClient } = require('mongodb');
 const moment = require('moment');
 const Spinner = require('node-spintax');
+const fs = require('fs');
 
-const { call, logger, greetingMessage, quickSleep } = require('./utils');
+const { call, logger, greetingMessage, quickSleep, longSleep, stats } = require('./utils');
 const { feed } = require('./actions/feed');
 const { dmFollowers, inbox, sendMessage } = require('./actions/direct');
 const { follow } = require('./actions/follow');
 const { publish } = require('./actions/publish');
 const { stories } = require('./actions/stories');
+const { comment } = require('./actions/comment');
 
 const log = (message) => logger('Bot', message);
 
@@ -178,7 +180,7 @@ class Bot {
     log('Done');
   }
 
-  async editProfile({ bio, url }) {
+  async editProfile({ newUsername, name, bio, url, profilePic }) {
     await this.setup();
 
     const currentUser = await this.ig.account.currentUser();
@@ -188,18 +190,65 @@ class Bot {
       external_url: url,
       gender: currentUser.gender,
       phone_number: '',
-      username: currentUser.username,
-      first_name: currentUser.first_name,
+      username: newUsername,
+      first_name: name,
       biography: bio,
       email: currentUser.email,
     };
+    log('Options:');
     log(options);
 
-    const result = await call(() => { return this.ig.account.editProfile(options) });
+    log('Editing profile...');
+    let result = await call(() => { return this.ig.account.editProfile(options) });
+    log(result);
+
+    log('Changing profile picture...');
+    const readStream = fs.createReadStream(profilePic);
+    result = await call(() => { return this.ig.account.changeProfilePicture(readStream) });
     log(result);
 
     log('Done');
   }
+
+  // async comment() {
+  //   await this.setup();
+  //
+  //   const usernames = [
+  //     '_garotafit.oficial',
+  //     '_gata.fit_',
+  //     'gatinhajuhhhh',
+  //   ];
+  //   const comments = [
+  //     '😍 bjs',
+  //     'bjs 😍 ',
+  //     'beijinhos',
+  //     'amei',
+  //     'wow',
+  //     'uau',
+  //   ];
+  //
+  //   for (let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+  //   for (let username of usernames) {
+  //     const targetPk = await this.ig.user.getIdByUsername(username);
+  //     const userFeed = this.ig.feed.user(targetPk);
+  //
+  //     const myPostsFirstPage = await userFeed.items();
+  //
+  //     const result = await call(() => {
+  //       return this.ig.media.comment({
+  //         mediaId: sample(myPostsFirstPage).id,
+  //         text: sample(comments),
+  //       });
+  //     });
+  //     await stats(this.statsCol, this.accountDetails._id, 'comment', username);
+  //     log(result);
+  //
+  //     longSleep();
+  //   }
+  //   }
+  //
+  //   log('Done');
+  // }
 }
 
 module.exports = Bot;

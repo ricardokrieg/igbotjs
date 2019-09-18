@@ -20,6 +20,7 @@
     "worker": "npx @babel/node src/worker.js",
     "sendDM": "npx @babel/node src/sendDM.js",
     "inbox": "npx @babel/node src/inbox.js",
-    "editProfile": "npx @babel/node src/editProfile.js"
+    "editProfile": "npx @babel/node src/editProfile.js",
+    "comment": "npx @babel/node src/comment.js"
   }
 }
