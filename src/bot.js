@@ -1,5 +1,17 @@
 const { IgApiClient } = require('instagram-private-api');
-const { sampleSize, sample, includes, filter, some, values, map, random } = require('lodash');
+const {
+  sampleSize,
+  sample,
+  includes,
+  filter,
+  some,
+  values,
+  map,
+  random,
+  times,
+  without,
+  isEmpty,
+} = require('lodash');
 const { MongoClient } = require('mongodb');
 const moment = require('moment');
 const Spinner = require('node-spintax');
@@ -8,10 +20,10 @@ const fs = require('fs');
 const { call, logger, greetingMessage, quickSleep, longSleep, stats } = require('./utils');
 const { feed } = require('./actions/feed');
 const { dmFollowers, inbox, sendMessage } = require('./actions/direct');
-const { follow } = require('./actions/follow');
-const { publish } = require('./actions/publish');
-const { stories } = require('./actions/stories');
-const { comment } = require('./actions/comment');
+const { follow, getFollowLimit } = require('./actions/follow');
+const { publish, getPublishPercentage } = require('./actions/publish');
+const { stories, getStoriesLimit } = require('./actions/stories');
+const { comment, getFeedLimit } = require('./actions/comment');
 
 const log = (message) => logger('Bot', message);
 
@@ -36,6 +48,90 @@ class Bot {
 
     this.cookies = null;
     this.state = null;
+  }
+
+  async simulate() {
+    log('Simulate - Start');
+
+    await this.setup();
+
+    const { ig, targetsCol, dmsCol, uploadsCol, statsCol, errorsCol } = this;
+    const accountDetails = this.accountDetails;
+
+    const followLimit       = getFollowLimit({ accountDetails });
+    const publishPercentage = getPublishPercentage({ accountDetails });
+    const storiesLimit      = getStoriesLimit({ accountDetails });
+    const feedLimit         = getFeedLimit({ accountDetails });
+
+    log(`Follow : ${followLimit}`);
+    log(`Publish: ${publishPercentage}`);
+    log(`Stories: ${storiesLimit}`);
+    log(`Feed   : ${feedLimit}`);
+
+    const schedule = generateSchedule({
+      followLimit,
+      publishPercentage,
+      storiesLimit,
+      feedLimit,
+    });
+
+    log('Simulate - End');
+  }
+
+  static generateSchedule({ followLimit, publishLimit, storiesLimit, feedLimit }) {
+    let actionTypes = [ 'follow', 'publish', 'stories', 'feed' ];
+
+    let actions = [];
+
+    while (true) {
+      if (isEmpty(actionTypes)) {
+        break;
+      }
+
+      const action = sample(actionTypes);
+
+      switch (action) {
+        case 'follow':
+          const n = 1 + random(0, 3);
+          actions = [ ...actions, times(n, () => 'follow') ];
+
+          const count = _.sumBy(actions, ({ a }) => a === 'follow' ? 1 : 0);
+
+          if (count >= followLimit) {
+            actionTypes = without(actionTypes, 'follow');
+          }
+          break;
+        case 'publish':
+          actions = [ ...actions, 'publish' ];
+
+          const count = _.sumBy(actions, ({ a }) => a === 'publish' ? 1 : 0);
+
+          if (count >= publishLimit) {
+            actionTypes = without(actionTypes, 'publish');
+          }
+          break;
+        case 'stories':
+          const n = 1 + random(0, 10);
+          actions = [ ...actions, times(n, () => 'stories') ];
+
+          const count = _.sumBy(actions, ({ a }) => a === 'stories' ? 1 : 0);
+
+          if (count >= storiesLimit) {
+            actionTypes = without(actionTypes, 'stories');
+          }
+          break;
+        case 'feed':
+          const n = 1 + random(0, 5);
+          actions = [ ...actions, times(n, () => 'feed') ];
+
+          const count = _.sumBy(actions, ({ a }) => a === 'feed' ? 1 : 0);
+
+          if (count >= feedLimit) {
+            actionTypes = without(actionTypes, 'feed');
+          }
+          break;
+      }
+    }
   }
 
   async start() {

@@ -5,6 +5,10 @@ const { stats, logger, quickSleep, call, randomLimit } = require('../utils');
 const log = (message) => logger('Follow', message);
 
 
+function getFollowLimit({ accountDetails }) {
+  return randomLimit(accountDetails.followLimit / accountDetails.activeHours);
+}
+
 async function follow({ ig, accountDetails, targetsCol, statsCol }) {
   const followLimit = randomLimit(accountDetails.followLimit / accountDetails.activeHours);
   log(`Going to follow ${followLimit} users`);
@@ -142,4 +146,4 @@ async function followFromList({ ig, targetsCol, follows, statsCol }) {
 }
 
 
-module.exports = { follow };
+module.exports = { follow, getFollowLimit };
