@@ -24,24 +24,31 @@ class DBManager {
   }
 
   accountsCol() {
-    return this.col('accounts');
+    return this.col({ colName: 'accounts' });
   }
 
   statsCol() {
-    return this.col('stats');
+    return this.col({ colName: 'stats' });
   }
 
   targetsCol() {
-    return this.col('targets');
+    return this.col({ colName: 'targets' });
   }
 
-  // this.targetsCol = client.db('igbotjs').collection('targets');
   // this.dmsCol = client.db('igbotjs').collection('direct');
   // this.uploadsCol = client.db('igbotjs').collection('uploads');
   // this.errorsCol = client.db('igbotjs').collection('errors');
 
   async accountDetails() {
-    return await this.accountsCol().findOne({ _id: this.username });
+    const details = await this.accountsCol().findOne({ _id: this.username });
+
+    if (details) {
+      return details;
+    } else {
+      const message = `Account ${this.username} not found.`;
+      log.error(message);
+      throw new Error(message);
+    }
   }
 
   async updateCookiesAndState({ cookies, state }) {

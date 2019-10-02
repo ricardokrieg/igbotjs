@@ -1,30 +1,12 @@
 const { IgApiClient } = require('instagram-private-api');
-const {
-  sampleSize,
-  sample,
-  includes,
-  filter,
-  some,
-  values,
-  map,
-  random,
-  times,
-  without,
-  isEmpty,
-} = require('lodash');
-const moment = require('moment');
-const Spinner = require('node-spintax');
-const fs = require('fs');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
-const { call, logger, greetingMessage, quickSleep, longSleep, stats } = require('./utils');
-const { feed } = require('./actions/feed');
-const { dmFollowers, inbox, sendMessage } = require('./actions/direct');
-const { follow, getFollowLimit } = require('./actions/follow');
-const { publish, getPublishLimit } = require('./actions/publish');
-const { stories, getStoriesLimit } = require('./actions/stories');
-const { comment, getFeedLimit } = require('./actions/comment');
+const DBManager      = require('./DBManager');
+const SessionManager = require('./SessionManager');
+const AccountManager = require('./AccountManager');
+const StatsManager   = require('./StatsManager');
+const FollowManager  = require('./actions/FollowManager');
 
 
 class Bot {
@@ -39,41 +21,50 @@ class Bot {
       url: 'mongodb://wolf:xxx123xxx@ds243963.mlab.com:43963/igbotjs',
       dbName: 'igbotjs',
     });
+  }
+
+  async setup() {
+    log(`Setup - Start`);
+
+    await this.dbManager.connect();
+
+    const accountDetails = await this.dbManager.accountDetails();
 
     this.sessionManager = new SessionManager({
       ig: this.ig,
-      username,
+      username: this.username,
+      accountDetails,
       dbManager: this.dbManager,
     });
 
-    const accountDetails = this.dbManager.accountDetails();
     this.accountManager = new AccountManager({
       ig: this.ig,
-      username,
+      username: this.username,
       accountDetails,
     });
 
     const statsCol = this.dbManager.statsCol();
-    this.statsManager = new StatsManager({ username, statsCol });
+    this.statsManager = new StatsManager({
+      username: this.username,
+      statsCol,
+    });
 
     const sources = accountDetails.sources;
     this.followManager = new FollowManager({
       ig: this.ig,
-      username,
+      username: this.username,
       sources,
       getBlacklist: this.statsManager.getBlacklist.bind(this.statsManager),
       addStats: this.statsManager.addStats.bind(this.statsManager),
       addTarget: this.statsManager.addTarget.bind(this.statsManager),
     });
-  }
-
-  async setup() {
-    await this.dbManager.connect();
 
     this.sessionManager.start();
     this.accountManager.setup();
 
     await this.sessionManager.login();
+
+    log(`Setup - End`);
   }
 
   async simulate() {
@@ -102,6 +93,9 @@ class Bot {
       switch(event.action) {
         case 'follow':
           await this.followManager.run({ limit: event.limit });
+          break;
+        default:
+          log.error(`"${event.action}" not implemented`);
           break;
       }
     }

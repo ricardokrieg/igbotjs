@@ -1,11 +1,19 @@
 const moment = require('moment');
-const { random } = require('lodash');
+const { random, times } = require('lodash');
 const Spinner = require('node-spintax');
 const defaultHandler = require('log-chainable/handlers').minimalConsoleColorized;
 
 
 const logHandler = (level, nameStack, args) => {
-  defaultHandler(level, nameStack, [ moment().format('LTS'), ...args ]);
+  const nameStackLength = nameStack.join('.').length;
+  const paddingLeft = times(5 - level.length, () => ' ').join('');
+  const paddingRight = times(Math.max(15, nameStackLength) - nameStackLength, () => ' ').join('');
+
+  defaultHandler(
+    level,
+    [`${paddingLeft}${nameStack.join('.')}${paddingRight}`],
+    [ moment().format('LTS'), ...args ]
+  );
 };
 
 const logger = (origin, message) => {

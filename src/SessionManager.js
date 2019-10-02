@@ -3,13 +3,13 @@ const log = require('log-chainable').namespace(module).handler(logHandler);
 
 
 class SessionManager {
-  constructor({ ig, dbManager, username }) {
+  constructor({ ig, dbManager, username, accountDetails }) {
     this.ig        = ig;
     this.dbManager = dbManager;
     this.username  = username;
 
-    this.cookies = null;
-    this.state   = null;
+    this.cookies = accountDetails.cookies;
+    this.state   = accountDetails.state;
   }
 
   start() {
@@ -23,16 +23,21 @@ class SessionManager {
   async login() {
     log('Logging in...');
 
-    await this.loadCookies();
-    await this.loadState();
+    if (this.cookies && this.state) {
+      await this.loadCookies();
+      await this.loadState();
 
-    log('Simulating pre login flow...');
-    await this.ig.simulate.preLoginFlow();
+      log('Simulating pre login flow...');
+      await this.ig.simulate.preLoginFlow();
 
-    log('Simulating post login flow...');
-    await this.ig.simulate.postLoginFlow();
+      log('Simulating post login flow...');
+      await this.ig.simulate.postLoginFlow();
 
-    log('Logged in');
+      log('Logged in');
+    } else {
+      log.error('Cookies/State are missing');
+      throw 'Cookies/State are missing';
+    }
   }
 
   async requestSubscription() {
@@ -52,29 +57,21 @@ class SessionManager {
   async loadCookies() {
     log('Loading cookies...');
 
-    this.cookies = (await this.dbManager.accountsCol().findOne({ _id: this.username })).cookies;
-
-    log(this.cookies);
-
     await this.ig.state.deserializeCookieJar(JSON.stringify(this.cookies));
   }
 
-  static async loadState() {
+  async loadState() {
     log('Loading state...');
 
-    this.state = (await this.dbManager.accountsCol().findOne({ _id: this.username })).state;
-
-    log(this.state);
-
     this.ig.state.deviceString = this.state.deviceString;
-    this.ig.state.deviceId = this.state.deviceId;
-    this.ig.state.uuid = this.state.uuid;
-    this.ig.state.phoneId = this.state.phoneId;
-    this.ig.state.adid = this.state.adid;
-    this.ig.state.build = this.state.build;
+    this.ig.state.deviceId     = this.state.deviceId;
+    this.ig.state.uuid         = this.state.uuid;
+    this.ig.state.phoneId      = this.state.phoneId;
+    this.ig.state.adid         = this.state.adid;
+    this.ig.state.build        = this.state.build;
   }
 
-  async call(command, ...params) {
+  static async call(command, ...params) {
     return new Promise(async (resolve, reject) => {
       let r;
       let tries = 0;

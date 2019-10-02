@@ -17,6 +17,8 @@
   },
   "scripts": {
     "console": "npx @babel/node",
+    "simulate": "npx @babel/node src/simulate.js",
+
     "addAccount": "npx @babel/node src/addAccount.js",
     "startAccount": "npx @babel/node src/startAccount.js",
     "worker": "npx @babel/node src/worker.js",

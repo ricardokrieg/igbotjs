@@ -1,4 +1,4 @@
-const { logHandler } = require('./utils');
+const { logHandler } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const { sample, map, isEmpty, filter, includes, some, values } = require('lodash');
 
