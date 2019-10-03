@@ -1,6 +1,9 @@
-const { logHandler } = require('../utils');
+const { logHandler, quickSleep } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const { sample, map, isEmpty, filter, includes, some, values } = require('lodash');
+
+const SessionManager = require('../SessionManager');
+
 
 class FollowManager {
   constructor({ username, ig, sources, getBlacklist, addStats, addTarget }) {
@@ -17,14 +20,11 @@ class FollowManager {
     log(`Going to follow ${followLimit} users`);
 
     const sourceUsername = sample(this.sources);
+    log(`Source: ${sourceUsername}`);
 
     const source = await SessionManager.call( () => this.ig.user.searchExact(sourceUsername) );
-    log('[source]');
-    log(source);
 
-    const blacklist = this.getBlacklist();
-    log(`[blacklist]`);
-    log(blacklist);
+    const blacklist = await this.getBlacklist();
 
     log(`Fetching ${source.username}'s followers...`);
     const followersFeed = this.ig.feed.accountFollowers(source.pk);
@@ -53,7 +53,7 @@ class FollowManager {
           continue;
         }
 
-        log(`User: ${followerUsername}`);
+        log(`Checking ${followerUsername}...`);
 
         if (some(values(friendship[followerPk]))) {
           await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
@@ -71,7 +71,6 @@ class FollowManager {
         }
 
         log(`Following ${followerUsername}...`);
-        log(userInfo);
 
         await SessionManager.call( () => this.ig.friendship.create(followerPk) );
 
@@ -79,7 +78,7 @@ class FollowManager {
         await this.addStats({ type: 'follow', reference: followerUsername });
 
         followCount++;
-        log(`Followed ${followerUsername}`);
+        log(`Followed ${followerUsername} (${followCount}/${followLimit})`);
 
         if (followCount >= followLimit) {
           break;

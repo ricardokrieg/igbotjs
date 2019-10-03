@@ -3,7 +3,6 @@ const { random, times } = require('lodash');
 const Spinner = require('node-spintax');
 const defaultHandler = require('log-chainable/handlers').minimalConsoleColorized;
 
-
 const logHandler = (level, nameStack, args) => {
   const nameStackLength = nameStack.join('.').length;
   const paddingLeft = times(5 - level.length, () => ' ').join('');
@@ -16,12 +15,10 @@ const logHandler = (level, nameStack, args) => {
   );
 };
 
-const logger = (origin, message) => {
-  console.log(`[${moment().format('LTS')}][${origin}] ${typeof(message) === 'string' ? message : JSON.stringify(message)}`);
-};
+const log = require('log-chainable').namespace(module).handler(logHandler);
 
 const sleep = (ms) => {
-  logger('Sleep', `Sleeping ${Math.round(ms / 1000)}s`);
+  log(`Sleeping ${Math.round(ms / 1000)}s`);
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
@@ -91,7 +88,7 @@ async function stats(col, account, type, reference) {
   await col.insertOne({ account, type, reference, timestamp: new Date() });
 }
 
-module.exports = { logHandler, stats, logger, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage, randomLocation };
+module.exports = { logHandler, stats, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage, randomLocation };
 
 /*async scrape(sourceUsername, limit) {
   await this.setup();

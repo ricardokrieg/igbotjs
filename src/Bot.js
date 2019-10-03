@@ -44,10 +44,12 @@ class Bot {
       accountDetails,
     });
 
-    const statsCol = this.dbManager.statsCol();
+    const statsCol   = this.dbManager.statsCol();
+    const targetsCol = this.dbManager.targetsCol();
     this.statsManager = new StatsManager({
       username: this.username,
       statsCol,
+      targetsCol,
     });
 
     const sources = accountDetails.sources;
@@ -90,16 +92,18 @@ class Bot {
       feedLimit,
     });
 
-    // for (let event of schedule) {
-    //   switch(event.action) {
-    //     case 'follow':
-    //       await this.followManager.run({ limit: event.limit });
-    //       break;
-    //     default:
-    //       log.error(`"${event.action}" not implemented`);
-    //       break;
-    //   }
-    // }
+    for (let event of schedule) {
+      switch(event.action) {
+        case 'follow':
+          log(`Schedule Event: ${JSON.stringify(event)}`);
+
+          await this.followManager.run({ followLimit: event.limit });
+          break;
+        default:
+          log.warn(`"${event.action}" not implemented`);
+          break;
+      }
+    }
 
     log('Simulator finished');
   }

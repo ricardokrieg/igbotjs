@@ -4,8 +4,8 @@ const { map } = require('lodash');
 
 class StatsManager {
   constructor({ username, statsCol, targetsCol }) {
-    this.username = username;
-    this.statsCol = statsCol;
+    this.username   = username;
+    this.statsCol   = statsCol;
     this.targetsCol = targetsCol;
   }
 
