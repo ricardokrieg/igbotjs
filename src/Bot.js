@@ -1,5 +1,5 @@
 const { IgApiClient } = require('instagram-private-api');
-const { logHandler } = require('./utils');
+const { logHandler, longSleep } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
 const DBManager      = require('./DBManager');
@@ -7,6 +7,7 @@ const SessionManager = require('./SessionManager');
 const AccountManager = require('./AccountManager');
 const StatsManager   = require('./StatsManager');
 const FollowManager  = require('./actions/FollowManager');
+const StoriesManager = require('./actions/StoriesManager');
 const Scheduler      = require('./Scheduler');
 
 
@@ -62,6 +63,11 @@ class Bot {
       addTarget: this.statsManager.addTarget.bind(this.statsManager),
     });
 
+    this.storiesManager = new StoriesManager({
+      ig: this.ig,
+      username: this.username,
+    });
+
     this.sessionManager.start();
     this.accountManager.setup();
 
@@ -93,16 +99,21 @@ class Bot {
     });
 
     for (let event of schedule) {
+      log(`Schedule Event: ${JSON.stringify(event)}`);
+
       switch(event.action) {
         case 'follow':
-          log(`Schedule Event: ${JSON.stringify(event)}`);
-
           await this.followManager.run({ followLimit: event.limit });
+          break;
+        case 'stories':
+          await this.storiesManager.run({ storiesLimit: event.limit });
           break;
         default:
           log.warn(`"${event.action}" not implemented`);
           break;
       }
+
+      await longSleep();
     }
 
     log('Simulator finished');
