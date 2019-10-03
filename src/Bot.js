@@ -8,6 +8,7 @@ const AccountManager = require('./AccountManager');
 const StatsManager   = require('./StatsManager');
 const FollowManager  = require('./actions/FollowManager');
 const StoriesManager = require('./actions/StoriesManager');
+const FeedManager    = require('./actions/FeedManager');
 const Scheduler      = require('./Scheduler');
 
 
@@ -68,6 +69,12 @@ class Bot {
       username: this.username,
     });
 
+    this.feedManager = new FeedManager({
+      ig: this.ig,
+      username: this.username,
+      addStats: this.statsManager.addStats.bind(this.statsManager),
+    });
+
     this.sessionManager.start();
     this.accountManager.setup();
 
@@ -107,6 +114,9 @@ class Bot {
           break;
         case 'stories':
           await this.storiesManager.run({ storiesLimit: event.limit });
+          break;
+        case 'feed':
+          await this.feedManager.run({ feedLimit: event.limit });
           break;
         default:
           log.warn(`"${event.action}" not implemented`);

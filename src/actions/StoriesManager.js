@@ -25,7 +25,7 @@ class StoriesManager {
     const storiesToWatch = items.slice(0, storiesLimit);
     log(`Watching ${storiesToWatch.length} stories...`);
 
-    sleep(storiesToWatch.length * 5000);
+    await sleep(storiesToWatch.length * 5000);
     const result = await this.ig.story.seen(storiesToWatch);
     log(result);
 
