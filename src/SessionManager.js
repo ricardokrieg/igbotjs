@@ -1,3 +1,7 @@
+const { find } = require('lodash');
+const Bluebird = require('bluebird');
+const inquirer = require('inquirer');
+const { IgCheckpointError } = require('instagram-private-api');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
@@ -8,8 +12,9 @@ class SessionManager {
     this.dbManager = dbManager;
     this.username  = username;
 
-    this.cookies = accountDetails.cookies;
-    this.state   = accountDetails.state;
+    this.cookies  = accountDetails.cookies;
+    this.state    = accountDetails.state;
+    this.password = accountDetails.password;
   }
 
   start() {
@@ -23,7 +28,7 @@ class SessionManager {
   async login() {
     log('Logging in...');
 
-    if (this.cookies && this.state) {
+    if (this.state && this.validCookies()) {
       await this.loadCookies();
       await this.loadState();
 
@@ -35,8 +40,38 @@ class SessionManager {
 
       log('Logged in');
     } else {
-      log.error('Cookies/State are missing');
-      throw 'Cookies/State are missing';
+      log.warn('Cookies/State are missing');
+
+      this.ig.state.generateDevice(this.username);
+
+      log('Simulating pre login flow...');
+      await this.ig.simulate.preLoginFlow();
+
+      await Bluebird.try(async () => {
+        await this.passwordLogin();
+      }).catch(IgCheckpointError, async () => {
+        log.warn('Checkpoint: ');
+        log(this.ig.state.checkpoint);
+
+        await this.ig.challenge.auto(true);
+
+        log.warn('Checkpoint: ');
+        log(this.ig.state.checkpoint);
+
+        const { code } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'code',
+            message: 'Enter code',
+          },
+        ]);
+        log(`Sending code ${code}...`);
+
+        const result = await this.ig.challenge.sendSecurityCode(code);
+        log(result);
+
+        await this.passwordLogin();
+      });
     }
   }
 
@@ -69,6 +104,23 @@ class SessionManager {
     this.ig.state.phoneId      = this.state.phoneId;
     this.ig.state.adid         = this.state.adid;
     this.ig.state.build        = this.state.build;
+  }
+
+  async passwordLogin() {
+    log('Performing password login...');
+
+    const auth = await this.ig.account.login(this.username, this.password);
+
+    log('SUCCESS!');
+
+    log('Simulating post login flow...');
+    await this.ig.simulate.postLoginFlow();
+
+    log('Logged in');
+  }
+
+  validCookies() {
+    return (this.cookies && this.cookies.cookies && find(this.cookies.cookies, { 'key': 'ds_user' }));
   }
 
   static async call(command, ...params) {

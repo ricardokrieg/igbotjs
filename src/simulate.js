@@ -2,7 +2,7 @@ const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const Bot = require('./Bot');
 
-const username = 'pamela_jordan.32';
+const username = 'stefjoe17';
 
 
 (async () => {

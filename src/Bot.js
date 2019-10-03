@@ -7,6 +7,7 @@ const SessionManager = require('./SessionManager');
 const AccountManager = require('./AccountManager');
 const StatsManager   = require('./StatsManager');
 const FollowManager  = require('./actions/FollowManager');
+const Scheduler      = require('./Scheduler');
 
 
 class Bot {
@@ -89,16 +90,16 @@ class Bot {
       feedLimit,
     });
 
-    for (let event of schedule) {
-      switch(event.action) {
-        case 'follow':
-          await this.followManager.run({ limit: event.limit });
-          break;
-        default:
-          log.error(`"${event.action}" not implemented`);
-          break;
-      }
-    }
+    // for (let event of schedule) {
+    //   switch(event.action) {
+    //     case 'follow':
+    //       await this.followManager.run({ limit: event.limit });
+    //       break;
+    //     default:
+    //       log.error(`"${event.action}" not implemented`);
+    //       break;
+    //   }
+    // }
 
     log('Simulator finished');
   }

@@ -17,6 +17,11 @@ class Scheduler {
 
       switch (sample(actionTypes)) {
         case 'follow':
+          if (!followLimit) {
+            actionTypes = without(actionTypes, 'follow');
+            break;
+          }
+
           const follows = 1 + random(0, followLimit/10);
           actions = [ ...actions, ...times(follows, () => 'follow') ];
 
@@ -27,6 +32,11 @@ class Scheduler {
           }
           break;
         case 'publish':
+          if (!publishLimit) {
+            actionTypes = without(actionTypes, 'publish');
+            break;
+          }
+
           actions = [ ...actions, 'publish' ];
 
           const publishCount = sumBy(actions, (a) => a === 'publish' ? 1 : 0);
@@ -36,6 +46,11 @@ class Scheduler {
           }
           break;
         case 'stories':
+          if (!storiesLimit) {
+            actionTypes = without(actionTypes, 'stories');
+            break;
+          }
+
           const stories = 1 + random(0, storiesLimit/10);
           actions = [ ...actions, ...times(stories, () => 'stories') ];
 
@@ -46,6 +61,11 @@ class Scheduler {
           }
           break;
         case 'feed':
+          if (!feedLimit) {
+            actionTypes = without(actionTypes, 'feed');
+            break;
+          }
+
           const feeds = 1 + random(0, feedLimit/10);
           actions = [ ...actions, ...times(feeds, () => 'feed') ];
 
