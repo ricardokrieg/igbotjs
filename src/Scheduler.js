@@ -1,13 +1,19 @@
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const { isEmpty, sample, random, sumBy, times, without, head, last, slice } = require('lodash');
+const { isEmpty, sample, random, sumBy, times, without, last, slice } = require('lodash');
 
 
 class Scheduler {
   static generate({ followLimit, publishLimit, storiesLimit, feedLimit }) {
     log('Generating schedule...');
 
-    let actionTypes = [ 'follow', 'publish', 'stories', 'feed' ];
+    let actionTypes = [ 'follow', 'stories', 'feed' ];
+
+    if (publishLimit && random(0, 100) < publishLimit) {
+      log(`Publish added`);
+      actionTypes = [ ...actionTypes, 'publish' ];
+    }
+
     let actions = [];
 
     while (true) {
@@ -32,18 +38,10 @@ class Scheduler {
           }
           break;
         case 'publish':
-          if (!publishLimit) {
-            actionTypes = without(actionTypes, 'publish');
-            break;
-          }
+          actionTypes = without(actionTypes, 'publish');
 
           actions = [ ...actions, 'publish' ];
 
-          const publishCount = sumBy(actions, (a) => a === 'publish' ? 1 : 0);
-
-          if (publishCount >= publishLimit) {
-            actionTypes = without(actionTypes, 'publish');
-          }
           break;
         case 'stories':
           if (!storiesLimit) {

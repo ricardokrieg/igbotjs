@@ -9,6 +9,7 @@ const StatsManager   = require('./StatsManager');
 const FollowManager  = require('./actions/FollowManager');
 const StoriesManager = require('./actions/StoriesManager');
 const FeedManager    = require('./actions/FeedManager');
+const PublishManager = require('./actions/PublishManager');
 const Scheduler      = require('./Scheduler');
 
 
@@ -48,10 +49,12 @@ class Bot {
 
     const statsCol   = this.dbManager.statsCol();
     const targetsCol = this.dbManager.targetsCol();
+    const uploadsCol = this.dbManager.uploadsCol();
     this.statsManager = new StatsManager({
       username: this.username,
       statsCol,
       targetsCol,
+      uploadsCol,
     });
 
     const sources = accountDetails.sources;
@@ -72,6 +75,15 @@ class Bot {
     this.feedManager = new FeedManager({
       ig: this.ig,
       username: this.username,
+      addStats: this.statsManager.addStats.bind(this.statsManager),
+    });
+
+    this.publishManager = new PublishManager({
+      ig: this.ig,
+      username: this.username,
+      imagesPath: accountDetails.path,
+      getBlacklist: this.statsManager.getPublishBlacklist.bind(this.statsManager),
+      addUpload: this.statsManager.addUpload.bind(this.statsManager),
       addStats: this.statsManager.addStats.bind(this.statsManager),
     });
 
@@ -117,6 +129,9 @@ class Bot {
           break;
         case 'feed':
           await this.feedManager.run({ feedLimit: event.limit });
+          break;
+        case 'publish':
+          await this.publishManager.run();
           break;
         default:
           log.warn(`"${event.action}" not implemented`);

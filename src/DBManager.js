@@ -35,8 +35,11 @@ class DBManager {
     return this.col({ colName: 'targets' });
   }
 
+  uploadsCol() {
+    return this.col({ colName: 'uploads' });
+  }
+
   // this.dmsCol = client.db('igbotjs').collection('direct');
-  // this.uploadsCol = client.db('igbotjs').collection('uploads');
   // this.errorsCol = client.db('igbotjs').collection('errors');
 
   async accountDetails() {
