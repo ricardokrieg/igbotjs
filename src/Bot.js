@@ -119,6 +119,7 @@ class Bot {
 
     for (let event of schedule) {
       log(`Schedule Event: ${JSON.stringify(event)}`);
+      await longSleep();
 
       switch(event.action) {
         case 'follow':
@@ -137,8 +138,6 @@ class Bot {
           log.warn(`"${event.action}" not implemented`);
           break;
       }
-
-      await longSleep();
     }
 
     log('Simulator finished');

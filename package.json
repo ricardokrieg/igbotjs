@@ -4,6 +4,7 @@
     "@babel/node": "^7.5.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
     "babel-preset-env": "^1.7.0",
+    "geolib": "^3.0.4",
     "inquirer": "^6.5.1",
     "instagram-private-api": "^1.24.0",
     "lodash": "^4.17.15",
@@ -18,7 +19,6 @@
   "scripts": {
     "console": "npx @babel/node",
     "simulate": "npx @babel/node src/simulate.js",
-
     "addAccount": "npx @babel/node src/addAccount.js",
     "startAccount": "npx @babel/node src/startAccount.js",
     "worker": "npx @babel/node src/worker.js",
