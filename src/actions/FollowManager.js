@@ -22,6 +22,11 @@ class FollowManager {
     const sourceUsername = sample(this.sources);
     log(`Source: ${sourceUsername}`);
 
+    if (!sourceUsername) {
+      log.warn(`No sources to follow.`);
+      return;
+    }
+
     const source = await SessionManager.call( () => this.ig.user.searchExact(sourceUsername) );
 
     const blacklist = await this.getBlacklist();
