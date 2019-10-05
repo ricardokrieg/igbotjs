@@ -14,7 +14,7 @@ const username = process.env.IG_USERNAME;
     await bot.sessionManager.login();
     await bot.accountManager.editProfile({
       bio: '',
-      profilePic: './skinspaladins.png',
+      profilePic: './skinspaladins.jpg',
     });
   } catch (e) {
     log.error(e);
