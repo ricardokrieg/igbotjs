@@ -5,7 +5,7 @@ const log = require('log-chainable').namespace(module).handler(logHandler);
 const Bot = require('./Bot');
 const { sleep } = require('./utils');
 
-const username = 'diandraratter';
+const username = process.env.IG_USERNAME;
 
 
 (async () => {
