@@ -2,6 +2,7 @@ const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const fs = require('fs');
 const SessionManager = require('./SessionManager');
+const PublishManager = require('./PublishManager');
 
 
 class AccountManager {
@@ -67,6 +68,12 @@ class AccountManager {
     log(result);
 
     if (profilePic) {
+      log(`Applying EXIF...`);
+      await PublishManager.applyExif({
+        filePath: profilePic,
+        basePath: `./base.jpg`,
+      });
+
       log('Changing profile picture...');
       const readStream = fs.createReadStream(profilePic);
       result = await SessionManager.call(() => this.ig.account.changeProfilePicture(readStream) );

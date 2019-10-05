@@ -12,7 +12,13 @@ const username = process.env.IG_USERNAME;
     const bot = new Bot({ username });
     await bot.setup();
     await bot.sessionManager.login();
-    await bot.accountManager.editProfile({ url: 'linktr.ee/skinspaladins' });
+    await bot.accountManager.editProfile({
+      username: 'skinspaladins',
+      name: 'Paladins Skins',
+      bio: '',
+      url: 'linktr.ee/skinspaladins',
+      profilePic: './skinspaladins.png',
+    });
   } catch (e) {
     log.error(e);
     process.exit(1);

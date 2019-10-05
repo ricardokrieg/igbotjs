@@ -56,7 +56,7 @@ class PublishManager {
     log(`Applying EXIF...`);
     await PublishManager.applyExif({
       filePath: newPath,
-      basePath: `${this.imagesPath}/base.jpg`,
+      basePath: `./base.jpg`,
     });
 
     log(`Uploading...`);
