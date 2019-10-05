@@ -2,7 +2,7 @@ const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const fs = require('fs');
 const SessionManager = require('./SessionManager');
-const PublishManager = require('./PublishManager');
+const PublishManager = require('./actions/PublishManager');
 
 
 class AccountManager {
