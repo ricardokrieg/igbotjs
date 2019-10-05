@@ -90,15 +90,13 @@ class Bot {
     this.sessionManager.start();
     this.accountManager.setup();
 
-    await this.sessionManager.login();
-
     log(`Setup - End`);
   }
 
   async simulate() {
     log('Starting simulator...');
 
-    await this.setup();
+    await this.sessionManager.login();
 
     const followLimit  = this.accountManager.getFollowLimit();
     const publishLimit = this.accountManager.getPublishLimit();

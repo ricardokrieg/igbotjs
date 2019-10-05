@@ -33,6 +33,7 @@ class SessionManager {
       await this.loadState();
 
       log('Simulating pre login flow...');
+      log.warn(`---> Maybe should not call preLoginFlow <---`);
       await this.ig.simulate.preLoginFlow();
 
       log('Simulating post login flow...');
