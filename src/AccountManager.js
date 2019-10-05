@@ -63,7 +63,7 @@ class AccountManager {
       log(options);
 
       log('Editing profile...');
-      let result = await SessionManager.call(() => this.ig.account.editProfile(options) );
+      const result = await SessionManager.call(() => this.ig.account.editProfile(options) );
       log(result);
     }
 
@@ -76,8 +76,8 @@ class AccountManager {
 
       log('Changing profile picture...');
       const readStream = fs.createReadStream(profilePic);
-      result = await SessionManager.call(() => this.ig.account.changeProfilePicture(readStream) );
-      log(result);
+      const resultPic = await SessionManager.call(() => this.ig.account.changeProfilePicture(readStream) );
+      log(resultPic);
     }
 
     log('Done');
