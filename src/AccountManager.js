@@ -1,4 +1,4 @@
-const { isNull } = require('lodash');
+const { isUndefined } = require('lodash');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const fs = require('fs');
@@ -47,17 +47,17 @@ class AccountManager {
     const currentUser = await this.ig.account.currentUser();
     log(currentUser);
 
-    if (isNull(username) && isNull(name) && isNull(bio) && isNull(url) && isNull(gender) && isNull(phoneNumber) && isNull(email)) {
+    if (isUndefined(username) && isUndefined(name) && isUndefined(bio) && isUndefined(url) && isUndefined(gender) && isUndefined(phoneNumber) && isUndefined(email)) {
       log.warn(`Nothing to edit`);
     } else {
       let options = {
-        external_url: isNull(url) ? currentUser.external_url : url,
-        gender: isNull(gender) ? currentUser.gender : gender,
-        phone_number: isNull(phoneNumber) ? currentUser.phone_number : phoneNumber,
-        username: isNull(username) ? currentUser.username : username,
-        first_name: isNull(name) ? currentUser.full_name : name,
-        biography: isNull(bio) ? currentUser.biography : bio,
-        email: isNull(email) ? currentUser.email : email,
+        external_url: isUndefined(url) ? currentUser.external_url : url,
+        gender: isUndefined(gender) ? currentUser.gender : gender,
+        phone_number: isUndefined(phoneNumber) ? currentUser.phone_number : phoneNumber,
+        username: isUndefined(username) ? currentUser.username : username,
+        first_name: isUndefined(name) ? currentUser.full_name : name,
+        biography: isUndefined(bio) ? currentUser.biography : bio,
+        email: isUndefined(email) ? currentUser.email : email,
       };
       log('Options:');
       log(options);
