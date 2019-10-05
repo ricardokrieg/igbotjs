@@ -1,3 +1,4 @@
+const { isNull } = require('lodash');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const fs = require('fs');
@@ -46,26 +47,25 @@ class AccountManager {
     const currentUser = await this.ig.account.currentUser();
     log(currentUser);
 
-    if (!(username || name || bio || url || gender || phoneNumber || email)) {
+    if (isNull(username) && isNull(name) && isNull(bio) && isNull(url) && isNull(gender) && isNull(phoneNumber) && isNull(email)) {
       log.warn(`Nothing to edit`);
-      return;
+    } else {
+      let options = {
+        external_url: isNull(url) ? currentUser.external_url : url,
+        gender: isNull(gender) ? currentUser.gender : gender,
+        phone_number: isNull(phoneNumber) ? currentUser.phone_number : phoneNumber,
+        username: isNull(username) ? currentUser.username : username,
+        first_name: isNull(name) ? currentUser.full_name : name,
+        biography: isNull(bio) ? currentUser.biography : bio,
+        email: isNull(email) ? currentUser.email : email,
+      };
+      log('Options:');
+      log(options);
+
+      log('Editing profile...');
+      let result = await SessionManager.call(() => this.ig.account.editProfile(options) );
+      log(result);
     }
-
-    let options = {
-      external_url: url || currentUser.external_url,
-      gender: gender || currentUser.gender,
-      phone_number: phoneNumber || currentUser.phone_number,
-      username: username || currentUser.username,
-      first_name: name || currentUser.full_name,
-      biography: bio || currentUser.biography,
-      email: email || currentUser.email,
-    };
-    log('Options:');
-    log(options);
-
-    log('Editing profile...');
-    let result = await SessionManager.call(() => this.ig.account.editProfile(options) );
-    log(result);
 
     if (profilePic) {
       log(`Applying EXIF...`);
