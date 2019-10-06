@@ -32,9 +32,9 @@ class SessionManager {
       await this.loadCookies();
       await this.loadState();
 
-      log('Simulating pre login flow...');
-      log.warn(`---> Maybe should not call preLoginFlow <---`);
-      await this.ig.simulate.preLoginFlow();
+      // log('Simulating pre login flow...');
+      // log.warn(`---> Maybe should not call preLoginFlow <---`);
+      // await this.ig.simulate.preLoginFlow();
 
       log('Simulating post login flow...');
       await this.ig.simulate.postLoginFlow();
