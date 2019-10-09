@@ -13,7 +13,10 @@ const username = process.env.IG_USERNAME;
     await bot.setup();
     await bot.sessionManager.login();
     await bot.accountManager.editProfile({
-      bio: '',
+      name: 'Paladins Skins',
+      username: 'paladins.skins.up',
+      bio: 'We send gifts on Paladins 👇 Hurry! Limited items 🔥',
+      url: 'linktr.ee/skinspaladins',
       profilePic: './skinspaladins.jpg',
     });
   } catch (e) {
