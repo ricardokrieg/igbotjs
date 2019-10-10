@@ -77,7 +77,7 @@ class SessionManager {
   }
 
   async logout() {
-    await this.ig.logout();
+    await this.ig.account.logout();
   }
 
   async createAccount(acc) {
