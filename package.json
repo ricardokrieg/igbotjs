@@ -20,6 +20,7 @@
     "console": "npx @babel/node",
     "simulate": "npx @babel/node src/simulate.js",
     "editProfile": "npx @babel/node src/editProfile.js",
+    "createAccount": "npx @babel/node src/createAccount.js",
     "addAccount": "npx @babel/node src/addAccount.js",
     "startAccount": "npx @babel/node src/startAccount.js",
     "worker": "npx @babel/node src/worker.js",
