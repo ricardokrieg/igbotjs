@@ -76,6 +76,14 @@ class SessionManager {
     }
   }
 
+  async logout() {
+    await this.ig.logout();
+  }
+
+  async createAccount(acc) {
+    return await this.ig.account.create(acc);
+  }
+
   async requestSubscription() {
     const cookies = await this.ig.state.serializeCookieJar();
     const state = {
