@@ -42,6 +42,14 @@ class DBManager {
   // this.dmsCol = client.db('igbotjs').collection('direct');
   // this.errorsCol = client.db('igbotjs').collection('errors');
 
+  async updateCookiesAndState({ cookies, state }) {
+    await this.accountsCol().updateOne(
+      { _id: this.username },
+      { $set: { cookies: cookies, state: state } },
+      { upsert: true }
+    );
+  }
+
   async accountDetails() {
     const details = await this.accountsCol().findOne({ _id: this.username });
 
@@ -54,12 +62,36 @@ class DBManager {
     }
   }
 
-  async updateCookiesAndState({ cookies, state }) {
+  async updateAccountDetails({ ...attrs }) {
     await this.accountsCol().updateOne(
       { _id: this.username },
-      { $set: { cookies: cookies, state: state } },
-      { upsert: true }
+      { $set: { attrs } },
+      { upsert: false }
     );
+  }
+
+  async readAccountStartedAt() {
+    const details = await this.accountsCol().findOne({ _id: this.username });
+
+    if (details) {
+      return details.startedAt;
+    } else {
+      const message = `Account ${this.username} not found.`;
+      log.error(message);
+      throw new Error(message);
+    }
+  }
+
+  async readAccountLastRun() {
+    const details = await this.accountsCol().findOne({ _id: this.username });
+
+    if (details) {
+      return details.lastRun;
+    } else {
+      const message = `Account ${this.username} not found.`;
+      log.error(message);
+      throw new Error(message);
+    }
   }
 }
 

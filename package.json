@@ -19,6 +19,7 @@
   "scripts": {
     "console": "npx @babel/node",
     "simulate": "npx @babel/node src/simulate.js",
+    "warmup": "npx @babel/node src/warmup.js",
     "editProfile": "npx @babel/node src/editProfile.js",
     "createAccount": "npx @babel/node src/createAccount.js",
     "addAccount": "npx @babel/node src/addAccount.js",

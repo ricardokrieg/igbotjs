@@ -1,4 +1,5 @@
 const { isUndefined } = require('lodash');
+const moment = require('moment');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const fs = require('fs');
@@ -7,10 +8,25 @@ const PublishManager = require('./actions/PublishManager');
 
 
 class AccountManager {
-  constructor({ username, accountDetails, ig }) {
+  constructor({
+    username,
+    accountDetails,
+    ig,
+    readAccountStartedAt,
+    readAccountLastRun,
+    updateAccountDetails,
+  }) {
     this.username       = username;
     this.accountDetails = accountDetails;
     this.ig             = ig;
+
+    this.readAccountStartedAt   = readAccountStartedAt;
+    this.readAccountLastRun     = readAccountLastRun;
+    this.updateAccountDetails   = updateAccountDetails;
+  }
+
+  getAccountDetails() {
+    return this.accountDetails;
   }
 
   getFollowLimit() {
@@ -40,6 +56,28 @@ class AccountManager {
       log(`Proxy: ${this.ig.state.proxyUrl}`);
     } else {
       log.warn('NO PROXY');
+    }
+  }
+
+  async getAccountAge() {
+    const startedAt = await this.readAccountStartedAt();
+
+    if (startedAt) {
+      return moment.duration(moment().diff(moment(startedAt))).days();
+    } else {
+      await this.updateAccountDetails({ startedAt: moment().format() });
+      return 0;
+    }
+  }
+
+  async lastRun({ newLastRun }) {
+    const currentLastRun = await this.readAccountLastRun();
+    await this.updateAccountDetails({ lastRun: newLastRun.format() });
+
+    if (currentLastRun) {
+      return moment(currentLastRun);
+    } else {
+      return newLastRun;
     }
   }
 
