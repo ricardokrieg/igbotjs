@@ -1,4 +1,4 @@
-const { random } = require('lodash');
+const { random, isEmpty } = require('lodash');
 const moment = require('moment');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
@@ -6,13 +6,19 @@ const Bot = require('./Bot');
 const { sleep } = require('./utils');
 
 const username = process.env.IG_USERNAME;
+const sandbox = !isEmpty(process.env.SANDBOX);
 
 
 (async () => {
   log('Start');
 
-  const bot = new Bot({ username });
-  await bot.setup();
+  const bot = new Bot({ username, sandbox });
+  try {
+    await bot.setup();
+  } catch (e) {
+    log.error(e);
+    process.exit(1);
+  }
 
   while (true) {
     try {

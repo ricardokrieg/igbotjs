@@ -1,5 +1,6 @@
 const { IgApiClient } = require('instagram-private-api');
-const { random } = require('lodash');
+const { random, omit } = require('lodash');
+const moment = require('moment');
 const { logHandler, longSleep } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
@@ -15,7 +16,12 @@ const Scheduler      = require('./Scheduler');
 
 
 class Bot {
-  constructor({ username }) {
+  constructor({ username, sandbox }) {
+    this.sandbox = sandbox;
+    if (sandbox) {
+      log.warn('Running on sandbox mode');
+    }
+
     this.username = username;
     log(`Username: ${username}`);
 
@@ -34,6 +40,8 @@ class Bot {
     await this.dbManager.connect();
 
     const accountDetails = await this.dbManager.accountDetails();
+    log('Account Details:');
+    log(omit(accountDetails, ['cookies']));
 
     this.sessionManager = new SessionManager({
       ig: this.ig,
@@ -153,6 +161,11 @@ class Bot {
     const newLastRun = moment();
     const lastRun = await this.accountManager.lastRun({ newLastRun });
 
+    log(`Account Age: ${age} days`);
+    log(`Last Run   : ${lastRun}`);
+
+    process.exit(0);
+
     // TODO, session breaks
     // TODO, action breaks
 
@@ -187,6 +200,8 @@ class Bot {
       if (random(0, 100) < 10) {
         // TODO, day off
         // sleep
+        await sleep24h();
+
         return;
       }
 

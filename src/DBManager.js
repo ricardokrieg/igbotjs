@@ -65,7 +65,7 @@ class DBManager {
   async updateAccountDetails({ ...attrs }) {
     await this.accountsCol().updateOne(
       { _id: this.username },
-      { $set: { attrs } },
+      { $set: attrs },
       { upsert: false }
     );
   }
