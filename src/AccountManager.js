@@ -72,7 +72,6 @@ class AccountManager {
 
   async lastRun({ newLastRun }) {
     const currentLastRun = await this.readAccountLastRun();
-    await this.updateAccountDetails({ lastRun: newLastRun.format() });
 
     if (currentLastRun) {
       return moment(currentLastRun);

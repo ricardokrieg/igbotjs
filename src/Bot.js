@@ -154,6 +154,8 @@ class Bot {
   }
 
   async warmup() {
+    let newAccountDetails = {};
+
     // the actions the account will perform are based on the age
     // 0 - 7 days -> warmup phase. each day adds more types of actions
     // 8 - INF -> botting phase. each day increase the limits
@@ -161,16 +163,18 @@ class Bot {
     const newLastRun = moment();
     const lastRun = await this.accountManager.lastRun({ newLastRun });
 
+    newAccountDetails['lastRun'] = newLastRun.format();
+
     log(`Account Age: ${age} days`);
     log(`Last Run   : ${lastRun}`);
-
-    process.exit(0);
 
     // TODO, session breaks
     // TODO, action breaks
 
     // first run of the week
     if (!newLastRun.isSame(lastRun, 'week')) {
+      log('Starting weekly routine');
+
       const {
         dailyLimitFactorLow,
         dailyLimitFactorHigh,
@@ -184,15 +188,23 @@ class Bot {
       const dailyLimitFactor = random(dailyLimitFactorLow, dailyLimitFactorHigh);
       // 4 ~ 10
       const dailyLimitDivider = random(dailyLimitDividerLow, dailyLimitDividerHigh);
-      // 20h ~ 00h
+      // 2000 ~ 2359 (20h ~ 00h)
       const sleepTime = random(sleepTimeLow, sleepTimeHigh);
 
-      this.accountManager.updateAccountDetails({
-        dailyLimitFactor,
-        dailyLimitDivider,
-        sleepTime,
-      });
+      log(`Daily Limit Factor : ${dailyLimitFactorLow} ~ ${dailyLimitFactorHigh} => ${dailyLimitFactor}`);
+      log(`Daily Limit Divider: ${dailyLimitDividerLow} ~ ${dailyLimitDividerHigh} => ${dailyLimitDivider}`);
+      log(`Sleep Time         : ${sleepTimeLow} ~ ${sleepTimeHigh} => ${sleepTime}`);
+
+      newAccountDetails['dailyLimitFactor']  = dailyLimitFactor;
+      newAccountDetails['dailyLimitDivider'] = dailyLimitDivider;
+      newAccountDetails['sleepTime']         = sleepTime;
     }
+
+    log(`Updating Account Details:`);
+    log(newAccountDetails);
+    await this.accountManager.updateAccountDetails(newAccountDetails);
+
+    process.exit(0);
 
     // first run of the day
     if (!newLastRun.isSame(lastRun, 'day')) {
