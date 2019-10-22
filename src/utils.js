@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { random, times } = require('lodash');
+const { random, times, isEmpty } = require('lodash');
 const Spinner = require('node-spintax');
 const defaultHandler = require('log-chainable/handlers').minimalConsoleColorized;
 
@@ -19,7 +19,10 @@ const log = require('log-chainable').namespace(module).handler(logHandler);
 
 const sleep = (ms) => {
   log(`Sleeping ${Math.round(ms / 1000)}s`);
-  return new Promise(resolve => setTimeout(resolve, ms));
+
+  const sandbox = !isEmpty(process.env.SANDBOX);
+
+  return new Promise(resolve => setTimeout(resolve, sandbox ? 0 : ms));
 };
 
 const quickSleep = () => {
@@ -28,6 +31,10 @@ const quickSleep = () => {
 
 const longSleep = () => {
   return sleep(random(30000, 60000));
+};
+
+const sleep24h = () => {
+  return sleep(24 * 60 * 60 * 1000);
 };
 
 const randomLimit = (limit) => {

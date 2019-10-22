@@ -1,7 +1,7 @@
 const { IgApiClient } = require('instagram-private-api');
 const { random, omit } = require('lodash');
 const moment = require('moment');
-const { logHandler, longSleep } = require('./utils');
+const { logHandler, longSleep, sleep24h } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
 const DBManager      = require('./DBManager');
@@ -200,28 +200,23 @@ class Bot {
       newAccountDetails['sleepTime']         = sleepTime;
     }
 
-    log(`Updating Account Details:`);
-    log(newAccountDetails);
-    await this.accountManager.updateAccountDetails(newAccountDetails);
-
-    process.exit(0);
-
     // first run of the day
+    let dayOff = false;
     if (!newLastRun.isSame(lastRun, 'day')) {
+      log('Starting daily routine');
+
       // decide if day off
       if (random(0, 100) < 10) {
-        // TODO, day off
-        // sleep
+        log('Day Off');
         await sleep24h();
 
-        return;
+        dayOff = true;
       }
 
-      const {
-        dailyLimitFactor,
-      } = this.accountManager.getAccountDetails();
+      const dailyLimitFactor = newAccountDetails['dailyLimitFactor'] ||
+                               this.accountManager.getAccountDetails().dailyLimitFactor;
 
-      const expectedDailyLimit = {
+      const expectedDailyLimit = age <= 7 ? {
         0: 0,
         1: 0,
         2: 1,
@@ -230,16 +225,29 @@ class Bot {
         5: 20,
         6: 50,
         7: 100,
-      }[age] || 200;
+      }[String(age)] : 200;
 
-      const dailyLimit = random(
+      const dailyLimit = Math.round(random(
         expectedDailyLimit * (100 - dailyLimitFactor)/100,
         expectedDailyLimit * (100 + dailyLimitFactor)/100
-      );
+      ));
 
-      this.accountManager.updateAccountDetails({
-        dailyLimit,
-      });
+      newAccountDetails['dailyLimit'] = dailyLimit;
+
+      log(`Daily Limit Factor  : ${dailyLimitFactor}`);
+      log(`Expected Daily Limit: ${expectedDailyLimit}`);
+      log(`Daily Limit         : ${dailyLimit}`);
+    }
+
+    log(`Updating Account Details:`);
+    log(newAccountDetails);
+    await this.accountManager.updateAccountDetails(newAccountDetails);
+
+    process.exit(0);
+
+    if (dayOff) {
+      log('Day Off. Exiting.');
+      return;
     }
 
     switch(age) {
