@@ -206,7 +206,7 @@ class Bot {
       log('Starting daily routine');
 
       // decide if day off
-      if (random(0, 100) < 10) {
+      if (age > 7 && random(0, 100) < 10) {
         log('Day Off');
         await sleep24h();
 
@@ -217,14 +217,14 @@ class Bot {
                                this.accountManager.getAccountDetails().dailyLimitFactor;
 
       const expectedDailyLimit = age <= 7 ? {
-        0: 0,
-        1: 0,
-        2: 1,
-        3: 5,
-        4: 10,
-        5: 20,
-        6: 50,
-        7: 100,
+        0: 5,
+        1: 5,
+        2: 10,
+        3: 20,
+        4: 50,
+        5: 75,
+        6: 100,
+        7: 150,
       }[String(age)] : 200;
 
       const dailyLimit = Math.round(random(
@@ -242,8 +242,6 @@ class Bot {
     log(`Updating Account Details:`);
     log(newAccountDetails);
     await this.accountManager.updateAccountDetails(newAccountDetails);
-
-    process.exit(0);
 
     if (dayOff) {
       log('Day Off. Exiting.');

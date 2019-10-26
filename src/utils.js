@@ -95,7 +95,7 @@ async function stats(col, account, type, reference) {
   await col.insertOne({ account, type, reference, timestamp: new Date() });
 }
 
-module.exports = { logHandler, stats, sleep, quickSleep, longSleep, randomLimit, call, greetingMessage, randomLocation };
+module.exports = { logHandler, stats, sleep, quickSleep, longSleep, sleep24h, randomLimit, call, greetingMessage, randomLocation };
 
 /*async scrape(sourceUsername, limit) {
   await this.setup();
