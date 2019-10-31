@@ -12,6 +12,7 @@ const FollowManager  = require('./actions/FollowManager');
 const StoriesManager = require('./actions/StoriesManager');
 const FeedManager    = require('./actions/FeedManager');
 const PublishManager = require('./actions/PublishManager');
+const ExploreManager = require('./actions/ExploreManager');
 const Scheduler      = require('./Scheduler');
 
 
@@ -99,6 +100,11 @@ class Bot {
       addStats: this.statsManager.addStats.bind(this.statsManager),
     });
 
+    this.exploreManager = new ExploreManager({
+      ig: this.ig,
+      username: this.username,
+    });
+
     this.sessionManager.start();
     this.accountManager.setup();
 
@@ -154,6 +160,11 @@ class Bot {
   }
 
   async warmup() {
+    await this.sessionManager.login();
+    await this.exploreManager.run({ limit: 10 });
+
+    process.exit(0);
+
     let newAccountDetails = {};
 
     // the actions the account will perform are based on the age
