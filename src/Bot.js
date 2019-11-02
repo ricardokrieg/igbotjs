@@ -1,5 +1,5 @@
 const { IgApiClient } = require('instagram-private-api');
-const { random, omit } = require('lodash');
+const { random, omit, sum, values, times, constant, concat, shuffle, sample, forEach } = require('lodash');
 const moment = require('moment');
 const { logHandler, longSleep, sleep24h } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
@@ -160,56 +160,34 @@ class Bot {
   }
 
   async warmup() {
-    await this.sessionManager.login();
-    await this.exploreManager.run({ limit: 10 });
+    const totalActions = await this.accountManager.getTotalActionsBefore({ date: moment() });
+    const actionsForToday = totalActions > 0 ? totalActions : 1;
 
-    process.exit(0);
+    let weights = {
+      followSource: 10,
+      followRecommended: 1,
+      followExplore: 1,
+      likeFeedLast: 2,
+      likeFeedOld: 1,
+      likeExplore: 4,
+    };
+
+    if (actionsForToday < 10) {
+      weights = {
+        ...weights,
+        followSource: 0,
+      };
+    }
+
+    const actions = this.generateActions({ totalActions, weights });
 
     let newAccountDetails = {};
 
-    // the actions the account will perform are based on the age
-    // 0 - 7 days -> warmup phase. each day adds more types of actions
-    // 8 - INF -> botting phase. each day increase the limits
-    const age = await this.accountManager.getAccountAge();
     const newLastRun = moment();
     const lastRun = await this.accountManager.lastRun({ newLastRun });
 
     newAccountDetails['lastRun'] = newLastRun.format();
-
-    log(`Account Age: ${age} days`);
     log(`Last Run   : ${lastRun}`);
-
-    // TODO, session breaks
-    // TODO, action breaks
-
-    // first run of the week
-    if (!newLastRun.isSame(lastRun, 'week')) {
-      log('Starting weekly routine');
-
-      const {
-        dailyLimitFactorLow,
-        dailyLimitFactorHigh,
-        dailyLimitDividerLow,
-        dailyLimitDividerHigh,
-        sleepTimeLow,
-        sleepTimeHigh,
-      } = this.accountManager.getAccountDetails();
-
-      // 10% ~ 25%
-      const dailyLimitFactor = random(dailyLimitFactorLow, dailyLimitFactorHigh);
-      // 4 ~ 10
-      const dailyLimitDivider = random(dailyLimitDividerLow, dailyLimitDividerHigh);
-      // 2000 ~ 2359 (20h ~ 00h)
-      const sleepTime = random(sleepTimeLow, sleepTimeHigh);
-
-      log(`Daily Limit Factor : ${dailyLimitFactorLow} ~ ${dailyLimitFactorHigh} => ${dailyLimitFactor}`);
-      log(`Daily Limit Divider: ${dailyLimitDividerLow} ~ ${dailyLimitDividerHigh} => ${dailyLimitDivider}`);
-      log(`Sleep Time         : ${sleepTimeLow} ~ ${sleepTimeHigh} => ${sleepTime}`);
-
-      newAccountDetails['dailyLimitFactor']  = dailyLimitFactor;
-      newAccountDetails['dailyLimitDivider'] = dailyLimitDivider;
-      newAccountDetails['sleepTime']         = sleepTime;
-    }
 
     // first run of the day
     let dayOff = false;
@@ -217,37 +195,12 @@ class Bot {
       log('Starting daily routine');
 
       // decide if day off
-      if (age > 7 && random(0, 100) < 10) {
+      if (actionsForToday > 100 && random(0, 100) < 10) {
         log('Day Off');
         await sleep24h();
 
         dayOff = true;
       }
-
-      const dailyLimitFactor = newAccountDetails['dailyLimitFactor'] ||
-                               this.accountManager.getAccountDetails().dailyLimitFactor;
-
-      const expectedDailyLimit = age <= 7 ? {
-        0: 5,
-        1: 5,
-        2: 10,
-        3: 20,
-        4: 50,
-        5: 75,
-        6: 100,
-        7: 150,
-      }[String(age)] : 200;
-
-      const dailyLimit = Math.round(random(
-        expectedDailyLimit * (100 - dailyLimitFactor)/100,
-        expectedDailyLimit * (100 + dailyLimitFactor)/100
-      ));
-
-      newAccountDetails['dailyLimit'] = dailyLimit;
-
-      log(`Daily Limit Factor  : ${dailyLimitFactor}`);
-      log(`Expected Daily Limit: ${expectedDailyLimit}`);
-      log(`Daily Limit         : ${dailyLimit}`);
     }
 
     log(`Updating Account Details:`);
@@ -259,22 +212,40 @@ class Bot {
       return;
     }
 
-    switch(age) {
-      case 0:
-        // section delays: min: 60, max: 120
-        // visit explore
-          // load details from explore posts. min: 10, max: 30 (daily); min: 0, max: 5 (section)
-          // load details from explore accounts. 10% of loaded posts
-        // follow recommended. min: 3, max: 7 (daily); min: 0, max: 1 (section)
-          // load account details before following
-        // like feed posts. min: 3, max: 7 (daily); min: 0, max: 1 (section)
-        // watch stories. min: 10, max: 30 (daily); min: 0, max: 5 (section)
-          // (don`t necessarily watch all stories from an user. skip before finishing)
-          // (don`t simply randomize them ...)
-      default:
-        log.warn(`Invalid WarmUp Phase: ${age}`);
-        break;
-    }
+    // section delays: min: 60, max: 120
+    // visit explore
+    // load details from explore posts. min: 10, max: 30 (daily); min: 0, max: 5 (section)
+    // load details from explore accounts. 10% of loaded posts
+    // follow recommended. min: 3, max: 7 (daily); min: 0, max: 1 (section)
+    // load account details before following
+    // like feed posts. min: 3, max: 7 (daily); min: 0, max: 1 (section)
+    // watch stories. min: 10, max: 30 (daily); min: 0, max: 5 (section)
+    // (don`t necessarily watch all stories from an user. skip before finishing)
+    // (don`t simply randomize them ...)
+  }
+
+  generateActions({ totalActions, weights }) {
+    let actions = [];
+    const lightActionTypes = [
+      'openPostComments', 'scrollExplore', 'openProfile', 'search',
+    ];
+    let hardActionTypes = [];
+    forEach(weights, function(weight, actionType) {
+      hardActionTypes = [
+          ...hardActionTypes,
+          ...times(weight, constant(actionType)),
+      ];
+    });
+
+    times(totalActions, () => {
+      actions = [ ...actions, sample(hardActionTypes) ];
+    });
+    times(totalActions / 3, () => {
+      actions = [ ...actions, sample(lightActionTypes) ];
+    });
+    actions = shuffle(actions);
+
+    return actions;
   }
 }
 
