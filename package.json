@@ -27,6 +27,10 @@
     "worker": "npx @babel/node src/worker.js",
     "sendDM": "npx @babel/node src/sendDM.js",
     "inbox": "npx @babel/node src/inbox.js",
-    "comment": "npx @babel/node src/comment.js"
+    "comment": "npx @babel/node src/comment.js",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0"
   }
 }

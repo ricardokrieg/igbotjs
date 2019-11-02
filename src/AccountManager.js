@@ -15,6 +15,7 @@ class AccountManager {
     readAccountStartedAt,
     readAccountLastRun,
     updateAccountDetails,
+    getActionsBetween,
   }) {
     this.username       = username;
     this.accountDetails = accountDetails;
@@ -23,6 +24,7 @@ class AccountManager {
     this.readAccountStartedAt   = readAccountStartedAt;
     this.readAccountLastRun     = readAccountLastRun;
     this.updateAccountDetails   = updateAccountDetails;
+    this.getActionsBetween      = getActionsBetween;
   }
 
   getAccountDetails() {
@@ -68,6 +70,15 @@ class AccountManager {
       await this.updateAccountDetails({ startedAt: moment().format() });
       return 0;
     }
+  }
+
+  async getTotalActions() {
+    const actions = await this.getActionsBetween({
+      min: moment().subtract(1, 'month'),
+      max: moment().subtract(1, 'day')
+    });
+
+    return actions.count();
   }
 
   async lastRun({ newLastRun }) {

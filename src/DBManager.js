@@ -27,6 +27,10 @@ class DBManager {
     return this.col({ colName: 'accounts' });
   }
 
+  actionsCol() {
+    return this.col({ colName: 'actions' });
+  }
+
   statsCol() {
     return this.col({ colName: 'stats' });
   }

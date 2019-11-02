@@ -23,6 +23,7 @@ const sandbox = !isEmpty(process.env.SANDBOX);
   while (true) {
     try {
       await bot.warmup();
+      process.exit(0);
 
       // TODO these values can be custom per account
       if (moment().hour() >= 22 || moment().hour() <= 2) {

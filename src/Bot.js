@@ -51,6 +51,18 @@ class Bot {
       dbManager: this.dbManager,
     });
 
+    const actionsCol = this.dbManager.actionsCol();
+    const statsCol   = this.dbManager.statsCol();
+    const targetsCol = this.dbManager.targetsCol();
+    const uploadsCol = this.dbManager.uploadsCol();
+    this.statsManager = new StatsManager({
+      username: this.username,
+      statsCol,
+      actionsCol,
+      targetsCol,
+      uploadsCol,
+    });
+
     this.accountManager = new AccountManager({
       ig: this.ig,
       username: this.username,
@@ -58,16 +70,7 @@ class Bot {
       readAccountStartedAt: this.dbManager.readAccountStartedAt.bind(this.dbManager),
       readAccountLastRun: this.dbManager.readAccountLastRun.bind(this.dbManager),
       updateAccountDetails: this.dbManager.updateAccountDetails.bind(this.dbManager),
-    });
-
-    const statsCol   = this.dbManager.statsCol();
-    const targetsCol = this.dbManager.targetsCol();
-    const uploadsCol = this.dbManager.uploadsCol();
-    this.statsManager = new StatsManager({
-      username: this.username,
-      statsCol,
-      targetsCol,
-      uploadsCol,
+      getActionsBetween: this.statsManager.getActionsBetween.bind(this.statsManager),
     });
 
     const sources = accountDetails.sources;
@@ -160,8 +163,10 @@ class Bot {
   }
 
   async warmup() {
-    const totalActions = await this.accountManager.getTotalActionsBefore({ date: moment() });
+    const totalActions = await this.accountManager.getTotalActions();
     const actionsForToday = totalActions > 0 ? totalActions : 1;
+
+    log(`Total Actions: ${totalActions}, Actions for today: ${actionsForToday}`);
 
     let weights = {
       followSource: 10,
@@ -180,6 +185,8 @@ class Bot {
     }
 
     const actions = this.generateActions({ totalActions, weights });
+    log('Actions');
+    log(actions);
 
     let newAccountDetails = {};
 
