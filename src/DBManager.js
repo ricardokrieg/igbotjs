@@ -27,6 +27,10 @@ class DBManager {
     return this.col({ colName: 'accounts' });
   }
 
+  runsCol() {
+    return this.col({ colName: 'runs' });
+  }
+
   actionsCol() {
     return this.col({ colName: 'actions' });
   }
@@ -72,30 +76,6 @@ class DBManager {
       { $set: attrs },
       { upsert: false }
     );
-  }
-
-  async readAccountStartedAt() {
-    const details = await this.accountsCol().findOne({ _id: this.username });
-
-    if (details) {
-      return details.startedAt;
-    } else {
-      const message = `Account ${this.username} not found.`;
-      log.error(message);
-      throw new Error(message);
-    }
-  }
-
-  async readAccountLastRun() {
-    const details = await this.accountsCol().findOne({ _id: this.username });
-
-    if (details) {
-      return details.lastRun;
-    } else {
-      const message = `Account ${this.username} not found.`;
-      log.error(message);
-      throw new Error(message);
-    }
   }
 }
 

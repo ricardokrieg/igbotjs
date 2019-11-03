@@ -12,18 +12,12 @@ class AccountManager {
     username,
     accountDetails,
     ig,
-    readAccountStartedAt,
-    readAccountLastRun,
-    updateAccountDetails,
     getActionsBetween,
   }) {
     this.username       = username;
     this.accountDetails = accountDetails;
     this.ig             = ig;
 
-    this.readAccountStartedAt   = readAccountStartedAt;
-    this.readAccountLastRun     = readAccountLastRun;
-    this.updateAccountDetails   = updateAccountDetails;
     this.getActionsBetween      = getActionsBetween;
   }
 
@@ -61,17 +55,6 @@ class AccountManager {
     }
   }
 
-  async getAccountAge() {
-    const startedAt = await this.readAccountStartedAt();
-
-    if (startedAt) {
-      return moment.duration(moment().diff(moment(startedAt))).days();
-    } else {
-      await this.updateAccountDetails({ startedAt: moment().format() });
-      return 0;
-    }
-  }
-
   async getTotalActions() {
     const actions = await this.getActionsBetween({
       min: moment().subtract(1, 'month'),
@@ -79,16 +62,6 @@ class AccountManager {
     });
 
     return actions.count();
-  }
-
-  async lastRun({ newLastRun }) {
-    const currentLastRun = await this.readAccountLastRun();
-
-    if (currentLastRun) {
-      return moment(currentLastRun);
-    } else {
-      return newLastRun;
-    }
   }
 
   async editProfile({ username, name, bio, url, gender, phoneNumber, email, profilePic }) {

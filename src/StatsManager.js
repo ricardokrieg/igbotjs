@@ -1,14 +1,36 @@
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const { map } = require('lodash');
+const { map, isEmpty } = require('lodash');
+const moment = require('moment');
 
 class StatsManager {
-  constructor({ username, actionsCol, statsCol, targetsCol, uploadsCol }) {
+  constructor({ username, runsCol, actionsCol, statsCol, targetsCol, uploadsCol }) {
     this.username   = username;
+    this.runsCol    = runsCol;
     this.actionsCol = actionsCol;
     this.statsCol   = statsCol;
     this.targetsCol = targetsCol;
     this.uploadsCol = uploadsCol;
+  }
+
+  async addRun({ actions }) {
+    log(`addRun actions:${actions}`);
+
+    await this.runsCol.insertOne({
+      account: this.username,
+      actions: actions,
+      timestamp: new Date()
+    });
+  }
+
+  async getLastRun() {
+    const lastRun = await this.runsCol.find({ account: this.username }).sort({ timestamp: -1 }).limit(1).toArray();
+
+    if (isEmpty(lastRun)) {
+      return moment();
+    }
+
+    return moment(lastRun[0].timestamp);
   }
 
   async addStats({ type, reference }) {

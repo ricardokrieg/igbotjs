@@ -1,5 +1,5 @@
 const { IgApiClient } = require('instagram-private-api');
-const { random, omit, sum, values, times, constant, concat, shuffle, sample, forEach } = require('lodash');
+const { random, omit, isEmpty, times, constant, shuffle, sample, forEach } = require('lodash');
 const moment = require('moment');
 const { logHandler, longSleep, sleep24h } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
@@ -51,12 +51,14 @@ class Bot {
       dbManager: this.dbManager,
     });
 
+    const runsCol    = this.dbManager.runsCol();
     const actionsCol = this.dbManager.actionsCol();
     const statsCol   = this.dbManager.statsCol();
     const targetsCol = this.dbManager.targetsCol();
     const uploadsCol = this.dbManager.uploadsCol();
     this.statsManager = new StatsManager({
       username: this.username,
+      runsCol,
       statsCol,
       actionsCol,
       targetsCol,
@@ -67,9 +69,6 @@ class Bot {
       ig: this.ig,
       username: this.username,
       accountDetails,
-      readAccountStartedAt: this.dbManager.readAccountStartedAt.bind(this.dbManager),
-      readAccountLastRun: this.dbManager.readAccountLastRun.bind(this.dbManager),
-      updateAccountDetails: this.dbManager.updateAccountDetails.bind(this.dbManager),
       getActionsBetween: this.statsManager.getActionsBetween.bind(this.statsManager),
     });
 
@@ -170,10 +169,10 @@ class Bot {
 
     let weights = {
       followSource: 10,
-      followRecommended: 1,
-      followExplore: 1,
-      likeFeedLast: 2,
-      likeFeedOld: 1,
+      // followRecommended: 1,
+      // followExplore: 1,
+      // likeFeedLast: 2,
+      // likeFeedOld: 1,
       likeExplore: 4,
     };
 
@@ -188,17 +187,12 @@ class Bot {
     log('Actions');
     log(actions);
 
-    let newAccountDetails = {};
-
-    const newLastRun = moment();
-    const lastRun = await this.accountManager.lastRun({ newLastRun });
-
-    newAccountDetails['lastRun'] = newLastRun.format();
+    const lastRun = await this.statsManager.getLastRun();
     log(`Last Run   : ${lastRun}`);
 
     // first run of the day
     let dayOff = false;
-    if (!newLastRun.isSame(lastRun, 'day')) {
+    if (!moment().isSame(lastRun, 'day')) {
       log('Starting daily routine');
 
       // decide if day off
@@ -210,31 +204,40 @@ class Bot {
       }
     }
 
-    log(`Updating Account Details:`);
-    log(newAccountDetails);
-    await this.accountManager.updateAccountDetails(newAccountDetails);
+    await this.statsManager.addRun({ actions: actionsForToday });
 
     if (dayOff) {
       log('Day Off. Exiting.');
       return;
     }
 
+    if (isEmpty(actions.length)) {
+      log('No Actions');
+      return;
+    }
+
+    process.exit(0);
+    await this.sessionManager.login();
+
     // section delays: min: 60, max: 120
     // visit explore
-    // load details from explore posts. min: 10, max: 30 (daily); min: 0, max: 5 (section)
-    // load details from explore accounts. 10% of loaded posts
+      // load details from explore posts. min: 10, max: 30 (daily); min: 0, max: 5 (section)
+      // load details from explore accounts. 10% of loaded posts
     // follow recommended. min: 3, max: 7 (daily); min: 0, max: 1 (section)
-    // load account details before following
+      // load account details before following
     // like feed posts. min: 3, max: 7 (daily); min: 0, max: 1 (section)
     // watch stories. min: 10, max: 30 (daily); min: 0, max: 5 (section)
-    // (don`t necessarily watch all stories from an user. skip before finishing)
-    // (don`t simply randomize them ...)
+      // (don`t necessarily watch all stories from an user. skip before finishing)
+      // (don`t simply randomize them ...)
   }
 
   generateActions({ totalActions, weights }) {
     let actions = [];
     const lightActionTypes = [
-      'openPostComments', 'scrollExplore', 'openProfile', 'search',
+      // 'openPostComments',
+      // 'scrollExplore',
+      // 'openProfile',
+      'search',
     ];
     let hardActionTypes = [];
     forEach(weights, function(weight, actionType) {
@@ -247,7 +250,7 @@ class Bot {
     times(totalActions, () => {
       actions = [ ...actions, sample(hardActionTypes) ];
     });
-    times(totalActions / 3, () => {
+    times(Math.round(totalActions / 3), () => {
       actions = [ ...actions, sample(lightActionTypes) ];
     });
     actions = shuffle(actions);
