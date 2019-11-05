@@ -162,6 +162,9 @@ class Bot {
   }
 
   async warmup() {
+    const lastRun = await this.statsManager.getLastRun();
+    log(`Last Run: ${lastRun}`);
+
     const totalActions = await this.accountManager.getTotalActions();
     const actionsForToday = totalActions > 0 ? totalActions : 1;
 
@@ -183,13 +186,6 @@ class Bot {
       };
     }
 
-    const actions = this.generateActions({ totalActions, weights });
-    log('Actions');
-    log(actions);
-
-    const lastRun = await this.statsManager.getLastRun();
-    log(`Last Run   : ${lastRun}`);
-
     // first run of the day
     let dayOff = false;
     if (!moment().isSame(lastRun, 'day')) {
@@ -204,17 +200,21 @@ class Bot {
       }
     }
 
-    await this.statsManager.addRun({ actions: actionsForToday });
-
     if (dayOff) {
       log('Day Off. Exiting.');
       return;
     }
 
-    if (isEmpty(actions.length)) {
+    const actions = this.generateActions({ totalActions: actionsForToday, weights });
+    log('Actions');
+    log(actions);
+
+    if (isEmpty(actions)) {
       log('No Actions');
       return;
     }
+
+    await this.statsManager.addRun({ actions: actionsForToday });
 
     process.exit(0);
     await this.sessionManager.login();
