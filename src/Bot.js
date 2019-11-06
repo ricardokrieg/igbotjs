@@ -195,7 +195,10 @@ class Bot {
 
     // first run of the day
     let dayOff = false;
-    if (!moment().isSame(lastRun, 'day')) {
+    if (moment().isSame(lastRun, 'day')) {
+      log.warn(`This account already ran today (lastRun = ${lastRun})`);
+      process.exit(0);
+    } else {
       log('Starting daily routine');
 
       // decide if day off
@@ -286,3 +289,13 @@ class Bot {
 }
 
 module.exports = Bot;
+/*
+"state": {
+        "deviceString": "25/7.1.2; 440dpi; 1080x2030; Xiaomi/xiaomi; Redmi 5 Plus; vince; qcom",
+        "deviceId": "android-24de710ca39df2ad",
+        "uuid": "004aa663-0efa-59b2-873c-77ec0c9fef54",
+        "phoneId": "4f2104cc-638d-51dd-9894-1da086c08e0e",
+        "adid": "9d78eb2b-b197-524e-acfd-5aece1e2e0a2",
+        "build": "JLS36I"
+    }
+ */
