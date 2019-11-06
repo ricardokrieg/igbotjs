@@ -105,6 +105,7 @@ class Bot {
     this.exploreManager = new ExploreManager({
       ig: this.ig,
       username: this.username,
+      addAction: this.statsManager.addAction.bind(this.statsManager),
     });
 
     this.sessionManager.start();
@@ -222,7 +223,7 @@ class Bot {
       switch (action) {
         case 'likeExplore':
           await this.exploreManager.like();
-          longSleep();
+          await longSleep();
           break;
         default:
           log.warn(`Unknown Action: ${action}`);

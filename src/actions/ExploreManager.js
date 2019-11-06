@@ -6,9 +6,11 @@ const SessionManager = require('../SessionManager');
 
 
 class ExploreManager {
-  constructor({ username, ig }) {
+  constructor({ username, ig, addAction }) {
     this.username = username;
     this.ig       = ig;
+
+    this.addAction = addAction;
   }
 
   async like() {
@@ -20,9 +22,7 @@ class ExploreManager {
 
       const response = await this.topicalExplore({ repository: this.ig.discover, maxId: maxId });
 
-      let value = random(0, 100);
-      log(`Value = ${value}`);
-      if (value <= percentage) {
+      if (random(0, 100) <= percentage) {
         let mediaIds = [];
 
         for (let item of response['sectional_items']) {
@@ -42,6 +42,19 @@ class ExploreManager {
         if (!isEmpty(mediaIds)) {
           const mediaId = sample(mediaIds);
           log(`Liking ${mediaId}`);
+
+          const response = await SessionManager.call(() => {
+            return this.ig.media.like({
+              mediaId,
+              moduleInfo: {
+                module_name: 'explore_popular',
+              },
+              d: sample([0, 1]),
+            });
+          });
+          log(response);
+
+          await this.addAction({ type: 'likeExplore', reference: mediaId });
 
           break;
         }
