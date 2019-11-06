@@ -251,9 +251,6 @@ class Bot {
 
     await this.statsManager.addRun({ actions: actionsForToday });
 
-    process.exit(0);
-
-    // section delays: min: 60, max: 120
     // visit explore
       // load details from explore posts. min: 10, max: 30 (daily); min: 0, max: 5 (section)
       // load details from explore accounts. 10% of loaded posts
@@ -294,13 +291,3 @@ class Bot {
 }
 
 module.exports = Bot;
-/*
-"state": {
-        "deviceString": "25/7.1.2; 440dpi; 1080x2030; Xiaomi/xiaomi; Redmi 5 Plus; vince; qcom",
-        "deviceId": "android-24de710ca39df2ad",
-        "uuid": "004aa663-0efa-59b2-873c-77ec0c9fef54",
-        "phoneId": "4f2104cc-638d-51dd-9894-1da086c08e0e",
-        "adid": "9d78eb2b-b197-524e-acfd-5aece1e2e0a2",
-        "build": "JLS36I"
-    }
- */
