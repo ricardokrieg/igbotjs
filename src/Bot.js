@@ -214,10 +214,25 @@ class Bot {
       return;
     }
 
+    await this.sessionManager.login();
+
+    for (let action of actions) {
+      log(`Action: ${action}`);
+
+      switch (action) {
+        case 'likeExplore':
+          await this.exploreManager.like();
+          longSleep();
+          break;
+        default:
+          log.warn(`Unknown Action: ${action}`);
+          break;
+      }
+    }
+
     await this.statsManager.addRun({ actions: actionsForToday });
 
     process.exit(0);
-    await this.sessionManager.login();
 
     // section delays: min: 60, max: 120
     // visit explore
