@@ -234,6 +234,11 @@ class Bot {
           await this.exploreManager.like();
           await longSleep();
           break;
+
+        case 'scrollExplore':
+          await this.exploreManager.scroll();
+          await longSleep();
+          break;
         case 'search':
           await this.searchManager.search();
           await longSleep();
@@ -264,7 +269,7 @@ class Bot {
     let actions = [];
     const lightActionTypes = [
       // 'openPostComments',
-      // 'scrollExplore',
+      'scrollExplore',
       // 'openProfile',
       'search',
     ];

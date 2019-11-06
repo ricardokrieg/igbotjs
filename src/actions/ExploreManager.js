@@ -67,42 +67,24 @@ class ExploreManager {
     log('Done');
   }
 
-  async run({ limit }) {
-    log(`Going to like ${limit} posts`);
-
-    let count = 0;
+  async scroll() {
     let maxId = 0;
-    log(`Loading page ${maxId + 1}`);
+    let percentage = 20;
 
     while (true) {
-      const response = await this.topicalExplore({ repository: this.ig.discover, maxId: maxId });
+      log(`Loading page ${maxId + 1}. ${percentage}% chances of leaving on this page.`);
 
-      for (let item of response['sectional_items']) {
-        if (item['feed_type'] === 'media') {
-          for (let media of item['layout_content']['medias']) {
-            const mediaId = media['media']['id'];
+      await this.topicalExplore({ repository: this.ig.discover, maxId: maxId });
 
-            // TODO, will like based on a percentage
-            log(`Liking ${mediaId}`);
-            count++;
-
-            if (count > limit) {
-              break;
-            }
-          }
-        }
-
-        if (count > limit) {
-          break;
-        }
-      }
-
-      if (count > limit) {
+      if (random(0, 100) <= percentage) {
         break;
       }
 
+      percentage += 20;
       maxId++;
     }
+
+    log('Done');
   }
 
   async topicalExplore({ repository, maxId }) {
