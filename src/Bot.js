@@ -13,6 +13,7 @@ const StoriesManager = require('./actions/StoriesManager');
 const FeedManager    = require('./actions/FeedManager');
 const PublishManager = require('./actions/PublishManager');
 const ExploreManager = require('./actions/ExploreManager');
+const SearchManager  = require('./actions/SearchManager');
 const Scheduler      = require('./Scheduler');
 
 
@@ -106,6 +107,11 @@ class Bot {
       ig: this.ig,
       username: this.username,
       addAction: this.statsManager.addAction.bind(this.statsManager),
+    });
+
+    this.searchManager = new SearchManager({
+      ig: this.ig,
+      username: this.username,
     });
 
     this.sessionManager.start();
@@ -223,6 +229,10 @@ class Bot {
       switch (action) {
         case 'likeExplore':
           await this.exploreManager.like();
+          await longSleep();
+          break;
+        case 'search':
+          await this.searchManager.search();
           await longSleep();
           break;
         default:

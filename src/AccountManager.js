@@ -57,8 +57,8 @@ class AccountManager {
 
   async getTotalActions() {
     const actions = await this.getActionsBetween({
-      min: moment().subtract(1, 'month'),
-      max: moment().subtract(1, 'day')
+      min: moment().subtract(1, 'month').startOf('day'),
+      max: moment().subtract(1, 'day').endOf('day')
     });
 
     return actions.count();
