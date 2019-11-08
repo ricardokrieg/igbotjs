@@ -1,4 +1,4 @@
-const { logHandler, sleep } = require('../utils');
+const { logHandler, quickSleep } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const { random, sample, isEmpty } = require('lodash');
 
@@ -21,6 +21,7 @@ class ExploreManager {
       log(`Loading page ${maxId + 1}. ${percentage}% chances of liking on this page.`);
 
       const response = await this.topicalExplore({ repository: this.ig.discover, maxId: maxId });
+      await quickSleep();
 
       if (random(0, 100) <= percentage) {
         let mediaIds = [];
@@ -75,6 +76,7 @@ class ExploreManager {
       log(`Loading page ${maxId + 1}. ${percentage}% chances of leaving on this page.`);
 
       await this.topicalExplore({ repository: this.ig.discover, maxId: maxId });
+      await quickSleep();
 
       if (random(0, 100) <= percentage) {
         break;

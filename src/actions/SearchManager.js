@@ -1,4 +1,4 @@
-const { logHandler } = require('../utils');
+const { logHandler, quickSleep } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const { sample, isEmpty } = require('lodash');
 
@@ -14,6 +14,8 @@ class SearchManager {
     log(`Searching "${query}"...`);
 
     const result = await SessionManager.call( () => this.ig.user.search(query) );
+    await quickSleep();
+
     const users = result['users'];
     log(`Found ${users.length} results.`);
 
@@ -21,7 +23,9 @@ class SearchManager {
       const user = sample(users);
 
       log(`Visiting ${user['username']} profile...`);
-      const info = await SessionManager.call( () => this.ig.user.info(user['pk']) );
+
+      await SessionManager.call( () => this.ig.user.info(user['pk']) );
+      await quickSleep();
     }
   }
 
