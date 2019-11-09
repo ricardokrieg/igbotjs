@@ -81,6 +81,7 @@ class Bot {
       getBlacklist: this.statsManager.getBlacklist.bind(this.statsManager),
       addStats: this.statsManager.addStats.bind(this.statsManager),
       addTarget: this.statsManager.addTarget.bind(this.statsManager),
+      addAction: this.statsManager.addAction.bind(this.statsManager),
     });
 
     this.storiesManager = new StoriesManager({
@@ -179,7 +180,7 @@ class Bot {
 
     let weights = {
       followSource: 10,
-      // followRecommended: 1,
+      followRecommended: 1,
       // followExplore: 1,
       // likeFeedLast: 2,
       // likeFeedOld: 1,
@@ -230,6 +231,10 @@ class Bot {
       log(`Action: ${action}`);
 
       switch (action) {
+        case 'followRecommended':
+          await this.followManager.followRecommended();
+          await longSleep();
+          break;
         case 'likeExplore':
           await this.exploreManager.like();
           await longSleep();
@@ -243,6 +248,7 @@ class Bot {
           await this.searchManager.search();
           await longSleep();
           break;
+
         default:
           log.warn(`Unknown Action: ${action}`);
           break;

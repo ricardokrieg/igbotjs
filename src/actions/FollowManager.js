@@ -6,7 +6,7 @@ const SessionManager = require('../SessionManager');
 
 
 class FollowManager {
-  constructor({ username, ig, sources, getBlacklist, addStats, addTarget }) {
+  constructor({ username, ig, sources, getBlacklist, addStats, addTarget, addAction }) {
     this.username = username;
     this.ig       = ig;
     this.sources  = sources;
@@ -14,6 +14,27 @@ class FollowManager {
     this.getBlacklist = getBlacklist;
     this.addStats     = addStats;
     this.addTarget    = addTarget;
+    this.addAction    = addAction;
+  }
+
+  async followRecommended() {
+    log('Loading recommended users...');
+
+    const feed = this.ig.feed.discover();
+    const recommendations = await SessionManager.call( () => feed.items() );
+
+    log(`Found ${recommendations.length} users:`);
+    for (let recommended of recommendations) {
+      log(recommended.user.username);
+    }
+
+    const user = sample(recommendations).user;
+    log(`Following ${user.username}...`);
+
+    await SessionManager.call( () => this.ig.friendship.create(user.pk) );
+    await this.addAction({ type: 'followRecommended', reference: user.username });
+
+    log('Done');
   }
 
   async run({ followLimit }) {
