@@ -1,5 +1,5 @@
 const { IgApiClient } = require('instagram-private-api');
-const { random, omit, isEmpty, times, constant, shuffle, sample, forEach } = require('lodash');
+const { random, omit, pick, isEmpty, times, constant, shuffle, sample, forEach } = require('lodash');
 const moment = require('moment');
 const { logHandler, longSleep, sleep24h } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
@@ -227,26 +227,27 @@ class Bot {
 
     await this.sessionManager.login();
 
+    log('User Info:');
+    const currentUser = await SessionManager.call( () => this.ig.account.currentUser() );
+    const userInfo = await SessionManager.call( () => this.ig.user.info(currentUser.pk) );
+    log(pick(userInfo, ['pk', 'username', 'full_name', 'profile_pic_url', 'media_count', 'follower_count', 'following_count', 'biography', 'external_url']));
+
     for (let action of actions) {
       log(`Action: ${action}`);
 
       switch (action) {
         case 'followRecommended':
           await this.followManager.followRecommended();
-          await longSleep();
           break;
         case 'likeExplore':
           await this.exploreManager.like();
-          await longSleep();
           break;
 
         case 'scrollExplore':
           await this.exploreManager.scroll();
-          await longSleep();
           break;
         case 'search':
           await this.searchManager.search();
-          await longSleep();
           break;
 
         default:

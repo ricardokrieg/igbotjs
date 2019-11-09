@@ -2,7 +2,7 @@ const { find } = require('lodash');
 const Bluebird = require('bluebird');
 const inquirer = require('inquirer');
 const { IgCheckpointError } = require('instagram-private-api');
-const { logHandler } = require('./utils');
+const { logHandler, quickSleep } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
 
@@ -162,6 +162,7 @@ class SessionManager {
       }
 
       if (error === null) {
+        await quickSleep();
         resolve(r);
       } else {
         reject(error);

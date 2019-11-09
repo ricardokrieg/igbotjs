@@ -20,8 +20,7 @@ class ExploreManager {
     while (true) {
       log(`Loading page ${maxId + 1}. ${percentage}% chances of liking on this page.`);
 
-      const response = await this.topicalExplore({ repository: this.ig.discover, maxId: maxId });
-      await quickSleep();
+      const response = await SessionManager.call( () => this.topicalExplore({ repository: this.ig.discover, maxId: maxId }) );
 
       if (random(0, 100) <= percentage) {
         let mediaIds = [];
@@ -75,8 +74,7 @@ class ExploreManager {
     while (true) {
       log(`Loading page ${maxId + 1}. ${percentage}% chances of leaving on this page.`);
 
-      await this.topicalExplore({ repository: this.ig.discover, maxId: maxId });
-      await quickSleep();
+      await SessionManager.call( () => this.topicalExplore({ repository: this.ig.discover, maxId: maxId }) );
 
       if (random(0, 100) <= percentage) {
         break;
