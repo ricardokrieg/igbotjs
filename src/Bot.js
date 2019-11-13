@@ -182,13 +182,13 @@ class Bot {
     let weights = {
       followSource: 10,
       followRecommended: 1,
-      // followExplore: 1,
+      followExplore: 1,
       likeFeed: 2,
       // likeFeedOld: 1,
       likeExplore: 4,
     };
 
-    if (actionsForToday < 10) {
+    if (actionsForToday < 10 || true) {
       weights = {
         ...weights,
         followSource: 0,
@@ -233,8 +233,10 @@ class Bot {
     const userInfo = await SessionManager.call( () => this.ig.user.info(currentUser.pk) );
     log(pick(userInfo, ['pk', 'username', 'full_name', 'profile_pic_url', 'media_count', 'follower_count', 'following_count', 'biography', 'external_url']));
 
+    const actionsCount = actions.length;
+    let currentAction = 1;
     for (let action of actions) {
-      log(`Action: ${action}`);
+      log(`Action: ${action} (${currentAction++} of ${actionsCount})`);
 
       switch (action) {
         case 'followRecommended':
@@ -245,6 +247,9 @@ class Bot {
           break;
         case 'likeExplore':
           await this.exploreManager.like();
+          break;
+        case 'followExplore':
+          await this.exploreManager.follow();
           break;
 
         case 'scrollExplore':

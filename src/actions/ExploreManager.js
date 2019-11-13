@@ -1,6 +1,6 @@
 const { logHandler, quickSleep } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const { random, sample, isEmpty } = require('lodash');
+const { pick, random, sample, isEmpty } = require('lodash');
 
 const SessionManager = require('../SessionManager');
 
@@ -55,6 +55,65 @@ class ExploreManager {
           log(response);
 
           await this.addAction({ type: 'likeExplore', reference: mediaId });
+
+          break;
+        }
+      }
+
+      percentage += 20;
+      maxId++;
+    }
+
+    log('Done');
+  }
+
+  async follow() {
+    let maxId = 0;
+    let percentage = 20;
+
+    while (true) {
+      log(`Loading page ${maxId + 1}. ${percentage}% chances of following on this page.`);
+
+      const response = await SessionManager.call( () => this.topicalExplore({ repository: this.ig.discover, maxId: maxId }) );
+
+      if (random(0, 100) <= percentage) {
+        let selectedUsers = [];
+
+        for (let item of response['sectional_items']) {
+          if (item['feed_type'] === 'media') {
+            const medias = item['layout_content']['medias'];
+
+            if (medias) {
+              for (let media of item['layout_content']['medias']) {
+                const user = media['media']['user'];
+
+                if (!user['is_private'] && !user['is_verified'] && !user['has_anonymous_profile_picture']) {
+                  const friendshipStatus = user['friendship_status'];
+                  if (!friendshipStatus['following'] && !friendshipStatus['outgoing_request'] && !friendshipStatus['is_bestie'] && !friendshipStatus['is_restricted']) {
+                    selectedUsers = [ ...selectedUsers, pick(user, ['pk', 'username']) ];
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        log(`Selected ${selectedUsers.length} users to follow.`);
+        if (!isEmpty(selectedUsers)) {
+          const user = sample(selectedUsers);
+
+          log(`Visiting ${user['username']} profile`);
+          await SessionManager.call( () => this.ig.user.info(user['pk']) );
+          log(`Loading ${user['username']} feed`);
+          await SessionManager.call(() => this.ig.feed.user(user['pk']).items() );
+
+          log(`Following ${user['username']}`);
+          const response = await SessionManager.call(() => {
+            return this.ig.friendship.create(user['pk']);
+          });
+          log(response);
+
+          await this.addAction({ type: 'followExplore', reference: user['username'] });
 
           break;
         }

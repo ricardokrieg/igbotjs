@@ -22,10 +22,13 @@ class SearchManager {
     if (!isEmpty(users)) {
       const user = sample(users);
 
-      log(`Visiting ${user['username']} profile...`);
-
+      log(`Visiting ${user['username']} profile`);
       await SessionManager.call( () => this.ig.user.info(user['pk']) );
-      await quickSleep();
+
+      if (!user['is_private']) {
+        log(`Loading ${user['username']} feed`);
+        await SessionManager.call(() => this.ig.feed.user(user['pk']).items() );
+      }
     }
   }
 
