@@ -6,10 +6,60 @@ const SessionManager = require('../SessionManager');
 
 
 class FeedManager {
-  constructor({ username, ig, addStats }) {
+  constructor({ username, ig, addStats, addAction }) {
     this.username = username;
     this.ig       = ig;
-    this.addStats = addStats;
+
+    this.addStats  = addStats;
+    this.addAction = addAction;
+  }
+
+  async like() {
+    let page = 1;
+    let percentage = 20;
+
+    const timeline = this.ig.feed.timeline('pull_to_refresh');
+
+    while (true) {
+      log(`Loading page ${page}. ${percentage}% chances of liking on this page.`);
+
+      const items = await SessionManager.call(() => timeline.items() );
+
+      if (isEmpty(items)) {
+        log.warn(`Reached end of feed.`);
+        break;
+      }
+
+      if (random(0, 100) <= percentage) {
+        const mediaIds = map(filter(items, { comment_likes_enabled: true, has_liked: false }), 'id');
+        log(`Selected ${mediaIds.length} posts for liking.`);
+
+        if (!isEmpty(mediaIds)) {
+          const mediaId = sample(mediaIds);
+          log(`Liking ${mediaId}`);
+
+          const response = await SessionManager.call(() => {
+            return this.ig.media.like({
+              mediaId,
+              moduleInfo: {
+                module_name: 'explore_popular',
+              },
+              d: sample([0, 1]),
+            });
+          });
+          log(response);
+
+          await this.addAction({ type: 'likeFeed', reference: mediaId });
+
+          break;
+        }
+      }
+
+      percentage += 20;
+      page++;
+    }
+
+    log('Done');
   }
 
   async run({ feedLimit }) {

@@ -93,6 +93,7 @@ class Bot {
       ig: this.ig,
       username: this.username,
       addStats: this.statsManager.addStats.bind(this.statsManager),
+      addAction: this.statsManager.addAction.bind(this.statsManager),
     });
 
     this.publishManager = new PublishManager({
@@ -182,7 +183,7 @@ class Bot {
       followSource: 10,
       followRecommended: 1,
       // followExplore: 1,
-      // likeFeedLast: 2,
+      likeFeed: 2,
       // likeFeedOld: 1,
       likeExplore: 4,
     };
@@ -238,6 +239,9 @@ class Bot {
       switch (action) {
         case 'followRecommended':
           await this.followManager.followRecommended();
+          break;
+        case 'likeFeed':
+          await this.feedManager.like();
           break;
         case 'likeExplore':
           await this.exploreManager.like();
