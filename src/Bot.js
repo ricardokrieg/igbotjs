@@ -184,7 +184,7 @@ class Bot {
       followRecommended: 1,
       followExplore: 1,
       likeFeed: 2,
-      // likeFeedOld: 1,
+      likeFeedOld: 1,
       likeExplore: 4,
     };
 
@@ -234,9 +234,9 @@ class Bot {
     log(pick(userInfo, ['pk', 'username', 'full_name', 'profile_pic_url', 'media_count', 'follower_count', 'following_count', 'biography', 'external_url']));
 
     const actionsCount = actions.length;
-    let currentAction = 1;
+    let currentAction = 0;
     for (let action of actions) {
-      log(`Action: ${action} (${currentAction++} of ${actionsCount})`);
+      log(`Action: ${action} (${++currentAction} of ${actionsCount})`);
 
       switch (action) {
         case 'followRecommended':
@@ -244,6 +244,9 @@ class Bot {
           break;
         case 'likeFeed':
           await this.feedManager.like();
+          break;
+        case 'likeFeedOld':
+          await this.feedManager.likeOld();
           break;
         case 'likeExplore':
           await this.exploreManager.like();
@@ -265,7 +268,7 @@ class Bot {
       }
     }
 
-    await this.statsManager.addRun({ actions: actionsForToday });
+    await this.statsManager.addRun({ actions: currentAction });
 
     // visit explore
       // load details from explore posts. min: 10, max: 30 (daily); min: 0, max: 5 (section)
@@ -281,9 +284,10 @@ class Bot {
   generateActions({ totalActions, weights }) {
     let actions = [];
     const lightActionTypes = [
-      // 'openPostComments',
       'scrollExplore',
+      // 'scrollFeed',
       // 'openProfile',
+      // 'openPostComments',
       'search',
     ];
     let hardActionTypes = [];

@@ -1,6 +1,6 @@
 const { logHandler, quickSleep } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const { isEmpty, sampleSize, map, filter, sample, random } = require('lodash');
+const { pick, isEmpty, sampleSize, map, filter, sample, random } = require('lodash');
 
 const SessionManager = require('../SessionManager');
 
@@ -42,7 +42,7 @@ class FeedManager {
             return this.ig.media.like({
               mediaId,
               moduleInfo: {
-                module_name: 'explore_popular',
+                module_name: 'feed_timeline',
               },
               d: sample([0, 1]),
             });
@@ -52,6 +52,64 @@ class FeedManager {
           await this.addAction({ type: 'likeFeed', reference: mediaId });
 
           break;
+        }
+      }
+
+      percentage += 20;
+      page++;
+    }
+
+    log('Done');
+  }
+
+  async likeOld() {
+    let page = 1;
+    let percentage = 20;
+
+    const timeline = this.ig.feed.timeline('pull_to_refresh');
+
+    while (true) {
+      log(`Loading page ${page}. ${percentage}% chances of liking on this page.`);
+
+      const items = await SessionManager.call(() => timeline.items() );
+
+      if (isEmpty(items)) {
+        log.warn(`Reached end of feed.`);
+        break;
+      }
+
+      if (random(0, 100) <= percentage) {
+        if (!isEmpty(items)) {
+          const item = sample(items);
+          const user = pick(item['user'], [ 'pk', 'username' ]);
+
+          log(`Visiting ${user['username']} profile`);
+          await SessionManager.call( () => this.ig.user.info(user['pk']) );
+          log(`Loading ${user['username']} feed`);
+          const userItems = await SessionManager.call(() => this.ig.feed.user(user['pk']).items() );
+
+          const mediaIds = map(filter(userItems, { comment_likes_enabled: true, has_liked: false }), 'id');
+          log(`Selected ${mediaIds.length} posts for liking.`);
+
+          if (!isEmpty(mediaIds)) {
+            const mediaId = sample(mediaIds);
+            log(`Liking ${mediaId}`);
+
+            const response = await SessionManager.call(() => {
+              return this.ig.media.like({
+                mediaId,
+                moduleInfo: {
+                  module_name: 'feed_timeline',
+                },
+                d: sample([0, 1]),
+              });
+            });
+            log(response);
+
+            await this.addAction({ type: 'likeFeedOld', reference: mediaId });
+
+            break;
+          }
         }
       }
 
