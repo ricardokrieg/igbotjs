@@ -261,6 +261,15 @@ class Bot {
         case 'scrollExplore':
           await this.exploreManager.scroll();
           break;
+        case 'scrollFeed':
+          await this.feedManager.scroll();
+          break;
+        case 'feedOpenProfile':
+          await this.feedManager.openProfile();
+          break;
+        case 'feedOpenComments':
+          await this.feedManager.openComments();
+          break;
         case 'search':
           await this.searchManager.search();
           break;
@@ -288,9 +297,9 @@ class Bot {
     let actions = [];
     const lightActionTypes = [
       'scrollExplore',
-      // 'scrollFeed',
-      // 'openProfile',
-      // 'openPostComments',
+      'scrollFeed',
+      'feedOpenProfile',
+      'feedOpenComments',
       'search',
     ];
     let hardActionTypes = [];

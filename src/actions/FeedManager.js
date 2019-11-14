@@ -50,9 +50,9 @@ class FeedManager {
           log(response);
 
           await this.addAction({ type: 'likeFeed', reference: mediaId });
-
-          break;
         }
+
+        break;
       }
 
       percentage += 20;
@@ -107,10 +107,114 @@ class FeedManager {
             log(response);
 
             await this.addAction({ type: 'likeFeedOld', reference: mediaId });
-
-            break;
           }
         }
+
+        break;
+      }
+
+      percentage += 20;
+      page++;
+    }
+
+    log('Done');
+  }
+
+  async scroll() {
+    let page = 1;
+    let percentage = 20;
+
+    const timeline = this.ig.feed.timeline('pull_to_refresh');
+
+    while (true) {
+      log(`Loading page ${page}. ${percentage}% chances of leaving on this page.`);
+
+      const items = await SessionManager.call(() => timeline.items() );
+
+      if (isEmpty(items)) {
+        log.warn(`Reached end of feed.`);
+        break;
+      }
+
+      if (random(0, 100) <= percentage) {
+        break;
+      }
+
+      percentage += 20;
+      page++;
+    }
+
+    log('Done');
+  }
+
+  async openProfile() {
+    let page = 1;
+    let percentage = 20;
+
+    const timeline = this.ig.feed.timeline('pull_to_refresh');
+
+    while (true) {
+      log(`Loading page ${page}. ${percentage}% chances of opening on this page.`);
+
+      const items = await SessionManager.call(() => timeline.items() );
+
+      if (isEmpty(items)) {
+        log.warn(`Reached end of feed.`);
+        break;
+      }
+
+      if (random(0, 100) <= percentage) {
+        if (!isEmpty(items)) {
+          const item = sample(items);
+          const user = pick(item['user'], [ 'pk', 'username' ]);
+
+          log(`Visiting ${user['username']} profile`);
+          await SessionManager.call( () => this.ig.user.info(user['pk']) );
+          log(`Loading ${user['username']} feed`);
+          await SessionManager.call(() => this.ig.feed.user(user['pk']).items() );
+        }
+
+        break;
+      }
+
+      percentage += 20;
+      page++;
+    }
+
+    log('Done');
+  }
+
+  async openComments() {
+    let page = 1;
+    let percentage = 20;
+
+    const timeline = this.ig.feed.timeline('pull_to_refresh');
+
+    while (true) {
+      log(`Loading page ${page}. ${percentage}% chances of opening on this page.`);
+
+      const items = await SessionManager.call(() => timeline.items() );
+
+      if (isEmpty(items)) {
+        log.warn(`Reached end of feed.`);
+        break;
+      }
+
+      if (random(0, 100) <= percentage) {
+        const selectedItems = filter(items, { has_more_comments: true });
+        log(`Selected ${selectedItems.length} posts for opening comments.`);
+
+        if (!isEmpty(selectedItems)) {
+          const item = sample(selectedItems);
+          log(`Opening ${item['id']} comments (${item['comment_count']} comments)`);
+
+          const response = await SessionManager.call(() => {
+            return this.ig.feed.mediaComments(item['id']).items();
+          });
+          log(`Loaded ${response.length} comments`);
+        }
+
+        break;
       }
 
       percentage += 20;

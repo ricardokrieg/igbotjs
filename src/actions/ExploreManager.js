@@ -55,9 +55,9 @@ class ExploreManager {
           log(response);
 
           await this.addAction({ type: 'likeExplore', reference: mediaId });
-
-          break;
         }
+
+        break;
       }
 
       percentage += 20;
@@ -114,9 +114,9 @@ class ExploreManager {
           log(response);
 
           await this.addAction({ type: 'followExplore', reference: user['username'] });
-
-          break;
         }
+
+        break;
       }
 
       percentage += 20;
