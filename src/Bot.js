@@ -188,7 +188,7 @@ class Bot {
       likeExplore: 4,
     };
 
-    if (actionsForToday < 10 || true) {
+    if (actionsForToday < 10) {
       weights = {
         ...weights,
         followSource: 0,
@@ -253,6 +253,9 @@ class Bot {
           break;
         case 'followExplore':
           await this.exploreManager.follow();
+          break;
+        case 'followSource':
+          await this.followManager.follow();
           break;
 
         case 'scrollExplore':

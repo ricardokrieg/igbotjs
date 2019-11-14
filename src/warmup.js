@@ -5,6 +5,8 @@ const log = require('log-chainable').namespace(module).handler(logHandler);
 const Bot = require('./Bot');
 const { sleep } = require('./utils');
 
+moment.locale('pt-br');
+
 const username = process.env.IG_USERNAME;
 const sandbox = !isEmpty(process.env.SANDBOX);
 
