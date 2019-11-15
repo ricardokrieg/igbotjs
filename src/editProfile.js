@@ -8,16 +8,18 @@ const username = process.env.IG_USERNAME;
 (async () => {
   log('Start');
 
+  const bot = new Bot({ username });
+
   try {
-    const bot = new Bot({ username });
     await bot.setup();
     await bot.sessionManager.login();
+
     await bot.accountManager.editProfile({
-      name: 'Paladins Skins',
-      username: 'paladins.skins.up',
-      bio: 'We send gifts on Paladins 👇 Hurry! Limited items 🔥',
-      url: 'linktr.ee/skinspaladins',
-      profilePic: './skinspaladins.jpg',
+      // name: 'Nature Watcher',
+      username: 'naturewatcher5',
+      // bio: 'I take nature pics',
+      // url: 'linktr.ee/nature.watcher',
+      // profilePic: './nature_watcher.jpg',
     });
   } catch (e) {
     log.error(e);

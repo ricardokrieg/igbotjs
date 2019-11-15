@@ -31,7 +31,7 @@ const SESSION_END   = 10;
 
       const nextSession = moment()
         .add(1, 'day')
-        .hour( random(SESSION_BEGIN, SESSION_BEGIN) )
+        .hour( random(SESSION_BEGIN, SESSION_END) )
         .minute( random(0, 59) );
       log(`Next Session: ${nextSession.format()}`);
 

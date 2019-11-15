@@ -12,13 +12,15 @@ class AccountManager {
     username,
     accountDetails,
     ig,
+    dbManager,
     getActionsBetween,
   }) {
     this.username       = username;
     this.accountDetails = accountDetails;
     this.ig             = ig;
+    this.dbManager      = dbManager;
 
-    this.getActionsBetween      = getActionsBetween;
+    this.getActionsBetween = getActionsBetween;
   }
 
   getAccountDetails() {
@@ -86,14 +88,41 @@ class AccountManager {
       log('Editing profile...');
       const result = await SessionManager.call(() => this.ig.account.editProfile(options) );
       log(result);
+
+      if (!isUndefined(username)) {
+        log(`Updating MongoDB username: ${currentUser.username} => ${username}`);
+
+        await this.dbManager.uploadsCol().updateMany(
+          { account: currentUser.username },
+          { $set: { account: username } });
+
+        await this.dbManager.targetsCol().updateMany(
+          { account: currentUser.username },
+          { $set: { account: username } });
+
+        await this.dbManager.runsCol().updateMany(
+          { account: currentUser.username },
+          { $set: { account: username } });
+
+        await this.dbManager.actionsCol().updateMany(
+          { account: currentUser.username },
+          { $set: { account: username } });
+
+        let doc = await this.dbManager.accountsCol().findOne({ _id: currentUser.username });
+        doc._id = username;
+        const formerUsernames = doc.formerUsernames || [];
+        doc.formerUsernames = [ ...formerUsernames, currentUser.username ];
+        await this.dbManager.accountsCol().insertOne(doc);
+        await this.dbManager.accountsCol().deleteOne({ _id: currentUser.username });
+      }
     }
 
     if (profilePic) {
-      log(`Applying EXIF...`);
-      await PublishManager.applyExif({
-        filePath: profilePic,
-        basePath: `./base.jpg`,
-      });
+      // log(`Applying EXIF...`);
+      // await PublishManager.applyExif({
+      //   filePath: profilePic,
+      //   basePath: `./base.jpg`,
+      // });
 
       log('Changing profile picture...');
       const readStream = fs.createReadStream(profilePic);

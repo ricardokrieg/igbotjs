@@ -70,6 +70,7 @@ class Bot {
       ig: this.ig,
       username: this.username,
       accountDetails,
+      dbManager: this.dbManager,
       getActionsBetween: this.statsManager.getActionsBetween.bind(this.statsManager),
     });
 
@@ -282,16 +283,6 @@ class Bot {
     }
 
     await this.statsManager.addRun({ actions: currentAction });
-
-    // visit explore
-      // load details from explore posts. min: 10, max: 30 (daily); min: 0, max: 5 (section)
-      // load details from explore accounts. 10% of loaded posts
-    // follow recommended. min: 3, max: 7 (daily); min: 0, max: 1 (section)
-      // load account details before following
-    // like feed posts. min: 3, max: 7 (daily); min: 0, max: 1 (section)
-    // watch stories. min: 10, max: 30 (daily); min: 0, max: 5 (section)
-      // (don`t necessarily watch all stories from an user. skip before finishing)
-      // (don`t simply randomize them ...)
   }
 
   generateActions({ totalActions, weights, shouldPublish }) {
