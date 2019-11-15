@@ -103,6 +103,7 @@ class Bot {
       getBlacklist: this.statsManager.getPublishBlacklist.bind(this.statsManager),
       addUpload: this.statsManager.addUpload.bind(this.statsManager),
       addStats: this.statsManager.addStats.bind(this.statsManager),
+      addAction: this.statsManager.addAction.bind(this.statsManager),
     });
 
     this.exploreManager = new ExploreManager({
@@ -180,20 +181,13 @@ class Bot {
     log(`Total Actions: ${totalActions}, Actions for today: ${actionsForToday}`);
 
     let weights = {
-      followSource: 10,
+      followSource: actionsForToday > 10 ? 10 : 0,
       followRecommended: 1,
       followExplore: 1,
       likeFeed: 2,
       likeFeedOld: 1,
       likeExplore: 4,
     };
-
-    if (actionsForToday < 10) {
-      weights = {
-        ...weights,
-        followSource: 0,
-      };
-    }
 
     // first run of the day
     let dayOff = false;
@@ -217,7 +211,10 @@ class Bot {
       return;
     }
 
-    const actions = this.generateActions({ totalActions: actionsForToday, weights });
+    const publishedToday = await this.statsManager.getPublishedToday();
+    const shouldPublish = !publishedToday && actionsForToday > 10;
+
+    const actions = this.generateActions({ totalActions: actionsForToday, weights, shouldPublish });
     log('Actions');
     log(actions);
 
@@ -274,6 +271,10 @@ class Bot {
           await this.searchManager.search();
           break;
 
+        case 'publish':
+          await this.publishManager.publish();
+          break;
+
         default:
           log.warn(`Unknown Action: ${action}`);
           break;
@@ -293,7 +294,7 @@ class Bot {
       // (don`t simply randomize them ...)
   }
 
-  generateActions({ totalActions, weights }) {
+  generateActions({ totalActions, weights, shouldPublish }) {
     let actions = [];
     const lightActionTypes = [
       'scrollExplore',
@@ -313,12 +314,22 @@ class Bot {
     times(totalActions, () => {
       actions = [ ...actions, sample(hardActionTypes) ];
     });
+
     times(Math.round(totalActions / 3), () => {
       actions = [ ...actions, sample(lightActionTypes) ];
     });
-    actions = shuffle(actions);
 
-    return actions;
+    if (shouldPublish) {
+      const publishCount = random(2, 4);
+      log(`Going to publish ${publishCount} posts`);
+
+      actions = [
+        ...actions,
+        ...times(publishCount, constant('publish')),
+      ];
+    }
+
+    return shuffle(actions);
   }
 }
 

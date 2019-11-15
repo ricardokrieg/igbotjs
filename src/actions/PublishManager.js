@@ -1,6 +1,6 @@
 const { logHandler } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const { isEmpty, random, difference, sample } = require('lodash');
+const { isEmpty, random, difference, sample, filter } = require('lodash');
 const fs = require('fs');
 const child_process = require('child_process');
 const util = require('util');
@@ -10,27 +10,36 @@ const moment = require('moment');
 
 const readdir  = util.promisify(fs.readdir);
 const copyFile = util.promisify(fs.copyFile);
+const readFile = util.promisify(fs.readFile);
 const exec     = util.promisify(child_process.exec);
 
 const SessionManager = require('../SessionManager');
 
 
 class PublishManager {
-  constructor({ username, ig, imagesPath, getBlacklist, addStats, addUpload }) {
-    this.username     = username;
-    this.ig           = ig;
+  constructor({ username, ig, imagesPath, getBlacklist, addStats, addUpload, addAction }) {
+    this.username = username;
+    this.ig       = ig;
+
     this.imagesPath   = imagesPath;
     this.getBlacklist = getBlacklist;
-    this.addStats     = addStats;
-    this.addUpload    = addUpload;
+
+    this.addStats  = addStats;
+    this.addUpload = addUpload;
+    this.addAction = addAction;
   }
 
-  async run() {
-    log(`Going to publish image from "${this.imagesPath}"`);
+  async publish() {
+    log(`Going to publish from "${this.imagesPath}"`);
 
-    const images = await readdir(this.imagesPath);
+    const images = filter(await readdir(this.imagesPath), (path) => path.endsWith('.jpg') || path.endsWith('.jpeg'));
     const blacklist = await this.getBlacklist();
     const validImages = difference(images, blacklist);
+
+    log('Images');
+    log(images);
+    log('Blacklist');
+    log(blacklist);
 
     if (isEmpty(validImages)) {
       log.warn('There is no image to publish.');
@@ -40,12 +49,14 @@ class PublishManager {
     const image = sample(validImages);
     log(`Going to upload ${image}`);
 
-    const { latitude, longitude } = PublishManager.randomLocation();
-    log(`Coordinates: ${latitude}, ${longitude}`);
+    if (false) {
+      const { latitude, longitude } = PublishManager.randomLocation();
+      log(`Coordinates: ${latitude}, ${longitude}`);
 
-    const locations = await this.ig.search.location(latitude, longitude);
-    const mediaLocation = sample(locations);
-    log(`Location: ${mediaLocation['name']}`);
+      const locations = await this.ig.search.location(latitude, longitude);
+      const mediaLocation = sample(locations);
+      log(`Location: ${mediaLocation['name']}`);
+    }
 
     const oldPath = `${this.imagesPath}/${image}`;
     const newPath = `/tmp/${moment().unix()}.jpg`;
@@ -53,22 +64,40 @@ class PublishManager {
     log(`Copying ${oldPath} to ${newPath}`);
     await copyFile(oldPath, newPath);
 
-    log(`Applying EXIF...`);
-    await PublishManager.applyExif({
-      filePath: newPath,
-      basePath: `./base.jpg`,
-    });
+    //log(`Applying EXIF...`);
+    //await PublishManager.applyExif({
+    //  filePath: newPath,
+    //  basePath: `./base.jpg`,
+    //});
+
+    const caption = await this.getCaptionFor({ path: oldPath });
+    log('Caption');
+    log(caption);
 
     log(`Uploading...`);
     const publishResult = await this.ig.publish.photo({
       file: await Bluebird.fromCallback(cb => fs.readFile(newPath, cb)),
-      location: mediaLocation,
+      //location: mediaLocation,
+      caption: caption,
     });
 
     await this.addUpload({ image });
-    await this.addStats({ type: 'publish', reference: image });
+    await this.addAction({ type: 'publish', reference: image });
 
+    log(publishResult);
     log(`Published: ${publishResult['status']}`);
+  }
+
+  async getCaptionFor({ path }) {
+    let array = path.split('.');
+    array.pop();
+    const captionPath = array.join('.') + '.txt';
+
+    if (fs.existsSync(captionPath)) {
+      return await readFile(captionPath, 'utf8');
+    }
+
+    return null;
   }
 
   static randomLocation() {

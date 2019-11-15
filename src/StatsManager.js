@@ -64,8 +64,8 @@ class StatsManager {
 
   async addUpload({ image }) {
     await this.uploadsCol.insertOne({
-      _id: image,
       account: this.username,
+      reference: image,
       timestamp: new Date()
     });
   }
@@ -75,7 +75,7 @@ class StatsManager {
   }
 
   async getPublishBlacklist() {
-    return map(await this.uploadsCol.find().toArray(), '_id');
+    return map(await this.uploadsCol.find().toArray(), 'reference');
   }
 
   async getActionsBetween({ min, max }) {
@@ -86,6 +86,18 @@ class StatsManager {
         '$lte': new Date(max.toISOString()),
       },
     });
+  }
+
+  async getPublishedToday() {
+    const lastUpload = await this.uploadsCol.find({
+      account: this.username
+    }).sort({ timestamp: -1 }).limit(1).toArray()[0];
+
+    if (!lastUpload) {
+      return false;
+    }
+
+    return moment().isSame(lastUpload['timestamp'], 'day');
   }
 }
 
