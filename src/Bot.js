@@ -207,7 +207,7 @@ class Bot {
       }
     }
 
-    if (dayOff && false) {
+    if (dayOff) {
       log('Day Off. Exiting.');
       return;
     }
