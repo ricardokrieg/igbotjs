@@ -122,11 +122,11 @@ class AccountManager {
     }
 
     if (profilePic) {
-      // log(`Applying EXIF...`);
-      // await PublishManager.applyExif({
-      //   filePath: profilePic,
-      //   basePath: `./base.jpg`,
-      // });
+      log(`Applying EXIF...`);
+      await PublishManager.applyExif({
+        filePath: profilePic,
+        basePath: `./base.jpg`,
+      });
 
       log('Changing profile picture...');
       const readStream = fs.createReadStream(profilePic);

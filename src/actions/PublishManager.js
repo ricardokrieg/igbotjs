@@ -64,11 +64,11 @@ class PublishManager {
     log(`Copying ${oldPath} to ${newPath}`);
     await copyFile(oldPath, newPath);
 
-    //log(`Applying EXIF...`);
-    //await PublishManager.applyExif({
-    //  filePath: newPath,
-    //  basePath: `./base.jpg`,
-    //});
+    log(`Applying EXIF...`);
+    await PublishManager.applyExif({
+     filePath: newPath,
+     basePath: `./base.jpg`,
+    });
 
     const caption = await this.getCaptionFor({ path: oldPath });
     log('Caption');
