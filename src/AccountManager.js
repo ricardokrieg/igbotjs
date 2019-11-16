@@ -1,4 +1,4 @@
-const { isUndefined } = require('lodash');
+const { isUndefined, pick } = require('lodash');
 const moment = require('moment');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
@@ -64,6 +64,10 @@ class AccountManager {
     });
 
     return actions.count();
+  }
+
+  async getPublishValues() {
+    return pick(this.accountDetails, [ 'publishMin', 'publishMax' ]);
   }
 
   async editProfile({ username, name, bio, url, gender, phoneNumber, email, profilePic }) {

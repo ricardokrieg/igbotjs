@@ -1,5 +1,5 @@
 const { IgApiClient } = require('instagram-private-api');
-const { random, omit, pick, isEmpty, times, constant, shuffle, sample, forEach } = require('lodash');
+const { isNumber, random, omit, pick, isEmpty, times, constant, shuffle, sample, forEach } = require('lodash');
 const moment = require('moment');
 const { logHandler, longSleep, sleep24h } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
@@ -207,15 +207,18 @@ class Bot {
       }
     }
 
-    if (dayOff) {
+    if (dayOff && false) {
       log('Day Off. Exiting.');
       return;
     }
 
     const publishedToday = await this.statsManager.getPublishedToday();
-    const shouldPublish = !publishedToday && actionsForToday > 10;
+    const { publishMin, publishMax } = await this.accountManager.getPublishValues();
+    const shouldPublish = !publishedToday && actionsForToday > 10 && isNumber(publishMin) && isNumber(publishMax);
 
-    const actions = this.generateActions({ totalActions: actionsForToday, weights, shouldPublish });
+    const publishCount = shouldPublish ? random(publishMin, publishMax) : 0;
+
+    const actions = this.generateActions({ totalActions: actionsForToday, weights, publishCount });
     log('Actions');
     log(actions);
 
@@ -285,7 +288,7 @@ class Bot {
     await this.statsManager.addRun({ actions: currentAction });
   }
 
-  generateActions({ totalActions, weights, shouldPublish }) {
+  generateActions({ totalActions, weights, publishCount }) {
     let actions = [];
     const lightActionTypes = [
       'scrollExplore',
@@ -310,8 +313,7 @@ class Bot {
       actions = [ ...actions, sample(lightActionTypes) ];
     });
 
-    if (shouldPublish) {
-      const publishCount = random(2, 4);
+    if (publishCount > 0) {
       log(`Going to publish ${publishCount} posts`);
 
       actions = [
