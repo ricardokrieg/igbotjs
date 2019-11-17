@@ -174,7 +174,7 @@ class Bot {
 
   async warmup() {
     const lastRun = await this.statsManager.getLastRun();
-    log(`Last Run: ${lastRun}`);
+    log(`Last Run: ${lastRun ? lastRun : 'Never'}`);
 
     const totalActions = await this.accountManager.getTotalActions();
     const actionsForToday = totalActions > 0 ? totalActions : 1;
@@ -192,7 +192,7 @@ class Bot {
 
     // first run of the day
     let dayOff = false;
-    if (moment().isSame(lastRun, 'day')) {
+    if (lastRun && moment().isSame(lastRun, 'day')) {
       log.warn(`This account already ran today (lastRun = ${lastRun})`);
       process.exit(0);
     } else {

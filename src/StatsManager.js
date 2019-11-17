@@ -27,7 +27,7 @@ class StatsManager {
     const lastRun = await this.runsCol.find({ account: this.username }).sort({ timestamp: -1 }).limit(1).toArray();
 
     if (isEmpty(lastRun)) {
-      return moment();
+      return null;
     }
 
     return moment(lastRun[0].timestamp);
