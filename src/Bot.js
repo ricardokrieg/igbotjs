@@ -190,26 +190,17 @@ class Bot {
       likeExplore: 4,
     };
 
-    // first run of the day
-    let dayOff = false;
     if (lastRun && moment().isSame(lastRun, 'day')) {
-      log.warn(`This account already ran today (lastRun = ${lastRun})`);
-      process.exit(0);
+      log.warn(`This account already ran today (lastRun: ${lastRun})`);
+      return;
     } else {
       log('Starting daily routine');
 
       // decide if day off
       if (actionsForToday > 100 && random(0, 100) < 10) {
         log('Day Off');
-        await sleep24h();
-
-        dayOff = true;
+        return;
       }
-    }
-
-    if (dayOff) {
-      log('Day Off. Exiting.');
-      return;
     }
 
     const publishedToday = await this.statsManager.getPublishedToday();
