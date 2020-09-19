@@ -19,8 +19,6 @@
     "redis": "^2.8.0"
   },
   "scripts": {
-    "firebaseAddAccount": "npx @babel/node firebase/addAccount.js",
-
     "console": "npx @babel/node",
     "warmup": "npx @babel/node src/warmup.js",
     "editProfile": "npx @babel/node src/editProfile.js",

@@ -1,17 +1,24 @@
 const { IgApiClient, IgCheckpointError } = require('instagram-private-api');
 const Bluebird = require('bluebird');
 const inquirer = require('inquirer');
-const { MongoClient } = require('mongodb');
+const firebase = require('firebase');
+require('firebase/firestore');
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccount.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://instagram-bot-js.firebaseio.com'
+});
+const firestore = admin.firestore();
+const accountsColRef = firestore.collection('accounts');
+const util = require('util');
 
-const { logger } = require('./utils');
-
-const log = (message) => logger('AddAccount', message);
-
+const log = (object) => { console.log(util.inspect(object, false, null, true)); };
 
 let username = null;
-let accountsCol = null;
 
 const ig = new IgApiClient();
+let docRef;
 
 ig.request.end$.subscribe(async () => {
   const cookies = await ig.state.serializeCookieJar();
@@ -24,17 +31,10 @@ ig.request.end$.subscribe(async () => {
     build: ig.state.build,
   };
 
-  accountsCol.updateOne({ _id: username }, { $set: { cookies: cookies, state: state } });
+  docRef.set({ cookies, state }, { merge: true });
 });
 
-async function connectToDatabase() {
-  const client = new MongoClient('mongodb://wolf:xxx123xxx@ds243963.mlab.com:43963/igbotjs', { useNewUrlParser: true, useUnifiedTopology: true });
-  await client.connect();
-  log('Connected to database');
-  accountsCol = client.db('igbotjs').collection('accounts');
-}
-
-async function performLogin(username, password) {
+const performLogin = async (username, password) => {
   log('Logging in...');
 
   const auth = await ig.account.login(username, password);
@@ -46,11 +46,19 @@ async function performLogin(username, password) {
   await ig.simulate.postLoginFlow();
 
   log('Login done');
-}
+};
+
+const getAccountDetails = async (username) => {
+  docRef = await accountsColRef.doc(username);
+  const snapshot = await docRef.get();
+
+  if (!snapshot.exists) throw new Error(`Account ${username} not found`);
+
+  const data = snapshot.data();
+  return { username: docRef.id, ...data };
+};
 
 (async () => {
-  await connectToDatabase();
-
   username = (await inquirer.prompt([
     {
       type: 'input',
@@ -59,20 +67,17 @@ async function performLogin(username, password) {
     },
   ]))['username'];
 
-  const accountDetails = await accountsCol.findOne({ _id: username });
+  const accountDetails = await getAccountDetails(username);
+
   log(accountDetails);
 
-  log('Username: ' + accountDetails._id);
-  log('Password: ' + accountDetails.password);
-  log('Proxy   : ' + accountDetails.proxy);
-
   ig.state.generateDevice(username);
-  ig.state.proxyUrl = accountDetails.proxy;
+  // ig.state.proxyUrl = accountDetails.proxy;
 
   log('Simulating pre login flow...');
   await ig.simulate.preLoginFlow();
 
-  Bluebird.try(async () => {
+  await Bluebird.try(async () => {
     await performLogin(username, accountDetails.password);
   }).catch(IgCheckpointError, async () => {
     log(ig.state.checkpoint);
