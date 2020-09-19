@@ -4,9 +4,11 @@
     "@babel/node": "^7.5.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
     "babel-preset-env": "^1.7.0",
+    "firebase": "^7.20.0",
+    "firebase-admin": "^8.10.0",
     "geolib": "^3.0.4",
     "inquirer": "^6.5.1",
-    "instagram-private-api": "^1.24.0",
+    "instagram-private-api": "^1.42.0",
     "lodash": "^4.17.15",
     "log-chainable": "^0.2.1",
     "moment": "^2.24.0",
@@ -17,6 +19,8 @@
     "redis": "^2.8.0"
   },
   "scripts": {
+    "firebaseAddAccount": "npx @babel/node firebase/addAccount.js",
+
     "console": "npx @babel/node",
     "warmup": "npx @babel/node src/warmup.js",
     "editProfile": "npx @babel/node src/editProfile.js",
