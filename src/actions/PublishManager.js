@@ -49,36 +49,16 @@ class PublishManager {
     const image = sample(validImages);
     log(`Going to upload ${image}`);
 
-    if (false) {
-      const { latitude, longitude } = PublishManager.randomLocation();
-      log(`Coordinates: ${latitude}, ${longitude}`);
+    const imagePath = `${this.imagesPath}/${image}`;
 
-      const locations = await this.ig.search.location(latitude, longitude);
-      const mediaLocation = sample(locations);
-      log(`Location: ${mediaLocation['name']}`);
-    }
-
-    const oldPath = `${this.imagesPath}/${image}`;
-    const newPath = `/tmp/${moment().unix()}.jpg`;
-
-    log(`Copying ${oldPath} to ${newPath}`);
-    await copyFile(oldPath, newPath);
-
-    log(`Applying EXIF...`);
-    await PublishManager.applyExif({
-     filePath: newPath,
-     basePath: `./base.jpg`,
-    });
-
-    const caption = await this.getCaptionFor({ path: oldPath });
+    const caption = await this.getCaptionFor({ path: imagePath });
     log('Caption');
     log(caption);
 
-    log(`Uploading...`);
-    const publishResult = await this.ig.publish.photo({
-      file: await Bluebird.fromCallback(cb => fs.readFile(newPath, cb)),
-      //location: mediaLocation,
-      caption: caption,
+    const publishResult = await this.publishImage({
+      imagePath,
+      caption,
+      useLocation: false
     });
 
     await this.addUpload({ image });
@@ -86,6 +66,39 @@ class PublishManager {
 
     log(publishResult);
     log(`Published: ${publishResult['status']}`);
+  }
+
+  async publishImage({ imagePath, caption, useLocation }) {
+    let params = {};
+
+    if (useLocation) {
+      const { latitude, longitude } = PublishManager.randomLocation();
+      log(`Coordinates: ${latitude}, ${longitude}`);
+
+      const locations = await this.ig.search.location(latitude, longitude);
+      const mediaLocation = sample(locations);
+      log(`Location: ${mediaLocation['name']}`);
+
+      params['location'] = mediaLocation;
+    }
+
+    const oldPath = imagePath;
+    const newPath = `/tmp/${moment().unix()}.jpg`;
+
+    log(`Copying ${oldPath} to ${newPath}`);
+    await copyFile(oldPath, newPath);
+
+    log(`Applying EXIF...`);
+    await PublishManager.applyExif({
+      filePath: newPath,
+      basePath: `./base.jpg`,
+    });
+
+    params['file'] = await Bluebird.fromCallback(cb => fs.readFile(newPath, cb));
+    params['caption'] = caption;
+
+    log(`Uploading...`);
+    return await this.ig.publish.photo(params);
   }
 
   async getCaptionFor({ path }) {

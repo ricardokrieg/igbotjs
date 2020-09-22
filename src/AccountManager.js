@@ -3,6 +3,8 @@ const moment = require('moment');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const fs = require('fs');
+const util = require('util');
+const readFileAsync = util.promisify(fs.readFile);
 const SessionManager = require('./SessionManager');
 const PublishManager = require('./actions/PublishManager');
 
@@ -130,8 +132,9 @@ class AccountManager {
       });
 
       log('Changing profile picture...');
-      const readStream = fs.createReadStream(profilePic);
-      const resultPic = await SessionManager.call(() => this.ig.account.changeProfilePicture(readStream) );
+      // const readStream = fs.createReadStream(profilePic);
+      const file = await readFileAsync(profilePic);
+      const resultPic = await SessionManager.call(() => this.ig.account.changeProfilePicture(file) );
       log(resultPic);
     }
 

@@ -63,7 +63,7 @@ class StatsManager {
   }
 
   async addUpload({ image }) {
-    await this.uploadsCol.insertOne({
+    await this.uploadsCol.add({
       account: this.username,
       reference: image,
       timestamp: new Date()

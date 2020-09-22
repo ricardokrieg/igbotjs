@@ -22,6 +22,7 @@
     "console": "npx @babel/node",
     "warmup": "npx @babel/node src/warmup.js",
     "editProfile": "npx @babel/node src/editProfile.js",
+    "postImage": "npx @babel/node src/postImage.js",
 
     "simulate": "npx @babel/node src/simulate.js",
     "createAccount": "npx @babel/node src/createAccount.js",

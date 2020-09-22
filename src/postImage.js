@@ -14,13 +14,13 @@ const username = process.env.IG_USERNAME;
     await bot.setup();
     await bot.sessionManager.login();
 
-    await bot.accountManager.editProfile({
-      // name: 'Promoções em Teresina',
-      // username: 'naturewatcher5',
-      // bio: 'Segue a gente pra ficar por dentro de promoções exclusivas nos bares e restaurantes de Teresina',
-      // url: 'linktr.ee/nature.watcher',
-      profilePic: './profile.jpg',
+    const publishResult = await bot.publishManager.publishImage({
+      imagePath: './post3.jpg',
+      caption: 'Não perca promoções nos melhores bares de Teresina',
+      useLocation: false
     });
+
+    log(publishResult);
   } catch (e) {
     log.error(e);
     process.exit(1);
