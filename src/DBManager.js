@@ -1,68 +1,70 @@
-const { MongoClient } = require('mongodb');
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
+const firebase = require('firebase');
+require('firebase/firestore');
+
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccount.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://instagram-bot-js.firebaseio.com'
+});
+
+const firestore = admin.firestore();
+
 class DBManager {
-  constructor({ url, dbName, username }) {
-    this.url      = url;
-    this.dbName   = dbName;
+  constructor({ username }) {
     this.username = username;
-
-    this.client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   }
 
-  async connect() {
-    log('Connecting...');
-
-    await this.client.connect();
-
-    log('Connected');
-  }
-
-  col({ colName }) {
-    return this.client.db(this.dbName).collection(colName);
+  getCol(name) {
+    return firestore.collection(name);
   }
 
   accountsCol() {
-    return this.col({ colName: 'accounts' });
+    return this.getCol('accounts');
   }
 
   runsCol() {
-    return this.col({ colName: 'runs' });
+    return this.getCol('runs');
   }
 
   actionsCol() {
-    return this.col({ colName: 'actions' });
+    return this.getCol('actions');
   }
 
   statsCol() {
-    return this.col({ colName: 'stats' });
+    return this.getCol('stats');
   }
 
   targetsCol() {
-    return this.col({ colName: 'targets' });
+    return this.getCol('targets');
   }
 
   uploadsCol() {
-    return this.col({ colName: 'uploads' });
+    return this.getCol('uploads');
   }
 
   // this.dmsCol = client.db('igbotjs').collection('direct');
   // this.errorsCol = client.db('igbotjs').collection('errors');
 
   async updateCookiesAndState({ cookies, state }) {
-    await this.accountsCol().updateOne(
-      { _id: this.username },
-      { $set: { cookies: cookies, state: state } },
-      { upsert: true }
-    );
+    await this.accountRef().set({ cookies, state }, { merge: true });
+  }
+
+  async clearCookies() {
+    // await this.accountRef().update({ cookies: admin.firestore.FieldValue.delete() });
+    await this.accountRef().set({ cookies: {} }, { merge: true });
   }
 
   async accountDetails() {
-    const details = await this.accountsCol().findOne({ _id: this.username });
+    const snapshot = await this.accountRef().get();
 
-    if (details) {
-      return details;
+    if (snapshot.exists) {
+      const data = snapshot.data();
+      return { username: this.accountRef().id, ...data };
     } else {
       const message = `Account ${this.username} not found.`;
       log.error(message);
@@ -71,11 +73,16 @@ class DBManager {
   }
 
   async updateAccountDetails({ ...attrs }) {
-    await this.accountsCol().updateOne(
-      { _id: this.username },
-      { $set: attrs },
-      { upsert: false }
-    );
+    await this.accountRef().set(attrs, { merge: true });
+  }
+
+  accountRef() {
+    return this.accountsCol().doc(this.username);
+  }
+
+  setUsername(username) {
+    log(`Setting username to ${username}`);
+    this.username = username;
   }
 }
 

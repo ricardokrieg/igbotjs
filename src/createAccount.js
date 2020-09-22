@@ -7,10 +7,10 @@ const { sleep } = require('./utils');
 
 const username = process.env.IG_USERNAME;
 const acc = {
-  username: 'megathread123_',
+  username: 'sabujo20200922',
   password: 'xxx123xxx',
-  email: 'megathread123_@yahoo.com',
-  first_name: 'The Mega',
+  email: 'sabujo20200922@a6mail.net',
+  first_name: 'Sabujo',
 };
 
 

@@ -29,17 +29,11 @@ class Bot {
 
     this.ig = new IgApiClient();
 
-    this.dbManager = new DBManager({
-      username,
-      url: 'mongodb://wolf:xxx123xxx@ds243963.mlab.com:43963/igbotjs',
-      dbName: 'igbotjs',
-    });
+    this.dbManager = new DBManager({ username });
   }
 
   async setup() {
     log(`Setup - Start`);
-
-    await this.dbManager.connect();
 
     const accountDetails = await this.dbManager.accountDetails();
     log('Account Details:');

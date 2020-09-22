@@ -77,11 +77,41 @@ class SessionManager {
   }
 
   async logout() {
+    log('Logging out...');
+
     await this.ig.account.logout();
+    await quickSleep();
+    await this.dbManager.clearCookies();
+
+    log('Logged out');
   }
 
   async createAccount(acc) {
-    return await this.ig.account.create(acc);
+    log('Creating account...');
+    log(acc);
+
+    this.dbManager.setUsername(acc.username);
+
+    return await Bluebird.try(async () => {
+      return await this.ig.account.create(acc);
+    }).catch(IgCheckpointError, async () => {
+      log.warn('Checkpoint: ');
+      log(this.ig.state.checkpoint);
+
+      const { code } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'code',
+          message: 'Enter code',
+        },
+      ]);
+      log(`Sending code ${code}...`);
+
+      const result = await this.ig.challenge.sendSecurityCode(code);
+      log(result);
+
+      return await this.ig.account.create(acc);
+    });
   }
 
   async requestSubscription() {

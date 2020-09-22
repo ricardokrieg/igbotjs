@@ -94,30 +94,31 @@ class AccountManager {
       log(result);
 
       if (!isUndefined(username)) {
-        log(`Updating MongoDB username: ${currentUser.username} => ${username}`);
+        log(`Updating username: ${currentUser.username} => ${username}`);
 
-        await this.dbManager.uploadsCol().updateMany(
-          { account: currentUser.username },
-          { $set: { account: username } });
+        log.warn('Updating username on collections is not supported on Firestore yet');
+        // await this.dbManager.uploadsCol().updateMany(
+        //   { account: currentUser.username },
+        //   { $set: { account: username } });
+        //
+        // await this.dbManager.targetsCol().updateMany(
+        //   { account: currentUser.username },
+        //   { $set: { account: username } });
+        //
+        // await this.dbManager.runsCol().updateMany(
+        //   { account: currentUser.username },
+        //   { $set: { account: username } });
+        //
+        // await this.dbManager.actionsCol().updateMany(
+        //   { account: currentUser.username },
+        //   { $set: { account: username } });
 
-        await this.dbManager.targetsCol().updateMany(
-          { account: currentUser.username },
-          { $set: { account: username } });
-
-        await this.dbManager.runsCol().updateMany(
-          { account: currentUser.username },
-          { $set: { account: username } });
-
-        await this.dbManager.actionsCol().updateMany(
-          { account: currentUser.username },
-          { $set: { account: username } });
-
-        let doc = await this.dbManager.accountsCol().findOne({ _id: currentUser.username });
-        doc._id = username;
-        const formerUsernames = doc.formerUsernames || [];
-        doc.formerUsernames = [ ...formerUsernames, currentUser.username ];
-        await this.dbManager.accountsCol().insertOne(doc);
-        await this.dbManager.accountsCol().deleteOne({ _id: currentUser.username });
+        // let doc = await this.dbManager.accountsCol().findOne({ _id: currentUser.username });
+        // doc._id = username;
+        // const formerUsernames = doc.formerUsernames || [];
+        // doc.formerUsernames = [ ...formerUsernames, currentUser.username ];
+        // await this.dbManager.accountsCol().insertOne(doc);
+        // await this.dbManager.accountsCol().deleteOne({ _id: currentUser.username });
       }
     }
 

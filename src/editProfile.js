@@ -15,9 +15,9 @@ const username = process.env.IG_USERNAME;
     await bot.sessionManager.login();
 
     await bot.accountManager.editProfile({
-      // name: 'Nature Watcher',
-      username: 'naturewatcher5',
-      // bio: 'I take nature pics',
+      // name: 'Promoções em Teresina',
+      // username: 'naturewatcher5',
+      bio: 'Segue a gente pra ficar por dentro de promoções exclusivas nos bares e restaurantes de Teresina',
       // url: 'linktr.ee/nature.watcher',
       // profilePic: './nature_watcher.jpg',
     });
