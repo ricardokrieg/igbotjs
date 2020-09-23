@@ -23,6 +23,7 @@
     "warmup": "npx @babel/node src/warmup.js",
     "editProfile": "npx @babel/node src/editProfile.js",
     "postImage": "npx @babel/node src/postImage.js",
+    "scrape": "npx @babel/node src/scrape.js",
 
     "simulate": "npx @babel/node src/simulate.js",
     "createAccount": "npx @babel/node src/createAccount.js",

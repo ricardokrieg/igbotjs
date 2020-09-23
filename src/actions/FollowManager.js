@@ -17,6 +17,60 @@ class FollowManager {
     this.addAction    = addAction;
   }
 
+  async scrape({ sourceUsername }) {
+    log(`Scrapping ${sourceUsername}...`);
+
+    const source = await SessionManager.call( () => this.ig.user.searchExact(sourceUsername) );
+    const blacklist = await this.getBlacklist();
+
+    log(`Fetching ${source.username}'s followers`);
+    const followersFeed = this.ig.feed.accountFollowers(source.pk);
+
+    let page = 0;
+    while (true) {
+      log(`Fetching page ${++page}`);
+      const followers  = await SessionManager.call( () => followersFeed.items() );
+      log(`Fetching friendship status for ${followers.length} users`);
+      const friendship = await SessionManager.call( () => this.ig.friendship.showMany(map(followers, 'pk')) );
+
+      if (isEmpty(followers)) {
+        log(`Reached end of feed.`);
+        break;
+      }
+
+      const validUsers = filter(followers, { 'is_private': false, 'is_verified': false, 'has_anonymous_profile_picture': false });
+      log(`Fetched: ${followers.length} users (valid: ${validUsers.length})`);
+
+      for (const follower of validUsers) {
+        const followerPk = follower.pk;
+        const followerUsername = follower.username;
+
+        if (includes(blacklist, followerPk)) {
+          continue;
+        }
+
+        log(`Checking ${followerUsername}...`);
+
+        if (some(values(friendship[followerPk]))) {
+          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
+          log(`Rejected (friendship status)`);
+          continue;
+        }
+
+        const userInfo = await SessionManager.call( () => this.ig.user.info(followerPk) );
+        if (userInfo.is_business) {
+          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
+          log(`Rejected (business)`);
+          continue;
+        }
+
+        await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: false });
+      }
+    }
+
+    log('Done');
+  }
+
   async followRecommended() {
     log('Loading recommended users...');
 

@@ -52,14 +52,17 @@ class StatsManager {
   }
 
   async addTarget({ followerUsername, pk, followed, blacklisted }) {
-    await this.targetsCol.insertOne({
-      _id: followerUsername,
-      pk,
-      followed,
-      blacklisted,
-      account: this.username,
-      timestamp: new Date()
-    });
+    try {
+      await this.targetsCol.doc(followerUsername).set({
+        pk,
+        followed,
+        blacklisted,
+        account: this.username,
+        timestamp: new Date()
+      });
+    } catch (e) {
+      log.error(e);
+    }
   }
 
   async addUpload({ image }) {
@@ -71,7 +74,8 @@ class StatsManager {
   }
 
   async getBlacklist() {
-    return map(await this.targetsCol.find().toArray(), 'pk');
+    const res = await this.targetsCol.select('pk').get();
+    return map(res.docs, (doc) => doc.get('pk'));
   }
 
   async getPublishBlacklist() {
