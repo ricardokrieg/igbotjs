@@ -43,7 +43,7 @@ class StatsManager {
   }
 
   async addAction({ type, reference }) {
-    await this.actionsCol.insertOne({
+    await this.actionsCol.add({
       account: this.username,
       type,
       reference,

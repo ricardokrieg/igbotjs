@@ -24,6 +24,7 @@
     "editProfile": "npx @babel/node src/editProfile.js",
     "postImage": "npx @babel/node src/postImage.js",
     "scrape": "npx @babel/node src/scrape.js",
+    "follow": "npx @babel/node src/commands/follow.js",
 
     "simulate": "npx @babel/node src/simulate.js",
     "createAccount": "npx @babel/node src/createAccount.js",

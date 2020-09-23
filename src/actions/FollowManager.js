@@ -6,7 +6,7 @@ const SessionManager = require('../SessionManager');
 
 
 class FollowManager {
-  constructor({ username, ig, sources, getBlacklist, addStats, addTarget, addAction }) {
+  constructor({ username, ig, sources, getBlacklist, addStats, addTarget, addAction, targetsCol }) {
     this.username = username;
     this.ig       = ig;
     this.sources  = sources;
@@ -15,6 +15,8 @@ class FollowManager {
     this.addStats     = addStats;
     this.addTarget    = addTarget;
     this.addAction    = addAction;
+
+    this.targetsCol = targetsCol;
   }
 
   async scrape({ sourceUsername }) {
@@ -157,6 +159,52 @@ class FollowManager {
       }
 
       if (followed) break;
+    }
+
+    log('Done');
+  }
+
+  async followTargets({ limit }) {
+    const querySnapshot = await this.targetsCol.where('blacklisted', '==', false)
+                                               .where('followed', '==', false)
+                                               .get();
+    let users = [];
+    querySnapshot.forEach((snapshot) => {
+      users.push({ docRef: snapshot.ref, username: snapshot.ref.id, ...snapshot.data() });
+    });
+
+    // TODO should set a limit here
+    log(`Fetching friendship status for ${users.length} users`);
+    const friendship = await SessionManager.call( () => this.ig.friendship.showMany(map(users, 'pk')));
+
+    let i = 0;
+    let total = 0;
+    for (const user of users) {
+      const docRef = user.docRef;
+      const username = user.username;
+      const followerPk = user.pk;
+
+      log(`Checking ${username}...`);
+
+      if (some(values(friendship[followerPk]))) {
+        await docRef.set({ blacklisted: true }, { merge: true });
+        log(`Rejected (friendship status)`);
+        continue;
+      }
+
+      log(`Following ${username}`);
+      const response = await SessionManager.call( () => this.ig.friendship.create(followerPk) );
+      await docRef.set({ followed: true }, { merge: true });
+      total += 1;
+      log(response);
+
+      log(`Followed ${total} of ${limit}`);
+      if (total >= limit) {
+        log(`Reached limit. Stop following.`);
+        break;
+      }
+
+      i += 1;
     }
 
     log('Done');

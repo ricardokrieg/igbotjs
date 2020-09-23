@@ -51,6 +51,7 @@ class Bot {
     const statsCol   = this.dbManager.statsCol();
     const targetsCol = this.dbManager.targetsCol();
     const uploadsCol = this.dbManager.uploadsCol();
+
     this.statsManager = new StatsManager({
       username: this.username,
       runsCol,
@@ -77,6 +78,7 @@ class Bot {
       addStats: this.statsManager.addStats.bind(this.statsManager),
       addTarget: this.statsManager.addTarget.bind(this.statsManager),
       addAction: this.statsManager.addAction.bind(this.statsManager),
+      targetsCol,
     });
 
     this.storiesManager = new StoriesManager({
