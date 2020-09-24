@@ -25,6 +25,8 @@
     "postImage": "npx @babel/node src/postImage.js",
     "scrape": "npx @babel/node src/scrape.js",
     "follow": "npx @babel/node src/commands/follow.js",
+    "inbox": "npx @babel/node src/commands/inbox.js",
+    "dm": "npx @babel/node src/commands/dm.js",
 
     "simulate": "npx @babel/node src/simulate.js",
     "createAccount": "npx @babel/node src/createAccount.js",
@@ -32,7 +34,6 @@
     "startAccount": "npx @babel/node src/startAccount.js",
     "worker": "npx @babel/node src/worker.js",
     "sendDM": "npx @babel/node src/sendDM.js",
-    "inbox": "npx @babel/node src/inbox.js",
     "comment": "npx @babel/node src/comment.js",
     "test": "jest"
   },

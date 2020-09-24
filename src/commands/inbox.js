@@ -1,6 +1,8 @@
 const { logHandler } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const Bot = require('../Bot');
+const SessionManager = require('../SessionManager');
+const { inbox } = require('../actions/direct');
 
 const username = process.env.IG_USERNAME;
 
@@ -14,7 +16,8 @@ const username = process.env.IG_USERNAME;
     await bot.setup();
     await bot.sessionManager.login();
 
-    await bot.followManager.followTargets({ limit: 10 });
+    log('Loading inbox...');
+    await SessionManager.call( () => inbox({ ig: bot.ig }) );
   } catch (e) {
     log.error(e);
     process.exit(1);

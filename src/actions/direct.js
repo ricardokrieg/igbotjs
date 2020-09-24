@@ -2,9 +2,9 @@ const { includes, filter, map, random, sample, sampleSize, isEmpty } = require('
 const moment = require('moment');
 const Spinner = require('node-spintax');
 
-const { stats, logger, quickSleep, longSleep, call, randomLimit, greetingMessage } = require('../utils');
+const { logHandler, stats, quickSleep, longSleep, call, randomLimit, greetingMessage } = require('../utils');
 
-const log = (message) => logger('Direct', message);
+const log = require('log-chainable').namespace(module).handler(logHandler);
 
 
 async function dmFollowers({ ig, accountDetails, dmsCol, statsCol }) {
@@ -79,7 +79,7 @@ async function inbox({ ig }) {
   const inboxFeed = ig.feed.directInbox();
   const threads = await call(() => { return inboxFeed.items(); });
 
-  for (thread of threads) {
+  for (const thread of threads) {
     const targetId = thread.users[0].pk;
     const lastItem = thread.last_permanent_item;
 
