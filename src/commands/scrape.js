@@ -1,6 +1,6 @@
-const { logHandler } = require('./utils');
+const { logHandler } = require('../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const Bot = require('./Bot');
+const Bot = require('../Bot');
 
 const username = process.env.IG_USERNAME;
 const target = process.env.IG_TARGET;

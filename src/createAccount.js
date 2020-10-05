@@ -7,10 +7,10 @@ const { sleep } = require('./utils');
 
 const username = process.env.IG_USERNAME;
 const acc = {
-  username: 'sabujo20200922',
+  username: 'promosdirceu002',
   password: 'xxx123xxx',
-  email: 'sabujo20200922@a6mail.net',
-  first_name: 'Sabujo',
+  email: 'promosdirceu002',
+  first_name: 'Promoções Dirceu',
 };
 
 
@@ -20,13 +20,13 @@ const acc = {
   const bot = new Bot({ username });
   await bot.setup();
 
-  await bot.sessionManager.login();
-  await longSleep();
+  // await bot.sessionManager.login();
+  // await longSleep();
+  //
+  // await bot.sessionManager.logout();
+  // await longSleep();
 
-  await bot.sessionManager.logout();
-  await longSleep();
-
-  const resp = await bot.sessionManager.createAccount(acc);
+  const resp = await bot.sessionManager.createAccount(acc, true);
   log(resp);
   await longSleep();
 

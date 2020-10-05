@@ -72,7 +72,7 @@ const getAccountDetails = async (username) => {
   log(accountDetails);
 
   ig.state.generateDevice(username);
-  // ig.state.proxyUrl = accountDetails.proxy;
+  ig.state.proxyUrl = accountDetails.proxy;
 
   log('Simulating pre login flow...');
   await ig.simulate.preLoginFlow();

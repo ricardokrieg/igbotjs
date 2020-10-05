@@ -23,10 +23,12 @@
     "warmup": "npx @babel/node src/warmup.js",
     "editProfile": "npx @babel/node src/editProfile.js",
     "postImage": "npx @babel/node src/postImage.js",
-    "scrape": "npx @babel/node src/scrape.js",
+    "scrape": "npx @babel/node src/commands/scrape.js",
     "follow": "npx @babel/node src/commands/follow.js",
     "inbox": "npx @babel/node src/commands/inbox.js",
     "dm": "npx @babel/node src/commands/dm.js",
+    "newCreateAccount": "npx @babel/node src/commands/newCreateAccount.js",
+    "createAccountPhoneNumber": "npx @babel/node src/commands/createAccountPhoneNumber.js",
 
     "simulate": "npx @babel/node src/simulate.js",
     "createAccount": "npx @babel/node src/createAccount.js",

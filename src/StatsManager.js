@@ -51,13 +51,15 @@ class StatsManager {
     });
   }
 
-  async addTarget({ followerUsername, pk, followed, blacklisted }) {
+  async addTarget({ followerUsername, pk, source, sourceType, followed, blacklisted }) {
     try {
       await this.targetsCol.doc(followerUsername).set({
         pk,
         followed,
         blacklisted,
-        account: this.username,
+        scraper: this.username,
+        source,
+        source_type: sourceType,
         timestamp: new Date()
       });
     } catch (e) {

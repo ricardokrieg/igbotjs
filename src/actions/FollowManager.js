@@ -32,8 +32,6 @@ class FollowManager {
     while (true) {
       log(`Fetching page ${++page}`);
       const followers  = await SessionManager.call( () => followersFeed.items() );
-      log(`Fetching friendship status for ${followers.length} users`);
-      const friendship = await SessionManager.call( () => this.ig.friendship.showMany(map(followers, 'pk')) );
 
       if (isEmpty(followers)) {
         log(`Reached end of feed.`);
@@ -53,20 +51,19 @@ class FollowManager {
 
         log(`Checking ${followerUsername}...`);
 
-        if (some(values(friendship[followerPk]))) {
-          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
-          log(`Rejected (friendship status)`);
-          continue;
-        }
-
         const userInfo = await SessionManager.call( () => this.ig.user.info(followerPk) );
         if (userInfo.is_business) {
-          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
           log(`Rejected (business)`);
           continue;
         }
 
-        await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: false });
+        await this.addTarget({
+          followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+          followed: false, blacklisted: false });
       }
     }
 
@@ -135,14 +132,20 @@ class FollowManager {
         log(`Checking ${followerUsername}...`);
 
         if (some(values(friendship[followerPk]))) {
-          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
           log(`Rejected (friendship status)`);
           continue;
         }
 
         const userInfo = await SessionManager.call( () => this.ig.user.info(followerPk) );
         if (userInfo.is_business) {
-          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
           log(`Rejected (business)`);
           continue;
         }
@@ -151,7 +154,10 @@ class FollowManager {
         const response = await SessionManager.call( () => this.ig.friendship.create(followerPk) );
         log(response);
 
-        await this.addTarget({ followerUsername, pk: followerPk, followed: true, blacklisted: false });
+        await this.addTarget({
+          followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+          followed: true, blacklisted: false
+        });
         await this.addAction({ type: 'followSource', reference: followerUsername });
 
         followed = true;
@@ -255,7 +261,10 @@ class FollowManager {
         log(`Checking ${followerUsername}...`);
 
         if (some(values(friendship[followerPk]))) {
-          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
           log(`Rejected (friendship status)`);
           continue;
         }
@@ -264,7 +273,10 @@ class FollowManager {
 
         const userInfo = await SessionManager.call( () => this.ig.user.info(followerPk) );
         if (userInfo.is_business) {
-          await this.addTarget({ followerUsername, pk: followerPk, followed: false, blacklisted: true });
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
           log(`Rejected (business)`);
           continue;
         }
@@ -273,7 +285,10 @@ class FollowManager {
 
         await SessionManager.call( () => this.ig.friendship.create(followerPk) );
 
-        await this.addTarget({ followerUsername, pk: followerPk, followed: true, blacklisted: false });
+        await this.addTarget({
+          followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+          followed: true, blacklisted: false
+        });
         await this.addStats({ type: 'follow', reference: followerUsername });
 
         followCount++;
