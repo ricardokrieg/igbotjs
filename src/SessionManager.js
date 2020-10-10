@@ -324,7 +324,7 @@ class SessionManager {
         guid: this.ig.state.uuid,
         device_id: this.ig.state.deviceId,
         prefill_shown: 'False',
-    })/*.replace(/%2B/g, '+')*/;
+    });
 
     log(params);
 

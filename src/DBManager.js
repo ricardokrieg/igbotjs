@@ -47,7 +47,10 @@ class DBManager {
     return this.getCol('uploads');
   }
 
-  // this.dmsCol = client.db('igbotjs').collection('direct');
+  dmsCol() {
+    return this.getCol('direct');
+  }
+
   // this.errorsCol = client.db('igbotjs').collection('errors');
 
   async updateCookiesAndState({ cookies, state }) {

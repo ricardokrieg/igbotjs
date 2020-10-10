@@ -37,7 +37,7 @@ class Bot {
 
     const accountDetails = await this.dbManager.accountDetails();
     log('Account Details:');
-    log(omit(accountDetails, ['cookies']));
+    log(omit(accountDetails, ['cookies', 'state']));
 
     this.sessionManager = new SessionManager({
       ig: this.ig,
@@ -51,6 +51,7 @@ class Bot {
     const statsCol   = this.dbManager.statsCol();
     const targetsCol = this.dbManager.targetsCol();
     const uploadsCol = this.dbManager.uploadsCol();
+    const dmsCol = this.dbManager.dmsCol();
 
     this.statsManager = new StatsManager({
       username: this.username,

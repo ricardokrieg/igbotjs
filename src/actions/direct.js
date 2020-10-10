@@ -89,6 +89,7 @@ async function inbox({ ig }) {
     log(`(${moment.unix(parseInt(lastItem.timestamp.slice(0, 10))).format('lll')}) ${sender}: ${lastMessage}`);
   }
 
+  log(`${threads.length} threads`);
   log('End');
 }
 

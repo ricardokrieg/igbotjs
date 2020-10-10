@@ -29,6 +29,7 @@
     "dm": "npx @babel/node src/commands/dm.js",
     "newCreateAccount": "npx @babel/node src/commands/newCreateAccount.js",
     "createAccountPhoneNumber": "npx @babel/node src/commands/createAccountPhoneNumber.js",
+    "massDM": "npx @babel/node src/commands/massDM.js",
 
     "simulate": "npx @babel/node src/simulate.js",
     "createAccount": "npx @babel/node src/createAccount.js",
