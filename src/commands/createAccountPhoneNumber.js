@@ -5,13 +5,14 @@ const log = require('log-chainable').namespace(module).handler(logHandler);
 const Bot = require('../Bot');
 
 const acc = {
-  username: 'teresinapromonews6',
+  username: 'teresinapromonews21',
   password: 'xxx123xxx',
-  phone_number: '+19163099699',
-  full_phone_number: '+19163099699',
+  phone_number: '+19179822930',
+  full_phone_number: '+19179822930',
   first_name: 'Teresina Promo News',
 };
 const username = acc.username;
+// const username = process.env.IG_USERNAME;
 
 
 (async () => {
@@ -19,6 +20,12 @@ const username = acc.username;
 
   const bot = new Bot({ username });
   await bot.setup();
+
+  // await bot.sessionManager.login();
+  // await longSleep();
+  //
+  // await bot.sessionManager.logout();
+  // await longSleep();
 
   const resp = await bot.sessionManager.createAccountPhoneNumber(acc);
   log(resp);

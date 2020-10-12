@@ -1,6 +1,7 @@
 const { includes, filter, map, random, sample, sampleSize, isEmpty } = require('lodash');
 const moment = require('moment');
 const Spinner = require('node-spintax');
+const chalk = require('chalk');
 
 const { logHandler, stats, quickSleep, longSleep, call, randomLimit, greetingMessage } = require('../utils');
 
@@ -84,7 +85,8 @@ async function inbox({ ig }) {
     const lastItem = thread.last_permanent_item;
 
     log(`[${thread.thread_title}]`);
-    const sender = lastItem.user_id === targetId ? thread.users[0].username : 'Me';
+    const sender = lastItem.user_id === targetId ? chalk['red'](thread.users[0].username) : 'Me';
+
     const lastMessage = lastItem.item_type === 'link' ? lastItem.link.text : lastItem.text;
     log(`(${moment.unix(parseInt(lastItem.timestamp.slice(0, 10))).format('lll')}) ${sender}: ${lastMessage}`);
   }

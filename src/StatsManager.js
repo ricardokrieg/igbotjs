@@ -1,6 +1,6 @@
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const { map, isEmpty } = require('lodash');
+const { map, isEmpty, isUndefined } = require('lodash');
 const moment = require('moment');
 
 class StatsManager {
@@ -51,12 +51,15 @@ class StatsManager {
     });
   }
 
-  async addTarget({ followerUsername, pk, source, sourceType, followed, blacklisted }) {
+  async addTarget({ followerUsername, pk, source, sourceType, followed, blacklisted, brabosburguer }) {
+    let brabosburguerValue = isUndefined(brabosburguer) ? false : brabosburguer;
+
     try {
       await this.targetsCol.doc(followerUsername).set({
         pk,
         followed,
         blacklisted,
+        brabosburguer: brabosburguerValue,
         scraper: this.username,
         source,
         source_type: sourceType,

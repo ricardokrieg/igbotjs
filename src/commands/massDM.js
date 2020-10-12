@@ -7,19 +7,19 @@ const Bot = require('../Bot');
 const SessionManager = require('../SessionManager');
 const { sendMessage } = require('../actions/direct');
 
-const N = 2;
-const PHONE_NUMBER = '+12058294574';
+// const N = 2;
+// const PHONE_NUMBER = '+12058294574';
 // const PHONE_NUMBER = '+19092810391';
 
-const acc = {
-  username: `dirceudivulga${N}`,
-  password: 'xxx123xxx',
-  phone_number: PHONE_NUMBER,
-  full_phone_number: PHONE_NUMBER,
-  first_name: 'Dirceu Divulga',
-};
+// const acc = {
+//   username: `dirceudivulga${N}`,
+//   password: 'xxx123xxx',
+//   phone_number: PHONE_NUMBER,
+//   full_phone_number: PHONE_NUMBER,
+//   first_name: 'Dirceu Divulga',
+// };
 // const username = acc.username;
-const username = 'promosdirceu4';
+const username = 'teresinapromon';
 
 
 (async () => {
@@ -58,23 +58,34 @@ const username = 'promosdirceu4';
     log(`Spinner total variations: ${spinner.countVariations()}`);
 
     let blacklist = [];
-    const blacklistDocs = await bot.dbManager.dmsCol().select('target').get();
-    for (let blacklistDoc of blacklistDocs.docs) {
-      blacklist.push(blacklistDoc.get('target'));
-    }
+    // const blacklistDocs = await bot.dbManager.dmsCol().select('target').get();
+    // for (let blacklistDoc of blacklistDocs.docs) {
+    //   blacklist.push(blacklistDoc.get('target'));
+    // }
 
     log('Blacklist:');
     log(blacklist);
 
     log('Sending DMs...');
     let dmCount = 0;
+    let dmLimit = 20;
 
-    const targetAccounts = await bot.dbManager.targetsCol().get();
-    let targetUsernames = ['ricardokrieg'];
+    // const targetAccounts = await bot.dbManager.targetsCol().get();
+    let targetUsernames = [
+      'senpai.br04',
+      'lemoslenon',
+      'pose_manstore',
+      'oficialddstore',
+      'iuri.castro',
+      'acamilasenna',
+      'l.mstyle',
+      'liawlianne',
+      'dileila8',
+    ];
 
-    targetAccounts.forEach((targetAccount) => {
-      targetUsernames.push(targetAccount.ref.id);
-    });
+    // targetAccounts.forEach((targetAccount) => {
+    //   targetUsernames.push(targetAccount.ref.id);
+    // });
 
     for (let target of targetUsernames) {
       log(`Sending DM to ${target}...`);
@@ -89,8 +100,8 @@ const username = 'promosdirceu4';
       await bot.dbManager.dmsCol().add({ target, pk: '???', account: username, message });
 
       dmCount++;
-      log(`Sent ${dmCount} of 10`);
-      if (dmCount >= 10) {
+      log(`Sent ${dmCount} of ${dmLimit}`);
+      if (dmCount >= dmLimit) {
         return;
       }
 

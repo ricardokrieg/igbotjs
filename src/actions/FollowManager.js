@@ -25,10 +25,14 @@ class FollowManager {
     const source = await SessionManager.call( () => this.ig.user.searchExact(sourceUsername) );
     const blacklist = await this.getBlacklist();
 
+    log(`Blacklist has ${blacklist.length} accounts`);
+
     log(`Fetching ${source.username}'s followers`);
     const followersFeed = this.ig.feed.accountFollowers(source.pk);
 
     let page = 0;
+    let total = 0;
+    let valid = 0;
     while (true) {
       log(`Fetching page ${++page}`);
       const followers  = await SessionManager.call( () => followersFeed.items() );
@@ -38,20 +42,31 @@ class FollowManager {
         break;
       }
 
-      const validUsers = filter(followers, { 'is_private': false, 'is_verified': false, 'has_anonymous_profile_picture': false });
-      log(`Fetched: ${followers.length} users (valid: ${validUsers.length})`);
+      // const validUsers = filter(followers, { 'is_private': false, 'is_verified': false, 'has_anonymous_profile_picture': false });
+      log(`Fetched: ${followers.length} followers`);
 
-      for (const follower of validUsers) {
+      total += followers.length;
+      for (const follower of followers) {
         const followerPk = follower.pk;
         const followerUsername = follower.username;
 
-        if (includes(blacklist, followerPk)) {
+        if (includes(blacklist, followerPk) || includes(blacklist, followerUsername)) {
+          continue;
+        }
+
+        // if (follower.is_private || follower.is_verified || follower.has_anonymous_profile_picture) {
+        if (follower.is_verified || follower.has_anonymous_profile_picture) {
+          continue;
+        }
+
+        if (!follower.is_private && follower.latest_reel_media === 0) {
           continue;
         }
 
         log(`Checking ${followerUsername}...`);
 
         const userInfo = await SessionManager.call( () => this.ig.user.info(followerPk) );
+
         if (userInfo.is_business) {
           await this.addTarget({
             followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
@@ -61,10 +76,80 @@ class FollowManager {
           continue;
         }
 
+        if (userInfo.media_count < 9) {
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
+          log(`Rejected (media_count)`);
+          continue;
+        }
+
+        if (userInfo.follower_count < 100 || userInfo.follower_count > 5000) {
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
+          log(`Rejected (follower_count)`);
+          continue;
+        }
+
+        if (userInfo.following_count < 100 || userInfo.following_count > 5000) {
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
+          log(`Rejected (following_count)`);
+          continue;
+        }
+
+        if (isEmpty(userInfo.biography)) {
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
+
+          log(`Rejected (biography)`);
+          continue;
+        }
+
+        let invalidBiography = false;
+        for (let word of ['whatsapp', 'zap', 'link', 'direct', 'parceria', 'curso', 'peça', 'pedido', 'comercial', 'acesse', 'ifood']) {
+          if (userInfo.biography.includes(word)) {
+            await this.addTarget({
+              followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+              followed: false, blacklisted: true
+            });
+
+            log(`Rejected (biography)`);
+            invalidBiography = true;
+            break;
+          }
+        }
+        if (invalidBiography) {
+          continue;
+        }
+
+        if (!isEmpty(userInfo.external_url)) {
+          await this.addTarget({
+            followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
+            followed: false, blacklisted: true
+          });
+          log(`Rejected (external_url)`);
+          continue;
+        }
+
+        valid += 1;
+        log(`Adding...`);
         await this.addTarget({
           followerUsername, pk: followerPk, source: sourceUsername, sourceType: 'account',
-          followed: false, blacklisted: false });
+          followed: false, blacklisted: false, brabosburguer: true });
       }
+
+      log(`Page: ${page}`);
+      log(`Total: ${total}`);
+      log(`Added: ${valid}`);
+      log(`Successfully Added: ${((valid / total) * 100).toFixed(2)}%`);
     }
 
     log('Done');
