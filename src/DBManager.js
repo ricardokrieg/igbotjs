@@ -62,6 +62,17 @@ class DBManager {
     await this.accountRef().set({ cookies: {} }, { merge: true });
   }
 
+  async createAccountDoc({ data }) {
+    const snapshot = await this.accountRef().get();
+
+    if (snapshot.exists) {
+      return;
+    }
+
+    log(`Creating account doc: ${this.username}`);
+    await this.accountRef().set({ ...data });
+  }
+
   async accountDetails() {
     const snapshot = await this.accountRef().get();
 

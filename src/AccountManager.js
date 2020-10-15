@@ -140,6 +140,19 @@ class AccountManager {
 
     log('Done');
   }
+
+  async changeProfilePictureAndFirstPost({ path }) {
+    log(`Applying EXIF...`);
+    await PublishManager.applyExif({
+      filePath: path,
+      basePath: `./base.jpg`,
+    });
+
+    log('Changing profile picture...');
+    const file = await readFileAsync(path);
+    const resultPic = await SessionManager.call(() => this.ig.account.changeProfilePictureAndFirstPost(file) );
+    log(resultPic);
+  }
 }
 
 module.exports = AccountManager;

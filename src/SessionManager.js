@@ -307,6 +307,51 @@ class SessionManager {
     log(body8);
   }
 
+  async createAccountWithPhoneNumber(acc) {
+    log('Creating account with phone number...');
+    log(acc);
+
+    this.ig.state.generateDevice(acc.username);
+
+    log('Simulating pre login flow...');
+    await this.ig.simulate.preLoginFlow();
+
+    const input_phone_number = async () => {
+      const { phone_prefix, phone_number } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'phone_prefix',
+          message: 'Phone Prefix:',
+        },
+        {
+          type: 'input',
+          name: 'phone_number',
+          message: 'Phone Number:',
+        },
+      ]);
+
+      return { phone_prefix, phone_number };
+    }
+
+    const input_code = async ({ phone_prefix, phone_number }) => {
+      const { verification_code } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'verification_code',
+          message: `Verification Code for ${phone_prefix} ${phone_number}`,
+        },
+      ]);
+
+      return verification_code;
+    }
+
+    await this.ig.account.createWithPhoneNumber({ ...acc, input_phone_number, input_code });
+
+    // TODO these requests were sent to b.i.instagram.com host
+    // TODO check if they are always sent to this host after sign up
+    await this.ig.simulate.postSignupFlow();
+  }
+
   async createAccountPhoneNumber(acc) {
     log('Creating account with phone number...');
     log(acc);
@@ -568,7 +613,7 @@ class SessionManager {
   }
 
   validCookies() {
-    return (this.cookies && this.cookies.cookies && find(this.cookies.cookies, { 'key': 'ds_user' }));
+    return (this.cookies && this.cookies.cookies && find(this.cookies.cookies, { 'key': 'ds_user_id' }));
   }
 
   static async call(command, ...params) {

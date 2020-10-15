@@ -18,12 +18,7 @@ const Scheduler      = require('./Scheduler');
 
 
 class Bot {
-  constructor({ username, sandbox }) {
-    this.sandbox = sandbox;
-    if (sandbox) {
-      log.warn('Running on sandbox mode');
-    }
-
+  constructor({ username }) {
     this.username = username;
     log(`Username: ${username}`);
 
