@@ -19,6 +19,72 @@ class FollowManager {
     this.targetsCol = targetsCol;
   }
 
+  async extractFollowers({ sourceUsername, callback }) {
+    log(`Scrapping ${sourceUsername}...`);
+
+    const source = await SessionManager.call( () => this.ig.user.searchExact(sourceUsername) );
+
+    log(`Fetching ${source.username}'s followers`);
+    const followersFeed = this.ig.feed.accountFollowers(source.pk);
+
+    let page = 0;
+    let total = 0;
+    while (true) {
+      log(`Fetching page ${++page}`);
+      const followers  = await SessionManager.call( () => followersFeed.items() );
+
+      log(`Fetched: ${followers.length} followers`);
+
+      total += followers.length;
+      for (const follower of followers) {
+        await callback(follower);
+      }
+
+      log(`Page: ${page}`);
+      log(`Total: ${total}`);
+
+      if (!followersFeed.isMoreAvailable()) {
+        log(`Reached end of feed.`);
+        break;
+      }
+    }
+
+    log(`Done. Total: ${total}`);
+  }
+
+  async extractFollowing({ sourceUsername, callback }) {
+    log(`Scrapping ${sourceUsername}...`);
+
+    const source = await SessionManager.call( () => this.ig.user.searchExact(sourceUsername) );
+
+    log(`Fetching ${source.username}'s following`);
+    const followingFeed = this.ig.feed.accountFollowing(source.pk);
+
+    let page = 0;
+    let total = 0;
+    while (true) {
+      log(`Fetching page ${++page}`);
+      const followings  = await SessionManager.call( () => followingFeed.items() );
+
+      log(`Fetched: ${followings.length} following`);
+
+      total += followings.length;
+      for (const following of followings) {
+        await callback(following);
+      }
+
+      log(`Page: ${page}`);
+      log(`Total: ${total}`);
+
+      if (!followingFeed.isMoreAvailable()) {
+        log(`Reached end of feed.`);
+        break;
+      }
+    }
+
+    log(`Done. Total: ${total}`);
+  }
+
   async scrape({ sourceUsername }) {
     log(`Scrapping ${sourceUsername}...`);
 

@@ -4,6 +4,7 @@ const Spinner = require('node-spintax');
 const chalk = require('chalk');
 
 const { logHandler, stats, quickSleep, longSleep, call, randomLimit, greetingMessage } = require('../utils');
+const SessionManager = require('../SessionManager');
 
 const log = require('log-chainable').namespace(module).handler(logHandler);
 
@@ -102,10 +103,26 @@ async function sendMessage({ ig, target, message }) {
   const userId = await ig.user.getIdByUsername(target);
   const thread = ig.entity.directThread([userId.toString()]);
 
-  await call(() => { thread.broadcastText(message) });
+  await SessionManager.call(() => { thread.broadcastText(message) });
+
+  log('End');
+}
+
+async function sendMessageToGroup({ ig, targets, message }) {
+  log('Start');
+
+  let userIds = [];
+  for (let target of targets) {
+    const userId = await ig.user.getIdByUsername(target);
+    userIds.push(userId.toString());
+  }
+
+  const thread = ig.entity.directThread(userIds);
+
+  await SessionManager.call(() => { thread.broadcastText(message) });
 
   log('End');
 }
 
 
-module.exports = { inbox, sendMessage, dmFollowers };
+module.exports = { inbox, sendMessage, sendMessageToGroup, dmFollowers };

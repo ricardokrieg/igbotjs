@@ -4,13 +4,15 @@ const { map, isEmpty, isUndefined } = require('lodash');
 const moment = require('moment');
 
 class StatsManager {
-  constructor({ username, runsCol, actionsCol, statsCol, targetsCol, uploadsCol }) {
-    this.username   = username;
-    this.runsCol    = runsCol;
-    this.actionsCol = actionsCol;
-    this.statsCol   = statsCol;
-    this.targetsCol = targetsCol;
-    this.uploadsCol = uploadsCol;
+  constructor({ username, runsCol, actionsCol, statsCol, targetsCol, uploadsCol, blacklistCol, followersCol }) {
+    this.username     = username;
+    this.runsCol      = runsCol;
+    this.actionsCol   = actionsCol;
+    this.statsCol     = statsCol;
+    this.targetsCol   = targetsCol;
+    this.uploadsCol   = uploadsCol;
+    this.blacklistCol = blacklistCol;
+    this.followersCol = followersCol;
   }
 
   async addRun({ actions }) {
@@ -78,7 +80,20 @@ class StatsManager {
     });
   }
 
+  async addToFollowers({ username, params }) {
+    await this.followersCol.doc(username).set({ ...params, timestamp: new Date() });
+  }
+
+  async addToBlacklist({ username, params }) {
+    await this.blacklistCol.doc(username).set({ ...params, timestamp: new Date() });
+  }
+
   async getBlacklist() {
+    const res = await this.blacklistCol.get();
+    return map(res.docs, (doc) => doc.get('username'));
+  }
+
+  async getBlacklistV1() {
     const res = await this.targetsCol.select('pk').get();
     return map(res.docs, (doc) => doc.get('pk'));
   }

@@ -350,6 +350,7 @@ class SessionManager {
     // TODO these requests were sent to b.i.instagram.com host
     // TODO check if they are always sent to this host after sign up
     await this.ig.simulate.postSignupFlow();
+    await this.ig.simulate.postLoginFlow();
   }
 
   async createAccountPhoneNumber(acc) {

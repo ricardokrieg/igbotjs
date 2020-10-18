@@ -41,6 +41,9 @@
     "worker": "npx @babel/node src/worker.js",
     "sendDM": "npx @babel/node src/sendDM.js",
     "comment": "npx @babel/node src/comment.js",
+    "brabosburguer/createAndMassDM": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/createAndMassDM.js",
+    "brabosburguer/updateStats": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/updateStats.js",
+    "brabosburguer/fbr": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/fbr.js",
     "test": "jest"
   },
   "devDependencies": {

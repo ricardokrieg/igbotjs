@@ -27,6 +27,14 @@ class DBManager {
     return this.getCol('accounts');
   }
 
+  blacklistCol() {
+    return this.getCol('blacklist');
+  }
+
+  followersCol() {
+    return this.getCol('followers');
+  }
+
   runsCol() {
     return this.getCol('runs');
   }

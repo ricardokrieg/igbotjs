@@ -41,12 +41,14 @@ class Bot {
       dbManager: this.dbManager,
     });
 
-    const runsCol    = this.dbManager.runsCol();
-    const actionsCol = this.dbManager.actionsCol();
-    const statsCol   = this.dbManager.statsCol();
-    const targetsCol = this.dbManager.targetsCol();
-    const uploadsCol = this.dbManager.uploadsCol();
-    const dmsCol = this.dbManager.dmsCol();
+    const runsCol      = this.dbManager.runsCol();
+    const actionsCol   = this.dbManager.actionsCol();
+    const statsCol     = this.dbManager.statsCol();
+    const targetsCol   = this.dbManager.targetsCol();
+    const uploadsCol   = this.dbManager.uploadsCol();
+    const blacklistCol = this.dbManager.blacklistCol();
+    const followersCol = this.dbManager.followersCol();
+    const dmsCol       = this.dbManager.dmsCol();
 
     this.statsManager = new StatsManager({
       username: this.username,
@@ -55,6 +57,8 @@ class Bot {
       actionsCol,
       targetsCol,
       uploadsCol,
+      blacklistCol,
+      followersCol,
     });
 
     this.accountManager = new AccountManager({

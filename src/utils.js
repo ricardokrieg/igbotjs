@@ -2,6 +2,7 @@ const moment = require('moment');
 const { random, times, isEmpty, isUndefined } = require('lodash');
 const Spinner = require('node-spintax');
 const defaultHandler = require('log-chainable/handlers').minimalConsoleColorized;
+const inquirer = require('inquirer');
 
 const logHandler = (level, nameStack, args) => {
   const nameStackLength = nameStack.join('.').length;
@@ -112,4 +113,28 @@ function generateUsername({ username }) {
   return username;
 }
 
-module.exports = { logHandler, stats, sleep, quickSleep, longSleep, sleep24h, randomLimit, call, greetingMessage, randomLocation, randomBirthday, generateUsername };
+async function inputUsername() {
+  return (await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'username',
+      message: 'Username',
+    },
+  ])).username;
+}
+
+module.exports = {
+  logHandler,
+  stats,
+  sleep,
+  quickSleep,
+  longSleep,
+  sleep24h,
+  randomLimit,
+  call,
+  greetingMessage,
+  randomLocation,
+  randomBirthday,
+  generateUsername,
+  inputUsername
+};
