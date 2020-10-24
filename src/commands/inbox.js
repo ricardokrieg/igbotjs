@@ -17,7 +17,7 @@ const username = process.env.IG_USERNAME;
     await bot.sessionManager.login();
 
     log('Loading inbox...');
-    await SessionManager.call( () => inbox({ ig: bot.ig }) );
+    await SessionManager.call( () => inbox({ ig: bot.ig, showAll: true }) );
   } catch (e) {
     log.error(e);
     process.exit(1);

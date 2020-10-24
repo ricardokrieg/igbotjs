@@ -6,17 +6,10 @@ const SessionManager = require('../SessionManager');
 
 
 class FollowManager {
-  constructor({ username, ig, sources, getBlacklist, addStats, addTarget, addAction, targetsCol }) {
+  constructor({ username, ig, sources }) {
     this.username = username;
     this.ig       = ig;
     this.sources  = sources;
-
-    this.getBlacklist = getBlacklist;
-    this.addStats     = addStats;
-    this.addTarget    = addTarget;
-    this.addAction    = addAction;
-
-    this.targetsCol = targetsCol;
   }
 
   async extractFollowers({ sourceUsername, callback }) {
@@ -219,6 +212,10 @@ class FollowManager {
     }
 
     log('Done');
+  }
+
+  async addToBlacklist(follower) {
+
   }
 
   async followRecommended() {

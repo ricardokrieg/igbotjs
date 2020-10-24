@@ -8,7 +8,8 @@ const PROJECT = process.env.PROJECT;
 (async () => {
   log('Start');
 
-  const username = process.env.IG_USERNAME || await inputUsername();
+  const username = 'promosdirceu2';
+  // const username = process.env.IG_USERNAME || await inputUsername();
 
   const bot = new Bot({ username });
   await bot.setup();
@@ -20,8 +21,8 @@ const PROJECT = process.env.PROJECT;
     log(follower.username);
 
     try {
-      await bot.statsManager.addToBlacklist({ username: follower.username, params: { pk: follower.pk, project: 'brabosburguer' } });
-      await bot.statsManager.addToFollowers({ username: follower.username, params: { pk: follower.pk, project: 'brabosburguer' } });
+      await bot.statsManager.addToBlacklist({ username: follower.username, params: { pk: follower.pk, project: PROJECT } });
+      await bot.statsManager.addToFollowers({ username: follower.username, params: { pk: follower.pk, project: PROJECT } });
     } catch (e) {
       log.error(`Error: ${e.message}`);
     }
@@ -31,14 +32,14 @@ const PROJECT = process.env.PROJECT;
     log(follwoing.username);
 
     try {
-      await bot.statsManager.addToBlacklist({ username: follwoing.username, params: { pk: follwoing.pk, project: 'brabosburguer' } });
+      await bot.statsManager.addToBlacklist({ username: follwoing.username, params: { pk: follwoing.pk, project: PROJECT } });
     } catch (e) {
       log.error(e.message);
     }
   }
 
   await bot.followManager.extractFollowers({ sourceUsername: 'brabosburguerthe', callback: followerCallback });
-  await bot.followManager.extractFollowing({ sourceUsername: 'brabosburguerthe', callback: followingCallback });
+  // await bot.followManager.extractFollowing({ sourceUsername: 'brabosburguerthe', callback: followingCallback });
 
   process.exit(0);
 })();

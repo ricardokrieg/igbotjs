@@ -6,6 +6,7 @@
     "axios": "^0.20.0",
     "babel-preset-env": "^1.7.0",
     "bluebird": "^3.7.1",
+    "debug": "^4.2.0",
     "firebase": "^7.20.0",
     "firebase-admin": "^8.10.0",
     "geolib": "^3.0.4",
@@ -33,6 +34,7 @@
     "newCreateAccount": "npx @babel/node src/commands/newCreateAccount.js",
     "createAccountPhoneNumber": "npx @babel/node src/commands/createAccountPhoneNumber.js",
     "massDM": "npx @babel/node src/commands/massDM.js",
+    "challenge": "npx @babel/node src/commands/challenge.js",
     "exportForDM": "npx @babel/node src/management/exportForDM.js",
     "simulate": "npx @babel/node src/simulate.js",
     "createAccount": "npx @babel/node src/createAccount.js",
@@ -42,8 +44,12 @@
     "sendDM": "npx @babel/node src/sendDM.js",
     "comment": "npx @babel/node src/comment.js",
     "brabosburguer/createAndMassDM": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/createAndMassDM.js",
+    "brabosburguer/massDM": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/massDM.js",
     "brabosburguer/updateStats": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/updateStats.js",
     "brabosburguer/fbr": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/fbr.js",
+    "brabosburguer/reply": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/reply.js",
+    "brabosburguer/scrape": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/scrape.js",
+    "vtope/createAndAdd": "PROJECT=vtope npx @babel/node src/projects/vtope/createAndAdd.js",
     "test": "jest"
   },
   "devDependencies": {

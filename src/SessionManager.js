@@ -54,10 +54,19 @@ class SessionManager {
         log.warn('Checkpoint: ');
         log(this.ig.state.checkpoint);
 
-        await this.ig.challenge.auto(true);
+        // await this.ig.challenge.auto(true);
+        //
+        // log.warn('Checkpoint: ');
+        // log(this.ig.state.checkpoint);
 
-        log.warn('Checkpoint: ');
-        log(this.ig.state.checkpoint);
+        log('XXX 1');
+        log(this.ig.state.checkpoint.challenge.challenge_context);
+        log('XXX 1');
+        log(this.ig.state.checkpoint.challenge);
+        log('XXX 1');
+
+        log(this.ig.state.appUserAgent);
+        await this.ig.challenge.recaptcha();
 
         const { code } = await inquirer.prompt([
           {
@@ -307,7 +316,7 @@ class SessionManager {
     log(body8);
   }
 
-  async createAccountWithPhoneNumber(acc) {
+  async createAccountWithPhoneNumber(acc, input_phone_number_callback, input_code_callback) {
     log('Creating account with phone number...');
     log(acc);
 
@@ -345,7 +354,11 @@ class SessionManager {
       return verification_code;
     }
 
-    await this.ig.account.createWithPhoneNumber({ ...acc, input_phone_number, input_code });
+    await this.ig.account.createWithPhoneNumber({
+      ...acc,
+      input_phone_number: input_phone_number_callback || input_phone_number,
+      input_code: input_code_callback || input_code
+    });
 
     // TODO these requests were sent to b.i.instagram.com host
     // TODO check if they are always sent to this host after sign up

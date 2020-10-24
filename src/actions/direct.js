@@ -1,4 +1,4 @@
-const { includes, filter, map, random, sample, sampleSize, isEmpty } = require('lodash');
+const { isUndefined, includes, filter, map, random, sample, sampleSize, isEmpty } = require('lodash');
 const moment = require('moment');
 const Spinner = require('node-spintax');
 const chalk = require('chalk');
@@ -75,7 +75,7 @@ async function dmFollowers({ ig, accountDetails, dmsCol, statsCol }) {
   log(`DMed ${dmCount} followers`);
 }
 
-async function inbox({ ig }) {
+async function inbox({ ig, showAll, callback, onlyForReply }) {
   log('Start');
 
   const inboxFeed = ig.feed.directInbox();
@@ -85,19 +85,43 @@ async function inbox({ ig }) {
     const targetId = thread.users[0].pk;
     const lastItem = thread.last_permanent_item;
 
-    log(`[${thread.thread_title}]`);
-    const sender = lastItem.user_id === targetId ? chalk['red'](thread.users[0].username) : 'Me';
-
+    const needsReply = lastItem.user_id === targetId;
+    const sender = needsReply ? thread.users[0].username : 'Me';
     const lastMessage = lastItem.item_type === 'link' ? lastItem.link.text : lastItem.text;
-    log(`(${moment.unix(parseInt(lastItem.timestamp.slice(0, 10))).format('lll')}) ${sender}: ${lastMessage}`);
+    const timestamp = moment.unix(parseInt(lastItem.timestamp.slice(0, 10)));
+
+    if (isUndefined(callback)) {
+      const chalkSender = needsReply ? chalk['red'](sender) : sender;
+
+      log(`[${thread.thread_title}]`);
+      log(`(${timestamp.format('lll')}) ${chalkSender}: ${lastMessage}`);
+
+      if (!isUndefined(showAll) && showAll) {
+        log(thread);
+      }
+    } else {
+      if (!onlyForReply || needsReply) {
+        await callback({ ig, sender, targetId, lastMessage, timestamp });
+      }
+    }
   }
 
   log(`${threads.length} threads`);
   log('End');
 }
 
+async function sendMessage({ ig, pk, message }) {
+  log('Start');
 
-async function sendMessage({ ig, target, message }) {
+  const thread = ig.entity.directThread([pk.toString()]);
+
+  // await SessionManager.call(() => { thread.broadcastText(message) });
+  await thread.broadcastText(message);
+
+  log('End');
+}
+
+async function sendMessageWithUsername({ ig, target, message }) {
   log('Start');
 
   const userId = await ig.user.getIdByUsername(target);

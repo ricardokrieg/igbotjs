@@ -58,6 +58,7 @@ class Bot {
       targetsCol,
       uploadsCol,
       blacklistCol,
+      dmsCol,
       followersCol,
     });
 

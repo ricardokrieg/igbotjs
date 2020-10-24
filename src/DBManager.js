@@ -17,6 +17,7 @@ const firestore = admin.firestore();
 class DBManager {
   constructor({ username }) {
     this.username = username;
+    this.firestore = firestore;
   }
 
   getCol(name) {

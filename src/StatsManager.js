@@ -1,10 +1,10 @@
 const { logHandler } = require('./utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
-const { map, isEmpty, isUndefined } = require('lodash');
+const { map, filter, isEmpty, isUndefined } = require('lodash');
 const moment = require('moment');
 
 class StatsManager {
-  constructor({ username, runsCol, actionsCol, statsCol, targetsCol, uploadsCol, blacklistCol, followersCol }) {
+  constructor({ username, runsCol, actionsCol, statsCol, targetsCol, uploadsCol, blacklistCol, dmsCol, followersCol }) {
     this.username     = username;
     this.runsCol      = runsCol;
     this.actionsCol   = actionsCol;
@@ -12,6 +12,7 @@ class StatsManager {
     this.targetsCol   = targetsCol;
     this.uploadsCol   = uploadsCol;
     this.blacklistCol = blacklistCol;
+    this.dmsCol = dmsCol;
     this.followersCol = followersCol;
   }
 
@@ -72,6 +73,25 @@ class StatsManager {
     }
   }
 
+  async getTargets({ project }) {
+    const blacklist = await this.getBlacklist({ project });
+
+    const res = await this.targetsCol.where('project', '==', project).get();
+    const whitelisted = filter(res.docs, (doc) => !blacklist.includes(doc.ref.id));
+    return map(whitelisted, (doc) => ({ username: doc.ref.id, pk: doc.get('pk') }));
+  }
+
+  async addToDirect({ message, pk, project, target }) {
+    await this.dmsCol.add({
+      account: this.username,
+      message,
+      pk,
+      project,
+      target,
+      timestamp: new Date()
+    });
+  }
+
   async addUpload({ image }) {
     await this.uploadsCol.add({
       account: this.username,
@@ -81,16 +101,24 @@ class StatsManager {
   }
 
   async addToFollowers({ username, params }) {
-    await this.followersCol.doc(username).set({ ...params, timestamp: new Date() });
+    try {
+      await this.followersCol.doc(username).create({ ...params, timestamp: new Date() });
+    } catch (e) {
+      log.error(`User already on follower list: ${username}`);
+    }
   }
 
   async addToBlacklist({ username, params }) {
-    await this.blacklistCol.doc(username).set({ ...params, timestamp: new Date() });
+    try {
+      await this.blacklistCol.doc(username).create({ ...params, timestamp: new Date() });
+    } catch (e) {
+      log.error(`User already on blacklist: ${username}`);
+    }
   }
 
-  async getBlacklist() {
-    const res = await this.blacklistCol.get();
-    return map(res.docs, (doc) => doc.get('username'));
+  async getBlacklist({ project }) {
+    const res = await this.blacklistCol.where('project', '==', project).get();
+    return map(res.docs, (doc) => doc.ref.id);
   }
 
   async getBlacklistV1() {
