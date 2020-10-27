@@ -1,14 +1,14 @@
-const { logHandler, longSleep, inputUsername } = require('../../utils');
-const log = require('log-chainable').namespace(module).handler(logHandler);
+const { longSleep } = require('../../v2/utils/sleep');
+const { inputUsername } = require('../../v2/utils/username');
 const Bot = require('../../Bot');
-const SessionManager = require('../../SessionManager');
-
-const PROJECT = process.env.PROJECT;
+const addBlacklist = require('../../v2/firestore/addBlacklist');
+const addFollower = require('../../v2/firestore/addFollower');
+const debug = require('debug')('bot:brabosburguer:updateStats');
 
 (async () => {
-  log('Start');
+  debug('Start');
 
-  const username = 'promosdirceu2';
+  const username = 'teresina582';
   // const username = process.env.IG_USERNAME || await inputUsername();
 
   const bot = new Bot({ username });
@@ -18,28 +18,28 @@ const PROJECT = process.env.PROJECT;
   await longSleep();
 
   const followerCallback = async (follower) => {
-    log(follower.username);
+    debug(follower.username);
 
     try {
-      await bot.statsManager.addToBlacklist({ username: follower.username, params: { pk: follower.pk, project: PROJECT } });
-      await bot.statsManager.addToFollowers({ username: follower.username, params: { pk: follower.pk, project: PROJECT } });
+      await addBlacklist({ username: follower.username, pk: follower.pk });
+      await addFollower({ username: follower.username, pk: follower.pk });
     } catch (e) {
       log.error(`Error: ${e.message}`);
     }
   }
 
   const followingCallback = async (follwoing) => {
-    log(follwoing.username);
+    debug(follwoing.username);
 
     try {
-      await bot.statsManager.addToBlacklist({ username: follwoing.username, params: { pk: follwoing.pk, project: PROJECT } });
+      await addBlacklist({ username: follwoing.username, pk: follwoing.pk });
     } catch (e) {
       log.error(e.message);
     }
   }
 
   await bot.followManager.extractFollowers({ sourceUsername: 'brabosburguerthe', callback: followerCallback });
-  // await bot.followManager.extractFollowing({ sourceUsername: 'brabosburguerthe', callback: followingCallback });
+  await bot.followManager.extractFollowing({ sourceUsername: 'brabosburguerthe', callback: followingCallback });
 
   process.exit(0);
 })();

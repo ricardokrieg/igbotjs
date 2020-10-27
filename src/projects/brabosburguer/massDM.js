@@ -2,12 +2,14 @@ const { logHandler, longSleep, inputUsername } = require('../../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const Spinner = require('node-spintax');
 const Bot = require('../../Bot');
-const { sendMessage } = require('../../actions/direct');
+const { sendMessage, sendProfile } = require('../../actions/direct');
 const addBlacklist = require('../../v2/firestore/addBlacklist');
 const removeTarget = require('../../v2/firestore/removeTarget');
 const getTargets = require('../../v2/firestore/getTargets');
+const retry = require('../../v2/utils/retry');
 
-const message = '{Oi|Olá}. {Estou|To} {fazendo uma parceria com a|fazendo a divulgação da|trabalhando na divulgação da|divulgando a} {@brabosburguerthe|👉 @brabosburguerthe 👈}. É uma hamburgueria artesanal do Dirceu 🍔. Os hamburgueres são {ótimos|maravilhosos|gostosos} e são bem {baratos|baratos também}. {Aí você pode usar|Aí você usa} o cupom NBA5 pra ganhar um desconto de R$5 reais no primeiro pedido. Ajuda a gente aí 🙏. Eles começam a atender a partir das 19h {😛|🤙|💪|👍}';
+// const message = '{Oi|Olá}. {Estou|To} {fazendo uma parceria com a|fazendo a divulgação da|trabalhando na divulgação da|divulgando a} {@brabosburguerthe|👉 @brabosburguerthe 👈}. É uma hamburgueria artesanal do Dirceu 🍔. Os hamburgueres são {ótimos|maravilhosos|gostosos} e são bem {baratos|baratos também}. {Aí você pode usar|Aí você usa} o cupom NBA5 pra ganhar um desconto de R$5 reais no primeiro pedido. Ajuda a gente aí 🙏. Eles começam a atender a partir das 19h {😛|🤙|💪|👍}';
+const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabosburguerthe. É uma hamburgueria artesanal do Dirceu. Não se esquece de seguir @brabosburguerthe pra poder usar o cupom.';
 
 (async () => {
   log('Start');
@@ -20,14 +22,21 @@ const message = '{Oi|Olá}. {Estou|To} {fazendo uma parceria com a|fazendo a div
 
   await bot.sessionManager.login();
 
+  const source = await retry(() => bot.ig.user.searchExact('brabosburguerthe'));
+  const sourcePk = source.pk;
+
   const spinner = new Spinner(message);
   log(`Spinner total variations: ${spinner.countVariations()}`);
 
   log('Sending DMs...');
   let dmCount = 0;
-  let dmLimit = 10;
+  let dmLimit = 20;
 
-  const targets = await getTargets();
+  // const targets = await getTargets();
+  const targets = [
+    // { pk: '196431294', username: 'ricardokrieg' },
+    ...await getTargets(),
+  ];
   log(`${targets.length} total targets`);
 
   for (let target of targets) {
@@ -38,6 +47,7 @@ const message = '{Oi|Olá}. {Estou|To} {fazendo uma parceria com a|fazendo a div
 
     const message = spinner.unspinRandom(1)[0];
     try {
+      await sendProfile({ ig: bot.ig, pk: targetPK, profileId: sourcePk });
       await sendMessage({ ig: bot.ig, pk: targetPK, message });
     } catch (e) {
       log.error(e.message);

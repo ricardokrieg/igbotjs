@@ -121,6 +121,16 @@ async function sendMessage({ ig, pk, message }) {
   log('End');
 }
 
+async function sendProfile({ ig, pk, profileId }) {
+  log('Start');
+
+  const thread = ig.entity.directThread([pk.toString()]);
+
+  await thread.broadcastProfile(profileId);
+
+  log('End');
+}
+
 async function sendMessageWithUsername({ ig, target, message }) {
   log('Start');
 
@@ -149,4 +159,4 @@ async function sendMessageToGroup({ ig, targets, message }) {
 }
 
 
-module.exports = { inbox, sendMessage, sendMessageToGroup, dmFollowers };
+module.exports = { inbox, sendMessage, sendProfile, sendMessageToGroup, dmFollowers };

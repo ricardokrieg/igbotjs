@@ -326,12 +326,7 @@ class SessionManager {
     await this.ig.simulate.preLoginFlow();
 
     const input_phone_number = async () => {
-      const { phone_prefix, phone_number } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'phone_prefix',
-          message: 'Phone Prefix:',
-        },
+      const { phone_number } = await inquirer.prompt([
         {
           type: 'input',
           name: 'phone_number',
@@ -339,15 +334,15 @@ class SessionManager {
         },
       ]);
 
-      return { phone_prefix, phone_number };
+      return phone_number;
     }
 
-    const input_code = async ({ phone_prefix, phone_number }) => {
+    const input_code = async ({ phone_number }) => {
       const { verification_code } = await inquirer.prompt([
         {
           type: 'input',
           name: 'verification_code',
-          message: `Verification Code for ${phone_prefix} ${phone_number}`,
+          message: `Verification Code for ${phone_number}`,
         },
       ]);
 

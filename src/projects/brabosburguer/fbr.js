@@ -19,6 +19,10 @@ const PROJECT = process.env.PROJECT;
       continue;
     }
 
+    if(!['teresinacupom7539', 'teresinacupom4305', 'teresinacupom4816', 'teresinacupom2120', 'teresinacupom9193', 'teresinacupom987', 'teresinacupom925', 'teresinacupom6677', 'teresinacupom1752'].includes(sender)) {
+      continue;
+    }
+
     if (isUndefined(directs[sender])) {
       directs[sender] = [];
     }

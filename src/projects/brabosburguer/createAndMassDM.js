@@ -3,21 +3,37 @@ const log = require('log-chainable').namespace(module).handler(logHandler);
 const Spinner = require('node-spintax');
 const { omit } = require('lodash');
 const Bot = require('../../Bot');
-const { sendMessage } = require('../../actions/direct');
+const { sendMessage, sendProfile } = require('../../actions/direct');
 const SMSHubApi = require('../../sms/smshub');
 const addBlacklist = require('../../v2/firestore/addBlacklist');
 const removeTarget = require('../../v2/firestore/removeTarget');
 const getTargets = require('../../v2/firestore/getTargets');
+const retry = require('../../v2/utils/retry');
+
+const proxies = [
+  'http://jqxdg:BMrJkHMW@conn4.trs.ai:61616', // AllProxy - 0
+
+  'http://proxy:xxx123xxx@datacenter.mobileproxy.network:20810', // Henry - IPV4 DC - 1
+  'http://proxy:xxx123xxx@datacenter.mobileproxy.network:20811', // 2
+
+  'http://Selricardokrieg:B0m3QiY@92.63.195.185:45785', // Proxy-Seller - IPV4 - 3
+  'http://Selricardokrieg:B0m3QiY@93.88.77.30:45785', // 4
+  'http://Selricardokrieg:B0m3QiY@37.44.198.75:45785', // 5
+  'http://Selricardokrieg:B0m3QiY@45.132.50.64:45785', // 6
+  'http://Selricardokrieg:B0m3QiY@85.202.87.243:45785', // 7
+  'http://Selricardokrieg:B0m3QiY@85.235.82.166:45785', // 8
+  'http://Selricardokrieg:B0m3QiY@45.137.189.247:45785', // 9
+  'http://Selricardokrieg:B0m3QiY@91.236.120.92:45785', // 10
+];
+const proxy = proxies[process.env.PROXY_INDEX];
 
 const acc = {
   username: 'teresinacupom[RANDOM]',
   password: 'xxx123xxx',
-  proxy: 'http://gEDBB0n:YxTl5eY@de9.proxidize.com:56242',
+  proxy: proxy,
   first_name: 'Teresina Cupom',
   bio: 'Segue a gente pra ficar por dentro de promoções exclusivas nos bares e restaurantes de Teresina',
-  // bio: 'Perfil novo. Teresina',
-  message: '{Oi|Olá}. {Estou|To} {fazendo uma parceria com a|fazendo a divulgação da|trabalhando na divulgação da|divulgando a} {@brabosburguerthe|👉 @brabosburguerthe 👈}. É uma hamburgueria artesanal do Dirceu 🍔. Os hamburgueres são {ótimos|maravilhosos|gostosos} e são bem {baratos|baratos também}. {Aí você pode usar|Aí você usa} o cupom NBA5 pra ganhar um desconto de R$5 reais no primeiro pedido. Ajuda a gente aí 🙏. Eles começam a atender a partir das 19h {😛|🤙|💪|👍}',
-  // message: 'Já conhece a @brabosburguerthe ?? É hamburguer artesanal aqui do Dirceu. Ajuda a gente aí 🙏',
+  message: 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabosburguerthe. É uma hamburgueria artesanal do Dirceu. Não se esquece de seguir @brabosburguerthe pra poder usar o cupom.',
 };
 
 (async () => {
@@ -37,14 +53,14 @@ const acc = {
     return await SMSHubApi.getNumber();
   }
 
-  const input_code_callback = async ({ phone_prefix, phone_number }) => {
+  const input_code_callback = async ({ phone_number }) => {
     return await SMSHubApi.getCode();
   }
 
   await bot.sessionManager.createAccountWithPhoneNumber(
     { ...acc, username, day, month, year },
-    // input_phone_number_callback,
-    // input_code_callback
+    input_phone_number_callback,
+    input_code_callback
   );
   await longSleep();
 
@@ -76,6 +92,9 @@ const acc = {
   log(publishResult);
   await longSleep();
 
+  const source = await retry(() => bot.ig.user.searchExact('brabosburguerthe'));
+  const sourcePk = source.pk;
+
   const spinner = new Spinner(acc.message);
   log(`Spinner total variations: ${spinner.countVariations()}`);
 
@@ -83,7 +102,11 @@ const acc = {
   let dmCount = 0;
   let dmLimit = 20;
 
-  const targets = await getTargets();
+  // const targets = await getTargets();
+  const targets = [
+    // { pk: '196431294', username: 'ricardokrieg' },
+    ...await getTargets(),
+  ];
   log(`${targets.length} total targets`);
 
   for (let target of targets) {
@@ -94,6 +117,7 @@ const acc = {
 
     const message = spinner.unspinRandom(1)[0];
     try {
+      await sendProfile({ ig: bot.ig, pk: targetPK, profileId: sourcePk });
       await sendMessage({ ig: bot.ig, pk: targetPK, message });
     } catch (e) {
       log.error(e.message);
@@ -101,7 +125,6 @@ const acc = {
     }
 
     await bot.statsManager.addToDirect({ message, pk: targetPK, project: process.env.PROJECT, target: targetUsername });
-    // await bot.statsManager.addToBlacklist({ username: targetUsername, params: { pk: targetPK, project: PROJECT } });
     await addBlacklist({ username: targetUsername, pk: targetPK });
     await removeTarget(targetUsername);
 
