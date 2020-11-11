@@ -22,7 +22,9 @@ const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabos
 
   await bot.sessionManager.login();
 
+  // TODO remove below VVVVV
   await bot.accountManager.changeProfilePictureAndFirstPost({ path: './profile.jpg' });
+  // await bot.accountManager.changeProfilePictureAndFirstPost({ path: './img_6523.2.jpg' });
   await longSleep();
 
   await bot.accountManager.editProfile({
@@ -48,6 +50,7 @@ const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabos
   });
   log(publishResult);
   await longSleep();
+  // TODO remove above ^^^^^
 
   const source = await retry(() => bot.ig.user.searchExact('brabosburguerthe'));
   const sourcePk = source.pk;

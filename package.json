@@ -43,6 +43,7 @@
     "worker": "npx @babel/node src/worker.js",
     "sendDM": "npx @babel/node src/sendDM.js",
     "comment": "npx @babel/node src/comment.js",
+    "brabosburguer/createMultiple": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/createMultiple.js",
     "brabosburguer/createAndMassDM": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/createAndMassDM.js",
     "brabosburguer/massDM": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/massDM.js",
     "brabosburguer/updateStats": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/updateStats.js",
@@ -50,6 +51,10 @@
     "brabosburguer/reply": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/reply.js",
     "brabosburguer/scrape": "PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/scrape.js",
     "vtope/createAndAdd": "PROJECT=vtope npx @babel/node src/projects/vtope/createAndAdd.js",
+    "vtope/userAgent": "PROJECT=vtope npx @babel/node src/projects/vtope/userAgent.js",
+    "namoradasfofos/massDM": "PROJECT=namoradasfofos npx @babel/node src/projects/namoradasfofos/massDM.js",
+    "namoradasfofos/scrape": "PROJECT=namoradasfofos npx @babel/node src/projects/namoradasfofos/scrape.js",
+    "namoradasfofos/createWithEmailAndMassDM": "PROJECT=namoradasfofos npx @babel/node src/projects/namoradasfofos/createWithEmailAndMassDM.js",
     "test": "jest"
   },
   "devDependencies": {

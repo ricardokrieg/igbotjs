@@ -1,4 +1,5 @@
 const axios = require('axios').default;
+const { isUndefined } = require('lodash');
 const { sleep } = require('../utils');
 const debug = require('debug')('bot:smshub');
 
@@ -13,8 +14,10 @@ client.defaults.params['api_key'] = SMS_HUB_API_KEY;
 let activationId;
 
 class SMSHubApi {
-  static async getNumber() {
-    const countryId = 2; // 0 - Russia, 2 - Cazaquistão, 73 - Brazil
+  static async getNumber(countryId) {
+    if (isUndefined(countryId)) {
+      countryId = 2; // 0 - Russia, 1 - Ucrânia, 2 - Cazaquistão
+    }
 
     try {
       const response = await client.get(

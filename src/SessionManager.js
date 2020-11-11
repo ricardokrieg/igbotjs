@@ -361,6 +361,55 @@ class SessionManager {
     await this.ig.simulate.postLoginFlow();
   }
 
+  async createAccountWithEmail(acc, input_email_callback, input_code_callback) {
+    log('Creating account with email...');
+    log(acc);
+
+    if (acc.usernameForDevice === null) {
+      this.ig.state.generateDevice(acc.username);
+    } else {
+      this.ig.state.generateDevice(acc.usernameForDevice);
+    }
+
+    log('Simulating pre login flow...');
+    await this.ig.simulate.preLoginFlow();
+
+    const input_email = async () => {
+      const { email } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'email',
+          message: 'Email:',
+        },
+      ]);
+
+      return email;
+    }
+
+    const input_code = async ({ email }) => {
+      const { verification_code } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'verification_code',
+          message: `Verification Code for ${email}`,
+        },
+      ]);
+
+      return verification_code;
+    }
+
+    await this.ig.account.createWithEmail({
+      ...acc,
+      input_email: input_email_callback || input_email,
+      input_code: input_code_callback || input_code
+    });
+
+    // TODO these requests were sent to b.i.instagram.com host
+    // TODO check if they are always sent to this host after sign up
+    await this.ig.simulate.postSignupFlow();
+    await this.ig.simulate.postLoginFlow();
+  }
+
   async createAccountPhoneNumber(acc) {
     log('Creating account with phone number...');
     log(acc);

@@ -24,6 +24,14 @@ const proxies = [
   'http://Selricardokrieg:B0m3QiY@85.235.82.166:45785', // 8
   'http://Selricardokrieg:B0m3QiY@45.137.189.247:45785', // 9
   'http://Selricardokrieg:B0m3QiY@91.236.120.92:45785', // 10
+  'http://Selricardokrieg:B0m3QiY@45.135.132.158:45785', // 11
+  'http://Selricardokrieg:B0m3QiY@91.228.239.226:45785', // 12
+  'http://Selricardokrieg:B0m3QiY@185.30.99.20:45785', // 13
+  'http://Selricardokrieg:B0m3QiY@87.251.69.194:45785', // 14
+
+  'http://4g.hydraproxy.com:4559', // 15
+
+  'http://o.mobileproxy.space:63017', // 16
 ];
 const proxy = proxies[process.env.PROXY_INDEX];
 

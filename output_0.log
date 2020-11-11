@@ -1,0 +1,414 @@
+warning package.json: No license field
+$ PROJECT=brabosburguer npx @babel/node src/projects/brabosburguer/createAndMassDM.js
+[info] ( createAndMassDM) 9:36:02 AM Start
+[info] ( createAndMassDM) 9:36:02 AM teresinacupom9982
+[info] ( Bot            ) 9:36:02 AM Username: teresinacupom9982
+2020-10-30T12:36:02.967Z retry-request Current retry attempt: 1
+2020-10-30T12:36:04.793Z retry-request Response status: undefined
+[info] ( DBManager      ) 9:36:04 AM Creating account doc: teresinacupom9982
+[info] ( Bot            ) 9:36:05 AM Setup - Start
+2020-10-30T12:36:05.079Z retry-request Current retry attempt: 1
+2020-10-30T12:36:05.291Z retry-request Response status: undefined
+[info] ( Bot            ) 9:36:05 AM Account Details:
+[info] ( Bot            ) 9:36:05 AM { username: 'teresinacupom9982',
+  proxy: 'http://jqxdg:BMrJkHMW@conn4.trs.ai:61616',
+  password: 'xxx123xxx' }
+[info] ( SessionManager ) 9:36:05 AM Starting...
+[info] ( SessionManager ) 9:36:05 AM Started
+[info] ( AccountManager ) 9:36:05 AM Proxy: http://jqxdg:BMrJkHMW@conn4.trs.ai:61616
+[info] ( Bot            ) 9:36:05 AM Setup - End
+[info] ( SessionManager ) 9:36:05 AM Creating account with phone number...
+[info] ( SessionManager ) 9:36:05 AM { username: 'teresinacupom9982',
+  password: 'xxx123xxx',
+  proxy: 'http://jqxdg:BMrJkHMW@conn4.trs.ai:61616',
+  first_name: 'Teresina Cupom',
+  bio:
+   'Segue a gente pra ficar por dentro de promoções exclusivas nos bares e restaurantes de Teresina',
+  message:
+   'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabosburguerthe. É uma hamburgueria artesanal do Dirceu. Não se esquece de seguir @brabosburguerthe pra poder usar o cupom.',
+  day: 28,
+  month: 7,
+  year: 1972 }
+[info] ( SessionManager ) 9:36:05 AM Simulating pre login flow...
+2020-10-30T12:36:05.362Z ig:state Could not find csrftoken
+2020-10-30T12:36:05.362Z ig:state csrftoken lookup failed, returning "missing".
+2020-10-30T12:36:05.371Z ig:request Requesting POST /api/v1/launcher/sync/
+2020-10-30T12:36:05.371Z ig:request undefined
+2020-10-30T12:36:05.372Z ig:request { signed_body:
+   'SIGNATURE.{"_csrftoken":"missing","id":"5d0b6556-746e-538b-82cf-a2ac99c297d7","server_config_retrieval":"1"}' }
+2020-10-30T12:36:08.379Z ig:request {"configs": {"ig_android_carrier_signals_killswitch": {"params": {"is_enabled": {"value": true}}}, "ig_android_misattribution_logview": {"params": {"enabled": {"value": false}}}, "ig_android_smb_email_confirmation_in_signup_launcher": {"params": {"is_enabled": {"value": true}}}, "ig_android_camera_network_activity_logger": {"params": {"is_enabled": {"value": true}}}, "fbns": {"params": {"config_url": {"value": "mqtt-gw.pushnotifs.com"}, "direct_preload_is_enabled": {"value": true}, "enable_for_blocked_countries": {"value": false}, "ig_preload_is_disabled": {"value": false}, "master_killswitch_enabled": {"value": false}, "preload_is_enabled": {"value": false}, "push_is_enabled": {"value": true}}}, "igtv_android_dead_code_detection_device_based": {"params": {"is_enabled": {"value": false}}}, "ig_android_age_fallback_update": {"params": {"age_fallback_type": {"value": "fallback_with_dialog"}}}, "ig_android_direct_inbox_mas_entrypoint_badge_launcher": {"params": {"in_app_badge_experiment": {"value": true}, "should_show_badge": {"value": true}, "should_show_direct_badge_only": {"value": false}}}, "ig_android_email_confirmation_main_reg_launcher": {"params": {"is_auto_confirm_only": {"value": false}, "should_confirm_email": {"value": true}}}, "ig_android_email_confirmation_sac_launcher": {"params": {"is_auto_confirm_only": {"value": false}, "should_confirm_email": {"value": true}}}, "ig_android_mac_mimicry_owner": {"params": {"is_mimicry_su_owner": {"value": false, "logging_id": ["589528591951939"]}, "is_new_edit_bio_enabled": {"value": true, "logging_id": ["589528591951939"]}}}, "ig_android_master_account_sso_library_kill_switch": {"params": {"is_enabled": {"value": true}}}, "ig_android_mutiple_account_launcher_badge_config": {"params": {"is_enabled": {"value": false}, "show_direct_badge": {"value": false}}}, "ig_android_password_creation_for_passwordless_user_config": {"params": {"is_enabled": {"value": false, "logging_id": ["360522258461556"]}}}, "ig_android_remove_invalid_nonce": {"params": {"is_enabled": {"value": true}}}, "ig_android_sac_nux_change_one_tap_upsell_to_parent_level_launcher": {"params": {"is_enabled": {"value": true}}}, "ig_android_show_no_multi_mainaccount_when_linked_in_cal_error_dialog_launcher": {"params": {"should_show_dialog": {"value": true}}}, "ig_android_simple_sac_with_escape_launcher": {"params": {"enable_simple_sac": {"value": true, "logging_id": ["656403581691285"]}, "is_simple_sac_in_flow": {"value": true, "logging_id": ["656403581691285"]}, "should_have_escape": {"value": false, "logging_id": ["656403581691285"]}, "should_show_bold_cp": {"value": false, "logging_id": ["656403581691285"]}}}, "ig_android_smartlock_in_recovery": {"params": {"is_enabled": {"value": true}}}, "ig_android_south_korea_terms": {"params": {"terms_position": {"value": "none"}}}, "ig_android_turn_off_prefills_account_recovery": {"params": {"is_enabled": {"value": true, "logging_id": ["757650948139938"]}}}, "ig_android_upsell_one_tap_on_multiple_account_recovery_screen_launcher": {"params": {"is_enabled": {"value": true}}}, "ig_save_ccu_state_after_account_creation_v2": {"params": {"enabled": {"value": true}}}, "api_endpoint_logging": {"params": {"is_enabled": {"value": true}}}, "bloks_cache_fix": {"params": {"is_enabled": {"value": false, "logging_id": ["GK$bloks_cache_fix$public$control$53$1220352C"]}}}, "fizz_ig_android": {"params": {"is_enabled": {"value": true}}}, "ig_android_anr_multisignal_anr_detector": {"params": {"is_enabled": {"value": true}}}, "ig_android_app_release_channel": {"params": {"release_channel": {"value": "PUBLIC"}}}, "ig_android_app_startup_sticky_country": {"params": {"is_enabled": {"value": true}, "request_country": {"value": "BR"}}}, "ig_android_bitmap_cache_weak_ref_cleaner": {"params": {"clean_hybrid_bitmap_refs": {"value": true}, "clean_java_bitmap_refs": {"value": true}}}, "ig_android_bloks_perf_logging": {"params": {"is_enabled": {"value": true}}}, "ig_android_drawable_usage_logging": {"params": {"sampling_rate": {"value": 0}}}, "ig_android_igtv_series_use_coroutines": {"params": {"enabled": {"value": true}}}, "ig_android_image_clear_disk_cache": {"params": {"is_enabled": {"value": true}, "is_setting_initial_cache_version_enabled": {"value": true}, "valid_cache_version": {"value": 1}}}, "ig_android_libunwindstack": {"params": {"is_enabled": {"value": true}}}, "ig_android_memory_leak_reporting": {"params": {"is_enabled": {"value": false}, "sample_rate": {"value": 500}}}, "ig_android_memory_manager_lib": {"params": {"detect_leaks": {"value": true}, "is_enabled": {"value": true}, "memory_metrics_delay_ms": {"value": 500}, "memory_metrics_interval_ms": {"value": 30000}, "metrics_enabled": {"value": false}, "periodic_event_handler_enabled": {"value": true}, "sanitize_heap_dumps": {"value": true}, "session_event_handler_enabled": {"value": true}, "upload_daily": {"value": false}, "upload_on_leak": {"value": true}, "upload_on_oom": {"value": false}}}, "ig_user_mismatch_soft_error": {"params": {"crash_enabled": {"value": false}}}, "sonar_prober": {"params": {"fna_info_endpoint": {"value": "https://graph.facebook.com/glb_map"}, "fna_info_params": {"value": "access_token=432827354065804|cb9c2da18237a3bb72878cc3a28019ad\u0026get_fna_candidates=true"}, "fna_sample_rate": {"value": 50000}, "is_enabled": {"value": true}, "pop_info_endpoint": {"value": "https://graph.facebook.com/glb_map"}, "pop_info_params": {"value": "access_token=432827354065804|cb9c2da18237a3bb72878cc3a28019ad\u0026get_all_clusters=true"}, "pop_sample_rate": {"value": 50000}}}, "live_special_codec_size_list": {"params": {"is_blacklisted": {"value": false}}}, "ig_android_aed": {"params": {"is_enabled": {"value": true}}}, "ig_android_badging_on_transsion": {"params": {"enable_badging": {"value": true, "logging_id": ["3046729998772932"]}}}, "ig_rn_route_handler": {"params": {"is_enabled": {"value": true}}}, "ig_android_vc_ring_screen_device": {"params": {"screen_timeout_duration_ms": {"value": 15000}}}, "ig_android_vc_unified_signaling": {"params": {"enabled": {"value": true}}}, "ig_shopping_bag_icon_redesign": {"params": {"is_enabled": {"value": true}}}, "ig_android_gallery_thumbnail_android_q": {"params": {"is_enabled": {"value": true}, "should_use_androidq_load_thumbnail": {"value": true}}}, "ig_android_stories_deduplication": {"params": {"should_remove_duplicate_reels": {"value": true}}}, "ig_android_stories_prefetch_logic_optimizations": {"params": {"forward_prefetch_limit": {"value": 5}}}, "ig_android_stories_tray_request_qpl_gating": {"params": {"is_enabled": {"value": true}, "seconds_to_delay": {"value": 30}}}, "ig_android_coordinatorlayout_root_layout": {"params": {"is_enabled": {"value": false}}}, "ig_panorama_build": {"params": {"is_enabled": {"value": false}}}, "ig_panorama_ui_refresh": {"params": {"is_enabled": {"value": false}, "is_scrollaway_navigation_on": {"value": false}}}, "ig_android_codec_high_profile": {"params": {"is_constrained": {"value": true}, "is_enabled": {"value": true}}}, "ig_android_felix_release_players": {"params": {"is_enabled": {"value": false}}}, "ig_android_frame_retriever_fix": {"params": {"frame_queue_limit": {"value": -1}}}, "ig_android_media_codec_info_collection": {"params": {"is_enabled": {"value": false}}}, "ig_android_vc_clear_task_flag_killswitch": {"params": {"is_on": {"value": false}}}}, "status": "ok"}
+2020-10-30T12:36:08.385Z ig:request { configs:
+   { ig_android_carrier_signals_killswitch: { params: [Object] },
+     ig_android_misattribution_logview: { params: [Object] },
+     ig_android_smb_email_confirmation_in_signup_launcher: { params: [Object] },
+     ig_android_camera_network_activity_logger: { params: [Object] },
+     fbns: { params: [Object] },
+     igtv_android_dead_code_detection_device_based: { params: [Object] },
+     ig_android_age_fallback_update: { params: [Object] },
+     ig_android_direct_inbox_mas_entrypoint_badge_launcher: { params: [Object] },
+     ig_android_email_confirmation_main_reg_launcher: { params: [Object] },
+     ig_android_email_confirmation_sac_launcher: { params: [Object] },
+     ig_android_mac_mimicry_owner: { params: [Object] },
+     ig_android_master_account_sso_library_kill_switch: { params: [Object] },
+     ig_android_mutiple_account_launcher_badge_config: { params: [Object] },
+     ig_android_password_creation_for_passwordless_user_config: { params: [Object] },
+     ig_android_remove_invalid_nonce: { params: [Object] },
+     ig_android_sac_nux_change_one_tap_upsell_to_parent_level_launcher: { params: [Object] },
+     ig_android_show_no_multi_mainaccount_when_linked_in_cal_error_dialog_launcher: { params: [Object] },
+     ig_android_simple_sac_with_escape_launcher: { params: [Object] },
+     ig_android_smartlock_in_recovery: { params: [Object] },
+     ig_android_south_korea_terms: { params: [Object] },
+     ig_android_turn_off_prefills_account_recovery: { params: [Object] },
+     ig_android_upsell_one_tap_on_multiple_account_recovery_screen_launcher: { params: [Object] },
+     ig_save_ccu_state_after_account_creation_v2: { params: [Object] },
+     api_endpoint_logging: { params: [Object] },
+     bloks_cache_fix: { params: [Object] },
+     fizz_ig_android: { params: [Object] },
+     ig_android_anr_multisignal_anr_detector: { params: [Object] },
+     ig_android_app_release_channel: { params: [Object] },
+     ig_android_app_startup_sticky_country: { params: [Object] },
+     ig_android_bitmap_cache_weak_ref_cleaner: { params: [Object] },
+     ig_android_bloks_perf_logging: { params: [Object] },
+     ig_android_drawable_usage_logging: { params: [Object] },
+     ig_android_igtv_series_use_coroutines: { params: [Object] },
+     ig_android_image_clear_disk_cache: { params: [Object] },
+     ig_android_libunwindstack: { params: [Object] },
+     ig_android_memory_leak_reporting: { params: [Object] },
+     ig_android_memory_manager_lib: { params: [Object] },
+     ig_user_mismatch_soft_error: { params: [Object] },
+     sonar_prober: { params: [Object] },
+     live_special_codec_size_list: { params: [Object] },
+     ig_android_aed: { params: [Object] },
+     ig_android_badging_on_transsion: { params: [Object] },
+     ig_rn_route_handler: { params: [Object] },
+     ig_android_vc_ring_screen_device: { params: [Object] },
+     ig_android_vc_unified_signaling: { params: [Object] },
+     ig_shopping_bag_icon_redesign: { params: [Object] },
+     ig_android_gallery_thumbnail_android_q: { params: [Object] },
+     ig_android_stories_deduplication: { params: [Object] },
+     ig_android_stories_prefetch_logic_optimizations: { params: [Object] },
+     ig_android_stories_tray_request_qpl_gating: { params: [Object] },
+     ig_android_coordinatorlayout_root_layout: { params: [Object] },
+     ig_panorama_build: { params: [Object] },
+     ig_panorama_ui_refresh: { params: [Object] },
+     ig_android_codec_high_profile: { params: [Object] },
+     ig_android_felix_release_players: { params: [Object] },
+     ig_android_frame_retriever_fix: { params: [Object] },
+     ig_android_media_codec_info_collection: { params: [Object] },
+     ig_android_vc_clear_task_flag_killswitch: { params: [Object] } },
+  status: 'ok' }
+2020-10-30T12:36:08.390Z ig:state Could not find ds_user_id
+2020-10-30T12:36:08.394Z ig:request Requesting POST /api/v1/qe/sync/
+2020-10-30T12:36:08.394Z ig:request undefined
+2020-10-30T12:36:08.394Z ig:request { signed_body:
+   'SIGNATURE.{"id":"5d0b6556-746e-538b-82cf-a2ac99c297d7","experiments":"ig_android_device_detection_info_upload,ig_android_gmail_oauth_in_reg,ig_android_account_linking_upsell_universe,ig_android_direct_main_tab_universe_v2,ig_android_sms_retriever_backtest_universe,ig_android_vc_interop_use_test_igid_universe,ig_android_direct_add_direct_to_android_native_photo_share_sheet,ig_growth_android_profile_pic_prefill_with_fb_pic_2,ig_account_identity_logged_out_signals_global_holdout_universe,ig_android_notification_unpack_universe,ig_android_quickcapture_keep_screen_on,ig_android_device_based_country_verification,ig_android_login_identifier_fuzzy_match,ig_android_reg_modularization_universe,ig_android_video_render_codec_low_memory_gc,ig_android_device_verification_separate_endpoint,ig_android_email_fuzzy_matching_universe,ig_android_suma_landing_page,ig_android_smartlock_hints_universe,ig_android_video_ffmpegutil_pts_fix,ig_android_retry_create_account_universe,ig_android_caption_typeahead_fix_on_o_universe,ig_android_enable_keyboardlistener_redesign,ig_android_reg_nux_headers_cleanup_universe,ig_android_nux_add_email_device,ig_android_device_info_foreground_reporting,ig_android_shortcuts_2019,ig_android_device_verification_fb_signup,ig_android_passwordless_account_password_creation_universe,ig_android_security_intent_switchoff,ig_android_sim_info_upload,ig_android_mobile_http_flow_device_universe,ig_android_fb_account_linking_sampling_freq_universe"}' }
+2020-10-30T12:36:10.215Z ig:request {"experiments": [{"name": "ig_android_gmail_oauth_in_reg", "group": "rollout_1201", "additional_params": [], "params": [{"name": "try_background_confirm", "value": "true"}]}, {"name": "ig_android_account_linking_upsell_universe", "group": "control", "additional_params": [], "params": [{"name": "logout_impression_limit", "value": "0"}]}, {"name": "ig_android_direct_add_direct_to_android_native_photo_share_sheet", "group": "test", "additional_params": [], "params": [{"name": "is_enabled", "value": "true"}]}, {"name": "ig_android_quickcapture_keep_screen_on", "group": "test", "additional_params": [], "params": [{"name": "keep_screen_on_enabled", "value": "true"}]}, {"name": "ig_android_video_render_codec_low_memory_gc", "group": "control", "additional_params": [], "params": [{"name": "gc_before_codec_init", "value": "false"}]}, {"name": "ig_android_video_ffmpegutil_pts_fix", "group": "test", "additional_params": [], "params": [{"name": "retry_count", "value": "5"}]}, {"name": "ig_android_shortcuts_2019", "group": "test", "additional_params": [], "params": [{"name": "is_enabled", "value": "true"}]}, {"name": "ig_android_passwordless_account_password_creation_universe", "group": "test_one_tap_check_box_shown", "additional_params": [], "params": [{"name": "upsell_for_mac_flow", "value": "true"}, {"name": "show_save_password_checkbox", "value": "true"}]}, {"name": "ig_android_security_intent_switchoff", "group": "allusers", "additional_params": [], "params": [{"name": "switch_offs", "value": ""}]}, {"name": "ig_android_sim_info_upload", "group": "test", "additional_params": [], "params": [{"name": "enable_upload", "value": "true"}]}, {"name": "ig_android_fb_account_linking_sampling_freq_universe", "group": "test", "additional_params": [], "params": [{"name": "freq", "value": "100"}]}], "status": "ok"}
+2020-10-30T12:36:10.217Z ig:request { experiments:
+   [ { name: 'ig_android_gmail_oauth_in_reg',
+       group: 'rollout_1201',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_account_linking_upsell_universe',
+       group: 'control',
+       additional_params: [],
+       params: [Array] },
+     { name:
+        'ig_android_direct_add_direct_to_android_native_photo_share_sheet',
+       group: 'test',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_quickcapture_keep_screen_on',
+       group: 'test',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_video_render_codec_low_memory_gc',
+       group: 'control',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_video_ffmpegutil_pts_fix',
+       group: 'test',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_shortcuts_2019',
+       group: 'test',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_passwordless_account_password_creation_universe',
+       group: 'test_one_tap_check_box_shown',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_security_intent_switchoff',
+       group: 'allusers',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_sim_info_upload',
+       group: 'test',
+       additional_params: [],
+       params: [Array] },
+     { name: 'ig_android_fb_account_linking_sampling_freq_universe',
+       group: 'test',
+       additional_params: [],
+       params: [Array] } ],
+  status: 'ok' }
+2020-10-30T12:36:10.226Z ig:request Requesting POST /api/v1/accounts/contact_point_prefill/
+2020-10-30T12:36:10.226Z ig:request undefined
+2020-10-30T12:36:10.226Z ig:request { signed_body:
+   'SIGNATURE.{"phone_id":"43cac6c5-cf8c-5dca-811f-1725b9a35dc1","_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","usage":"prefill"}' }
+2020-10-30T12:36:12.091Z ig:request {"status": "ok"}
+2020-10-30T12:36:12.092Z ig:request { status: 'ok' }
+2020-10-30T12:36:12.096Z ig:request Requesting POST /api/v1/accounts/get_prefill_candidates/
+2020-10-30T12:36:12.096Z ig:request undefined
+2020-10-30T12:36:12.097Z ig:request { signed_body:
+   'SIGNATURE.{"android_device_id":"android-759a9bd3c5db266b","phone_id":"43cac6c5-cf8c-5dca-811f-1725b9a35dc1","usages":"[\\"account_recovery_omnibox\\"]","device_id":"5d0b6556-746e-538b-82cf-a2ac99c297d7"}' }
+2020-10-30T12:36:13.900Z ig:request {"prefills": [{"usage": "account_recovery_omnibox", "candidates": []}], "status": "ok"}
+2020-10-30T12:36:13.901Z ig:request { prefills: [ { usage: 'account_recovery_omnibox', candidates: [] } ],
+  status: 'ok' }
+2020-10-30T12:36:13.906Z follow-redirects options { maxRedirects: 21,
+  maxBodyLength: 10485760,
+  protocol: 'https:',
+  path:
+   '/stubs/handler_api.php?action=getNumber&service=ig&country=2&api_key=52283U8c6238866021a16f14ac13f7da8ec3d9',
+  method: 'GET',
+  headers:
+   { Accept: 'application/json, text/plain, */*',
+     'User-Agent': 'axios/0.20.0' },
+  agent: undefined,
+  agents: { http: undefined, https: undefined },
+  auth: undefined,
+  hostname: 'smshub.org',
+  port: null,
+  nativeProtocols:
+   { 'http:':
+      { _connectionListener: [Function: connectionListener],
+        METHODS: [Array],
+        STATUS_CODES: [Object],
+        Agent: [Function],
+        ClientRequest: [Function],
+        IncomingMessage: [Function],
+        OutgoingMessage: [Function],
+        Server: [Function],
+        ServerResponse: [Function],
+        createServer: [Function: createServer],
+        get: [Function: get],
+        request: [Function: request],
+        maxHeaderSize: [Getter],
+        globalAgent: [Getter/Setter] },
+     'https:':
+      { Agent: [Function],
+        globalAgent: [Agent],
+        Server: [Function],
+        createServer: [Function: createServer],
+        get: [Function: get],
+        request: [Function: request] } } }
+2020-10-30T12:36:14.493Z bot:smshub ACCESS_NUMBER:68355108:77477047018
+2020-10-30T12:36:14.498Z ig:request Requesting POST /api/v1/accounts/check_phone_number/
+2020-10-30T12:36:14.498Z ig:request undefined
+2020-10-30T12:36:14.498Z ig:request { signed_body:
+   'SIGNATURE.{"phone_id":"43cac6c5-cf8c-5dca-811f-1725b9a35dc1","login_nonce_map":"{}","phone_number":"77477047018","_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","guid":"5d0b6556-746e-538b-82cf-a2ac99c297d7","device_id":"android-759a9bd3c5db266b","prefill_shown":"False"}' }
+2020-10-30T12:36:16.357Z ig:request {"status": "ok"}
+2020-10-30T12:36:16.357Z ig:request { status: 'ok' }
+2020-10-30T12:36:16.358Z ig:account { status: 'ok' }
+2020-10-30T12:36:16.364Z ig:request Requesting POST /api/v1/accounts/send_signup_sms_code/
+2020-10-30T12:36:16.364Z ig:request undefined
+2020-10-30T12:36:16.364Z ig:request { signed_body:
+   'SIGNATURE.{"phone_id":"43cac6c5-cf8c-5dca-811f-1725b9a35dc1","phone_number":"77477047018","_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","guid":"5d0b6556-746e-538b-82cf-a2ac99c297d7","device_id":"android-759a9bd3c5db266b","android_build_type":"release","waterfall_id":"826c4525-1700-5ec9-b369-72d43e55fcc9"}' }
+2020-10-30T12:36:19.019Z ig:request {"tos_version": "row", "age_required": true, "status": "ok"}
+2020-10-30T12:36:19.020Z ig:request { tos_version: 'row', age_required: true, status: 'ok' }
+2020-10-30T12:36:19.020Z ig:account { tos_version: 'row', age_required: true, status: 'ok' }
+[info] ( utils          ) 9:36:19 AM Sleeping 10s
+2020-10-30T12:36:29.028Z follow-redirects options { maxRedirects: 21,
+  maxBodyLength: 10485760,
+  protocol: 'https:',
+  path:
+   '/stubs/handler_api.php?action=getStatus&id=68355108&api_key=52283U8c6238866021a16f14ac13f7da8ec3d9',
+  method: 'GET',
+  headers:
+   { Accept: 'application/json, text/plain, */*',
+     'User-Agent': 'axios/0.20.0' },
+  agent: undefined,
+  agents: { http: undefined, https: undefined },
+  auth: undefined,
+  hostname: 'smshub.org',
+  port: null,
+  nativeProtocols:
+   { 'http:':
+      { _connectionListener: [Function: connectionListener],
+        METHODS: [Array],
+        STATUS_CODES: [Object],
+        Agent: [Function],
+        ClientRequest: [Function],
+        IncomingMessage: [Function],
+        OutgoingMessage: [Function],
+        Server: [Function],
+        ServerResponse: [Function],
+        createServer: [Function: createServer],
+        get: [Function: get],
+        request: [Function: request],
+        maxHeaderSize: [Getter],
+        globalAgent: [Getter/Setter] },
+     'https:':
+      { Agent: [Function],
+        globalAgent: [Agent],
+        Server: [Function],
+        createServer: [Function: createServer],
+        get: [Function: get],
+        request: [Function: request] } } }
+2020-10-30T12:36:29.668Z bot:smshub STATUS_WAIT_CODE
+[info] ( utils          ) 9:36:29 AM Sleeping 10s
+2020-10-30T12:36:39.673Z follow-redirects options { maxRedirects: 21,
+  maxBodyLength: 10485760,
+  protocol: 'https:',
+  path:
+   '/stubs/handler_api.php?action=getStatus&id=68355108&api_key=52283U8c6238866021a16f14ac13f7da8ec3d9',
+  method: 'GET',
+  headers:
+   { Accept: 'application/json, text/plain, */*',
+     'User-Agent': 'axios/0.20.0' },
+  agent: undefined,
+  agents: { http: undefined, https: undefined },
+  auth: undefined,
+  hostname: 'smshub.org',
+  port: null,
+  nativeProtocols:
+   { 'http:':
+      { _connectionListener: [Function: connectionListener],
+        METHODS: [Array],
+        STATUS_CODES: [Object],
+        Agent: [Function],
+        ClientRequest: [Function],
+        IncomingMessage: [Function],
+        OutgoingMessage: [Function],
+        Server: [Function],
+        ServerResponse: [Function],
+        createServer: [Function: createServer],
+        get: [Function: get],
+        request: [Function: request],
+        maxHeaderSize: [Getter],
+        globalAgent: [Getter/Setter] },
+     'https:':
+      { Agent: [Function],
+        globalAgent: [Agent],
+        Server: [Function],
+        createServer: [Function: createServer],
+        get: [Function: get],
+        request: [Function: request] } } }
+2020-10-30T12:36:40.113Z bot:smshub STATUS_OK:635892
+2020-10-30T12:36:40.118Z ig:request Requesting POST /api/v1/accounts/validate_signup_sms_code/
+2020-10-30T12:36:40.118Z ig:request undefined
+2020-10-30T12:36:40.118Z ig:request { signed_body:
+   'SIGNATURE.{"verification_code":"635892","phone_number":"77477047018","_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","guid":"5d0b6556-746e-538b-82cf-a2ac99c297d7","device_id":"android-759a9bd3c5db266b","waterfall_id":"826c4525-1700-5ec9-b369-72d43e55fcc9"}' }
+2020-10-30T12:36:42.163Z ig:request {"verified": true, "phone_number": "77477047018", "pn_taken": false, "status": "ok"}
+2020-10-30T12:36:42.164Z ig:request { verified: true,
+  phone_number: '77477047018',
+  pn_taken: false,
+  status: 'ok' }
+2020-10-30T12:36:42.164Z ig:account { verified: true,
+  phone_number: '77477047018',
+  pn_taken: false,
+  status: 'ok' }
+2020-10-30T12:36:42.167Z ig:request Requesting GET /api/v1/si/fetch_headers/?guid=5d0b6556-746e-538b-82cf-a2ac99c297d7&challenge_type=signup
+2020-10-30T12:36:42.167Z ig:request undefined
+2020-10-30T12:36:42.167Z ig:request undefined
+2020-10-30T12:36:44.006Z ig:request {"status": "ok"}
+2020-10-30T12:36:44.006Z ig:request { status: 'ok' }
+2020-10-30T12:36:44.014Z ig:request Requesting POST /api/v1/accounts/username_suggestions/
+2020-10-30T12:36:44.014Z ig:request undefined
+2020-10-30T12:36:44.014Z ig:request { signed_body:
+   'SIGNATURE.{"phone_id":"43cac6c5-cf8c-5dca-811f-1725b9a35dc1","_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","guid":"5d0b6556-746e-538b-82cf-a2ac99c297d7","name":"Teresina Cupom","device_id":"android-759a9bd3c5db266b","email":"","waterfall_id":"826c4525-1700-5ec9-b369-72d43e55fcc9"}' }
+2020-10-30T12:36:45.850Z ig:request {"suggestions_with_metadata": {"suggestions": [{"username": "teresinacupom", "prototype": "firstlast"}, {"username": "cupomteresina", "prototype": "lastfirst"}, {"username": "teresina.cupom", "prototype": "first.last"}, {"username": "cupom.teresina", "prototype": "last.first"}, {"username": "teresina_cupom", "prototype": "first_last"}, {"username": "cupom_teresina", "prototype": "last_first"}]}, "status": "ok"}
+2020-10-30T12:36:45.851Z ig:request { suggestions_with_metadata:
+   { suggestions:
+      [ [Object], [Object], [Object], [Object], [Object], [Object] ] },
+  status: 'ok' }
+2020-10-30T12:36:45.851Z ig:account { suggestions_with_metadata:
+   { suggestions:
+      [ [Object], [Object], [Object], [Object], [Object], [Object] ] },
+  status: 'ok' }
+2020-10-30T12:36:45.856Z ig:request Requesting POST /api/v1/consent/check_age_eligibility/
+2020-10-30T12:36:45.856Z ig:request undefined
+2020-10-30T12:36:45.856Z ig:request { _csrftoken: 'RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA',
+  day: 28,
+  year: 1972,
+  month: 7 }
+2020-10-30T12:36:47.488Z ig:request {"eligible_to_register": true, "parental_consent_required": false, "status": "ok"}
+2020-10-30T12:36:47.489Z ig:request { eligible_to_register: true,
+  parental_consent_required: false,
+  status: 'ok' }
+2020-10-30T12:36:47.489Z ig:consent { eligible_to_register: true,
+  parental_consent_required: false,
+  status: 'ok' }
+2020-10-30T12:36:47.492Z ig:request Requesting POST /api/v1/consent/new_user_flow_begins/
+2020-10-30T12:36:47.493Z ig:request undefined
+2020-10-30T12:36:47.493Z ig:request { signed_body:
+   'SIGNATURE.{"_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","device_id":"5d0b6556-746e-538b-82cf-a2ac99c297d7"}' }
+2020-10-30T12:36:49.330Z ig:request {"status": "ok"}
+2020-10-30T12:36:49.331Z ig:request { status: 'ok' }
+2020-10-30T12:36:49.336Z ig:request Requesting POST /api/v1/dynamic_onboarding/get_steps/
+2020-10-30T12:36:49.336Z ig:request undefined
+2020-10-30T12:36:49.336Z ig:request { signed_body:
+   'SIGNATURE.{"is_secondary_account_creation":"false","fb_connected":"false","seen_steps":"[]","progress_state":"prefetch","phone_id":"43cac6c5-cf8c-5dca-811f-1725b9a35dc1","fb_installed":"false","locale":"en_US","timezone_offset":"-10800","_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","network_type":"WIFI-UNKNOWN","guid":"5d0b6556-746e-538b-82cf-a2ac99c297d7","is_ci":"false","android_id":"android-759a9bd3c5db266b","waterfall_id":"826c4525-1700-5ec9-b369-72d43e55fcc9","reg_flow_taken":"phone","tos_accepted":"false"}' }
+2020-10-30T12:36:50.969Z ig:request {"steps": [{"step": "create_password"}, {"step": "check_for_phone"}, {"step": "fb_connect"}, {"step": "fb_follow"}, {"step": "fb_invite"}, {"step": "contact_invite", "qualifying_value": "10"}, {"step": "account_privacy"}, {"step": "take_profile_photo"}, {"step": "add_phone"}, {"step": "turn_on_onetap"}, {"step": "discover_people"}, {"step": "interest_account_suggestions"}], "status": "ok"}
+2020-10-30T12:36:50.970Z ig:request { steps:
+   [ { step: 'create_password' },
+     { step: 'check_for_phone' },
+     { step: 'fb_connect' },
+     { step: 'fb_follow' },
+     { step: 'fb_invite' },
+     { step: 'contact_invite', qualifying_value: '10' },
+     { step: 'account_privacy' },
+     { step: 'take_profile_photo' },
+     { step: 'add_phone' },
+     { step: 'turn_on_onetap' },
+     { step: 'discover_people' },
+     { step: 'interest_account_suggestions' } ],
+  status: 'ok' }
+2020-10-30T12:36:50.971Z ig:account { steps:
+   [ { step: 'create_password' },
+     { step: 'check_for_phone' },
+     { step: 'fb_connect' },
+     { step: 'fb_follow' },
+     { step: 'fb_invite' },
+     { step: 'contact_invite', qualifying_value: '10' },
+     { step: 'account_privacy' },
+     { step: 'take_profile_photo' },
+     { step: 'add_phone' },
+     { step: 'turn_on_onetap' },
+     { step: 'discover_people' },
+     { step: 'interest_account_suggestions' } ],
+  status: 'ok' }
+2020-10-30T12:36:50.979Z ig:request Requesting POST /api/v1/users/check_username/
+2020-10-30T12:36:50.979Z ig:request undefined
+2020-10-30T12:36:50.979Z ig:request { signed_body:
+   'SIGNATURE.{"_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","username":"teresinacupom9982","_uuid":"5d0b6556-746e-538b-82cf-a2ac99c297d7"}' }
+2020-10-30T12:36:52.812Z ig:request {"username": "teresinacupom9982", "available": true, "existing_user_password": false, "status": "ok"}
+2020-10-30T12:36:52.812Z ig:request { username: 'teresinacupom9982',
+  available: true,
+  existing_user_password: false,
+  status: 'ok' }
+2020-10-30T12:36:52.813Z ig:user { username: 'teresinacupom9982',
+  available: true,
+  existing_user_password: false,
+  status: 'ok' }
+2020-10-30T12:36:52.819Z ig:request Requesting POST /api/v1/accounts/create_validated/
+2020-10-30T12:36:52.819Z ig:request undefined
+2020-10-30T12:36:52.819Z ig:request { signed_body:
+   'SIGNATURE.{"is_secondary_account_creation":"false","jazoest":"22556","tos_version":"row","suggestedUsername":"","verification_code":"635892","sn_result":"API_ERROR: class X.7:7: ","do_not_auto_login_if_credentials_match":"true","phone_id":"43cac6c5-cf8c-5dca-811f-1725b9a35dc1","enc_password":"#PWD_INSTAGRAM:4:1604061412:AVIISkziwgL371n4T6gAAV7puWRzMIkZPisOgNN6iJNjC7soZSpkYGeGj9+hrzyvBLFDGcezVOLHjvJCb+GgvujuJ4gS3bDAFbaJSghxUF1EBABpheso5AwZR5ZkcrX0Va+VaIxL/2H06SlPBIcIVB25vWpWU9Y9LuSI/swxdHwCWjBkbucwdPUJnYhC37LariRjyKrkZVs4UWMVd+/rEIPUYhobZFbJB79vBqoialbr6IjJ7GOEMaRgarF+FlAEF06wqM4PYtckLppLp4dHNQMGXFIhPeiEsKY6/ELqSUb6sdPjBKkwTndlfsGDyrvjJJZ4rHyQ6ud8fyf+zAtRUpzvqVZp0tG6glNupRAuS54S0UYhLUpM02YWO0Z9boaLCZpSThtuVboX","phone_number":"77477047018","_csrftoken":"RZ7GNn3mEh78vt5Fx869DFnl95YdzeYA","username":"teresinacupom9982","first_name":"Teresina Cupom","day":28,"adid":"2d6a6498-fdbd-5b17-be7b-02a92ecd22eb","guid":"5d0b6556-746e-538b-82cf-a2ac99c297d7","year":1972,"device_id":"android-759a9bd3c5db266b","_uuid":"5d0b6556-746e-538b-82cf-a2ac99c297d7","month":7,"sn_nonce":"Nzc0NzcwNDcwMTh8MTYwNDA2MTQxMnxkYcy577+977+977+90qEm77+977+9","force_sign_up_code":"","waterfall_id":"826c4525-1700-5ec9-b369-72d43e55fcc9","qs_stamp":"","has_sms_consent":"true","one_tap_opt_in":"true"}' }
+2020-10-30T12:36:58.751Z ig:request {"message": "challenge_required", "challenge": {"url": "https://i.instagram.com/challenge/44235428878/vsWN9jkfSe/", "api_path": "/challenge/44235428878/vsWN9jkfSe/", "hide_webview_header": true, "lock": true, "logout": false, "native_flow": true, "flow_render_type": 0, "challenge_context": "{\"step_name\": \"\", \"nonce_code\": \"vsWN9jkfSe\", \"user_id\": 44235428878, \"is_stateless\": false}"}, "status": "fail"}
+2020-10-30T12:36:58.751Z ig:request { message: 'challenge_required',
+  challenge:
+   { url: 'https://i.instagram.com/challenge/44235428878/vsWN9jkfSe/',
+     api_path: '/challenge/44235428878/vsWN9jkfSe/',
+     hide_webview_header: true,
+     lock: true,
+     logout: false,
+     native_flow: true,
+     flow_render_type: 0,
+     challenge_context:
+      '{"step_name": "", "nonce_code": "vsWN9jkfSe", "user_id": 44235428878, "is_stateless": false}' },
+  status: 'fail' }
+2020-10-30T12:36:58.752Z ig:request Request POST /api/v1/accounts/create_validated/ failed: {"message":"challenge_required","challenge":{"url":"https://i.instagram.com/challenge/44235428878/vsWN9jkfSe/","api_path":"/challenge/44235428878/vsWN9jkfSe/","hide_webview_header":true,"lock":true,"logout":false,"native_flow":true,"flow_render_type":0,"challenge_context":"{\"step_name\": \"\", \"nonce_code\": \"vsWN9jkfSe\", \"user_id\": 44235428878, \"is_stateless\": false}"},"status":"fail"}
+(node:27852) UnhandledPromiseRejectionWarning: IgCheckpointError: POST /api/v1/accounts/create_validated/ - 400 Bad Request; challenge_required
+    at Request.handleResponseError (/Users/wolf/code/instagram-private-api/dist/core/request.js:109:24)
+    at Request.send (/Users/wolf/code/instagram-private-api/dist/core/request.js:58:28)
+(node:27852) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 1)
+(node:27852) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.

@@ -2,7 +2,7 @@ const { map, isUndefined } = require('lodash');
 const firestore = require('firebase-admin').firestore();
 
 module.exports = async ({ limit = -1, usernameOnly = false } = {}) => {
-  const targetsCol = firestore.collection('targets');
+  const targetsCol = firestore.collection('potentialTargets');
   let res = targetsCol.where('project', '==', process.env.PROJECT);
 
   if (limit > 0) {

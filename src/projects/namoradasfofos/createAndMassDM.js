@@ -1,38 +1,86 @@
-const { logHandler, longSleep, inputUsername } = require('../../utils');
+const { logHandler, longSleep, randomBirthday, generateUsername } = require('../../utils');
 const log = require('log-chainable').namespace(module).handler(logHandler);
 const Spinner = require('node-spintax');
+const { omit } = require('lodash');
 const Bot = require('../../Bot');
 const { sendMessage, sendProfile } = require('../../actions/direct');
+const SMSHubApi = require('../../sms/smshub');
 const addBlacklist = require('../../v2/firestore/addBlacklist');
 const removeTarget = require('../../v2/firestore/removeTarget');
 const getTargets = require('../../v2/firestore/getTargets');
 const retry = require('../../v2/utils/retry');
 
-// const message = '{Oi|Olá}. {Estou|To} {fazendo uma parceria com a|fazendo a divulgação da|trabalhando na divulgação da|divulgando a} {@brabosburguerthe|👉 @brabosburguerthe 👈}. É uma hamburgueria artesanal do Dirceu 🍔. Os hamburgueres são {ótimos|maravilhosos|gostosos} e são bem {baratos|baratos também}. {Aí você pode usar|Aí você usa} o cupom NBA5 pra ganhar um desconto de R$5 reais no primeiro pedido. Ajuda a gente aí 🙏. Eles começam a atender a partir das 19h {😛|🤙|💪|👍}';
-const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabosburguerthe. É uma hamburgueria artesanal do Dirceu. Não se esquece de seguir @brabosburguerthe pra poder usar o cupom.';
+const proxies = [
+  'http://jqxdg:BMrJkHMW@conn4.trs.ai:61616', // AllProxy - 0
+];
+const proxy = proxies[process.env.PROXY_INDEX];
+
+const usernames = [
+  'carool_da',
+  'carool_db',
+  'carool_dd',
+  'carool_dc',
+  'carool_de',
+  'carool_df',
+  'carool_dg',
+  'carool_dh',
+  'carool_di',
+  'carool_dj',
+];
+
+const acc = {
+  username: usernames[0],
+  password: 'xxx123xxx',
+  proxy: proxy,
+  first_name: 'Carol Dias',
+  // TODO: set bio
+  bio: 'Segue a gente pra ficar por dentro de promoções exclusivas nos bares e restaurantes de Teresina',
+  // TODO: set message
+  message: 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabosburguerthe. É uma hamburgueria artesanal do Dirceu. Não se esquece de seguir @brabosburguerthe pra poder usar o cupom.',
+};
 
 (async () => {
   log('Start');
 
-  const username = process.env.IG_USERNAME || await inputUsername();
+  const username = acc.username;
   log(username);
 
   const bot = new Bot({ username });
+
+  await bot.dbManager.createAccountDoc({ data: omit(acc, ['username', 'first_name', 'bio', 'message']) });
   await bot.setup();
 
-  await bot.sessionManager.login();
+  const {day, month, year} = randomBirthday();
 
+  const input_phone_number_callback = async () => {
+    return await SMSHubApi.getNumber();
+  }
+
+  const input_code_callback = async ({ phone_number }) => {
+    return await SMSHubApi.getCode();
+  }
+
+  await bot.sessionManager.createAccountWithPhoneNumber(
+    { ...acc, username, day, month, year },
+    input_phone_number_callback,
+    input_code_callback
+  );
+  await longSleep();
+
+  // TODO: pick new pictures
   await bot.accountManager.changeProfilePictureAndFirstPost({ path: './profile.jpg' });
   await longSleep();
 
   await bot.accountManager.editProfile({
-    bio: 'Segue a gente pra ficar por dentro de promoções exclusivas nos bares e restaurantes de Teresina',
+    bio: acc.bio,
   });
   await longSleep();
 
+  // TODO: set private?
   // await bot.ig.account.setPrivate();
   // await longSleep();
 
+  // TODO: pick new pictures
   let publishResult = await bot.publishManager.publishImage({
     imagePath: './images/teresinapromocoes1.jpg',
     caption: '',
@@ -41,6 +89,7 @@ const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabos
   log(publishResult);
   await longSleep();
 
+  // TODO: pick new pictures
   publishResult = await bot.publishManager.publishImage({
     imagePath: './images/teresinapromocoes2.jpg',
     caption: '',
@@ -49,10 +98,11 @@ const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabos
   log(publishResult);
   await longSleep();
 
+  // TODO: pick manual targets
   const source = await retry(() => bot.ig.user.searchExact('brabosburguerthe'));
   const sourcePk = source.pk;
 
-  const spinner = new Spinner(message);
+  const spinner = new Spinner(acc.message);
   log(`Spinner total variations: ${spinner.countVariations()}`);
 
   log('Sending DMs...');
@@ -82,7 +132,6 @@ const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabos
     }
 
     await bot.statsManager.addToDirect({ message, pk: targetPK, project: process.env.PROJECT, target: targetUsername });
-    // await bot.statsManager.addToBlacklist({ username: targetUsername, params: { pk: targetPK, project: PROJECT } });
     await addBlacklist({ username: targetUsername, pk: targetPK });
     await removeTarget(targetUsername);
 
@@ -94,6 +143,8 @@ const message = 'Você {foi sorteado e ganhou|ganhou} um cupom de R$5 na @brabos
 
     await longSleep();
   }
+
+  log(username);
 
   process.exit(0);
 })();
