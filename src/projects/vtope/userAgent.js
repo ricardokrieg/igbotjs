@@ -13,7 +13,7 @@ const retry = require('../../v2/utils/retry');
 (async () => {
   log('Start');
 
-  let username = 'deborah_linst';
+  let username = 'slow200p';
   log(username);
 
   let bot = new Bot({ username });

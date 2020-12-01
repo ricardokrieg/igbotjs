@@ -15,8 +15,12 @@ const longSleep = () => {
   return sleep(random(30000, 60000));
 };
 
+const veryLongSleep = () => {
+  return sleep(random(60000, 300000));
+};
+
 const sleep24h = () => {
   return sleep(24 * 60 * 60 * 1000);
 };
 
-module.exports = { sleep, quickSleep, longSleep, sleep24h };
+module.exports = { sleep, quickSleep, longSleep, veryLongSleep, sleep24h };

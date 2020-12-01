@@ -15,6 +15,8 @@ class SessionManager {
     this.cookies  = accountDetails.cookies;
     this.state    = accountDetails.state;
     this.password = accountDetails.password;
+
+    this.newDevice = false;
   }
 
   start() {
@@ -27,6 +29,12 @@ class SessionManager {
 
   async login() {
     log('Logging in...');
+
+    if (this.newDevice) {
+      log('Clearing cookies and device');
+      this.state = null;
+      this.cookies = null;
+    }
 
     if (this.state && this.validCookies()) {
       await this.loadCookies();
@@ -43,7 +51,11 @@ class SessionManager {
     } else {
       log.warn('Cookies/State are missing');
 
-      this.ig.state.generateDevice(this.username);
+      if (this.newDevice) {
+        this.ig.state.generateDevice(this.username + new Date());
+      } else {
+        this.ig.state.generateDevice(this.username);
+      }
 
       log('Simulating pre login flow...');
       await this.ig.simulate.preLoginFlow();
