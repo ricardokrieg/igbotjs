@@ -3,6 +3,7 @@ const request = require('request-promise');
 const { retry } = require('@lifeomic/attempt');
 const { Options, Response, jar } = require('request');
 const { Cookie, CookieJar, MemoryCookieStore } = require('tough-cookie');
+const Chance = require('chance');
 
 const cookieStore = new MemoryCookieStore();
 const cookieJar = jar(cookieStore);
@@ -11,19 +12,23 @@ module.exports = class Client {
   constructor(attrs) {
     this.attrs = attrs;
 
-    const cookies = [
-      `mid="${attrs.mid}"; Domain=.instagram.com; Path=/; Secure`,
-      `csrftoken="${attrs.token}"; Domain=.instagram.com; Path=/; Secure`,
-      `ds_user="${attrs.username}"; Domain=.instagram.com; Path=/; Secure`,
-      `rur="ASH"; Domain=.instagram.com; Path=/; Secure`,
-      `ds_user_id="${attrs.userId}"; Domain=.instagram.com; Path=/; Secure`,
-      `urlgen="${attrs.urlgen}"; Domain=.instagram.com; Path=/; Secure`,
-      `sessionid="${attrs.sessionId}"; Domain=.instagram.com; Path=/; Secure`,
-    ];
+    // const cookies = [
+    //   `mid="${attrs.mid}"; Domain=.instagram.com; Path=/; Secure`,
+    //   `csrftoken="${attrs.token}"; Domain=.instagram.com; Path=/; Secure`,
+    //   `ds_user="${attrs.username}"; Domain=.instagram.com; Path=/; Secure`,
+    //   `rur="ASH"; Domain=.instagram.com; Path=/; Secure`,
+    //   `ds_user_id="${attrs.userId}"; Domain=.instagram.com; Path=/; Secure`,
+    //   `urlgen="${attrs.urlgen}"; Domain=.instagram.com; Path=/; Secure`,
+    //   `sessionid="${attrs.sessionId}"; Domain=.instagram.com; Path=/; Secure`,
+    // ];
+
+    const cookies = attrs.cookies.split(`;`);
 
     for (let cookie of cookies) {
       cookieJar.setCookie(cookie, `https://i.instagram.com/`);
     }
+
+    this.pigeonSessionId = new Chance().guid();
   }
 
   async send(options) {
@@ -42,8 +47,7 @@ module.exports = class Client {
   defaultOptions(attrs, headerOverrides) {
     return {
       baseUrl: 'https://i.instagram.com',
-      // proxy: 'http://192.168.15.4:8888',
-      proxy: 'http://jqxdg:BMrJkHMW@conn4.trs.ai:61616',
+      proxy: attrs.proxy,
       transform: JSON.parse,
       simple: false,
       jar: cookieJar,
@@ -54,7 +58,7 @@ module.exports = class Client {
     };
   }
 
-  headers({ uuid, mid, deviceId, userAgent, pigeonSessionId, bloksVersionId }, overrides) {
+  headers({ uuid, mid, deviceId, userAgent }, overrides) {
     return defaultsDeep(
       {
         'Host': `i.instagram.com`,
@@ -77,8 +81,8 @@ module.exports = class Client {
         'X-IG-WWW-Claim': `0`,
         'X-IG-Android-ID': deviceId,
         'X-IG-Device-ID': uuid,
-        'X-Pigeon-Session-Id': pigeonSessionId,
-        'X-Bloks-Version-Id': bloksVersionId,
+        'X-Pigeon-Session-Id': this.pigeonSessionId,
+        'X-Bloks-Version-Id': `c76e70c382311c68b2201f168f946d800bbfcb7b6d9e43edbd9342d9a2048377`,
         'X-MID': mid,
         'X-Pigeon-Rawclienttime': (Date.now() / 1000).toFixed(3),
         'X-FB-HTTP-Engine': `Liger`,

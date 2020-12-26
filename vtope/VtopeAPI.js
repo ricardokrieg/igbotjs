@@ -19,29 +19,29 @@ const tasksClient = axios.create({
   baseURL: 'https://tasks.vto.pe/botapi/tasks/i/'
 });
 
+const attemptOptions = {
+  maxAttempts: 100,
+  delay: 3000,
+  factor: 1.2,
+  handleError: (error, context, options) => {
+    console.error(error.response.data);
+    console.error(context);
+    console.error(options);
+  }
+};
+
 class VtopeAPI {
   async request(url) {
-    return await this._request(client, url);
+    return this._request(client, url);
   }
 
   async taskRequest(url) {
-    while(true) {
-      try {
-        return await this._request(tasksClient, url);
-      } catch(e) {
-        if (e.error === 'notask') {
-          console.error(e);
-          await sleep(60000);
-        } else {
-          throw e;
-        }
-      }
-    }
+    return this._request(tasksClient, url);
   }
 
   async _request(_client, _url) {
     try {
-      const response = await retry(async () => _client.get(_url), { maxAttempts: 10 });
+      const response = await retry(async () => _client.get(_url), attemptOptions);
       return response.data;
     } catch(e) {
       console.error(e.message);

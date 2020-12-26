@@ -9,6 +9,7 @@
     "bluebird": "^3.7.1",
     "chance": "^1.1.7",
     "cheerio": "^1.0.0-rc.3",
+    "csv-parse": "^4.14.1",
     "debug": "^4.2.0",
     "firebase": "^7.20.0",
     "firebase-admin": "^8.10.0",
@@ -18,7 +19,7 @@
     "instagram-private-api": "link:../instagram-private-api",
     "lodash": "^4.17.15",
     "log-chainable": "^0.2.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.1",
     "mongodb": "^3.3.1",
     "node-gzip": "^1.1.2",
     "node-resque": "^5.5.5",
@@ -67,7 +68,8 @@
     "namoradasfofos/massDM": "PROJECT=namoradasfofos npx @babel/node src/projects/namoradasfofos/massDM.js",
     "namoradasfofos/scrape": "PROJECT=namoradasfofos npx @babel/node src/projects/namoradasfofos/scrape.js",
     "namoradasfofos/createWithEmailAndMassDM": "PROJECT=namoradasfofos npx @babel/node src/projects/namoradasfofos/createWithEmailAndMassDM.js",
-    "soctool/warm": "npx @babel/node soctool/warm.js",
+    "soctool/import": "npx @babel/node soctool/import.js",
+    "soctool/run": "npx @babel/node soctool/run.js",
     "test": "jest"
   },
   "devDependencies": {

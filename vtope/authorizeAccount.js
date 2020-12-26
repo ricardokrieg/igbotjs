@@ -1,8 +1,8 @@
 const VtopeAPI = require('./VtopeAPI');
 const debug = require('debug')('bot:vtope:authorizeAccount');
 
-const igUsername = `promocoesthe_`;
-const igId       = `44513880809`;
+const igUsername = `marcoaureliokk`;
+const igId       = `44903530855`;
 
 (async () => {
   try {

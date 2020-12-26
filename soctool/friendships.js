@@ -19,6 +19,10 @@ const friendshipsCreate = async (client, pk) => {
   const response = await client.send({ url: `/api/v1/friendships/create/${pk}/`, method: `POST`, form });
   debug(response);
 
+  if (response.spam) {
+    throw response.message;
+  }
+
   return response;
 };
 
