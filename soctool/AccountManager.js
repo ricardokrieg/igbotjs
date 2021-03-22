@@ -95,7 +95,14 @@ class AccountManager {
     const [ proxyType, proxyHost, proxyPort, proxyLogin, proxyPassword ] = record.proxy.split(`:`);
 
     const userId = /.*?ds_user_id=(\d+).*?/.exec(cookies)[1];
-    const proxy = `${proxyType}://${proxyLogin}:${proxyPassword}@${proxyHost}:${proxyPort}`;
+    let proxy = '';
+    if (proxyType && proxyHost && proxyPort) {
+      if (proxyLogin && proxyPassword) {
+        proxy = `${proxyType}://${proxyLogin}:${proxyPassword}@${proxyHost}:${proxyPort}`;
+      } else {
+        proxy = `${proxyType}://${proxyHost}:${proxyPort}`;
+      }
+    }
 
     debug(`Username: ${username}`);
     debug(`Password: ${password}`);
