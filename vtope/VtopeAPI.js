@@ -36,7 +36,7 @@ class VtopeAPI {
   }
 
   async taskRequest(url) {
-    return this._request(tasksClient, url);
+    return await this._request(tasksClient, url);
   }
 
   async _request(_client, _url) {

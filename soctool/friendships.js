@@ -23,6 +23,10 @@ const friendshipsCreate = async (client, pk) => {
     throw response.message;
   }
 
+  if (response.message === 'challenge_required' || response.status === 'fail') {
+    throw 'Challenge Required';
+  }
+
   return response;
 };
 

@@ -38,7 +38,7 @@ const run = async (username) => {
   const { followCount, minFollowCount, maxFollowCount } = getFollowCountForDay(accountManager.attrs.day);
   if (followCount < 1) {
     debug(`Rest day. Exiting.`);
-    process.exit(0);
+    return;
   } else {
     debug(`Going to follow ${followCount} (${minFollowCount} ~ ${maxFollowCount})`);
   }
@@ -51,9 +51,9 @@ const run = async (username) => {
 
   await start(client);
 
-  if (i >= minFollowCount) {
+  if ((i - 1) >= minFollowCount) {
     debug(`Already reached ${followCount} actions today`);
-    process.exit(0);
+    return;
   }
 
   // await api.requestLike({ atoken: accountManager.attrs.atoken });
@@ -69,7 +69,9 @@ const run = async (username) => {
       //   await sleep(30000);
       // }
 
+      debug(`Requesting FOLLOW task...`);
       data = await api.requestFollow({ atoken: accountManager.attrs.atoken });
+      debug(`VTOPE API response:`);
       debug(data);
 
       const { id, shortcode } = data;
@@ -80,6 +82,7 @@ const run = async (username) => {
 
       await accountManager.saveAction(data);
 
+      debug(`Sending TASK_SUCCESS request...`);
       data = await api.taskSuccess({ atoken: accountManager.attrs.atoken, id: id });
       debug(data);
 
@@ -109,6 +112,7 @@ const run = async (username) => {
       console.error(`Error on Account ${username}`);
       console.error(e);
 
+      debug(`Sending TASK_ERROR request...`);
       data = await api.taskError({ atoken: accountManager.attrs.atoken, id: taskId, errorType: 'doerror' });
       debug(data);
 
@@ -124,7 +128,6 @@ const run = async (username) => {
     const accounts = [];
     for (let username of usernames) {
       accounts.push(run(username));
-      await sleep(30000);
     }
 
     Promise.all(accounts);
