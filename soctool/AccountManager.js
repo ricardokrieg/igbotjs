@@ -1,4 +1,4 @@
-const { isUndefined, map } = require('lodash');
+const { isUndefined, isNull, isEmpty, map } = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('bot:soctool:AccountManager');
 
@@ -31,7 +31,7 @@ class AccountManager {
     this.attrs = snapshot.data();
     debug(this.attrs);
 
-    if (isUndefined(this.attrs.atoken)) {
+    if (isUndefined(this.attrs.atoken) || isNull(this.attrs.atoken) || isEmpty(this.attrs.atoken)) {
       const atoken = await this.authorizeCommand(this.attrs.userId, this.attrs.username);
       await this.saveAttrs({ atoken });
     }
@@ -45,11 +45,11 @@ class AccountManager {
 
   async calculateStage() {
     let momentDate;
-    if (isUndefined(this.attrs.createdAt)) {
-      this.attrs.createdAt = new Date();
-      momentDate = moment(this.attrs.createdAt);
+    if (isUndefined(this.attrs.addedAt) || isNull(this.attrs.addedAt)) {
+      this.attrs.addedAt = new Date();
+      momentDate = moment(this.attrs.addedAt);
     } else {
-      momentDate = moment(this.attrs.createdAt.toDate());
+      momentDate = moment(this.attrs.addedAt.toDate());
     }
 
     this.attrs.day = moment().diff(momentDate, 'days') + 1;
@@ -64,12 +64,20 @@ class AccountManager {
     return AccountManager.accountsCol().doc(this.username);
   }
 
+  eventsCol() {
+    return this.accountRef().collection('events');
+  }
+
+  lastEvent() {
+    return this.eventsCol().orderBy('timestamp', 'desc').limit(1);
+  }
+
   static accountsCol() {
-    return firestore.collection('vtope_accounts');
+    return firestore.collection('v2_accounts');
   }
 
   static actionsCol() {
-    return firestore.collection('vtope_actions');
+    return firestore.collection('v2_actions');
   }
 
   async actionsToday() {
@@ -122,7 +130,9 @@ class AccountManager {
       throw `Account ${username} already exists!`;
     }
 
-    return accountManager.accountRef().create({ username, password, userId, userAgent, deviceId, uuid, phoneId, adId, cookies, proxy });
+    const addedAt = new Date();
+    await accountManager.accountRef().create({ username, password, userId, userAgent, deviceId, uuid, phoneId, adId, cookies, proxy, addedAt });
+    return accountManager.accountRef().collection('events').add({ type: 'added', timestamp: new Date() });
   }
 }
 

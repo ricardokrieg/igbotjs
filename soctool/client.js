@@ -28,7 +28,8 @@ module.exports = class Client {
       cookieJar.setCookie(cookie, `https://i.instagram.com/`);
     }
 
-    this.pigeonSessionId = new Chance().guid();
+    this.clientSessionId = this.generateTemporaryGuid(`clientSessionId`, 1200000, attrs.deviceId);
+    this.pigeonSessionId = this.generateTemporaryGuid(`pigeonSessionId`, 1200000, attrs.deviceId);
   }
 
   async send(options) {
@@ -74,6 +75,7 @@ module.exports = class Client {
         'X-IG-Bandwidth-TotalTime-MS': `0`,
         'X-IG-Connection-Speed': `-1kbps`,
         'X-Bloks-Is-Layout-RTL': `false`,
+        'X-Bloks-Is-Panorama-Enabled': `false`,
         'X-IG-Device-Locale': `ru_RU`,
         'X-IG-App-Locale': `ru_RU`,
         'X-IG-Mapped-Locale': `ru_RU`,
@@ -82,13 +84,17 @@ module.exports = class Client {
         'X-IG-Android-ID': deviceId,
         'X-IG-Device-ID': uuid,
         'X-Pigeon-Session-Id': this.pigeonSessionId,
-        'X-Bloks-Version-Id': `c76e70c382311c68b2201f168f946d800bbfcb7b6d9e43edbd9342d9a2048377`,
+        'X-Bloks-Version-Id': `0647a22bbc02f6145d1c3ddd4e87fa47a90e9bf170164de4a4534b45a389e4d6`,
         'X-MID': mid,
         'X-Pigeon-Rawclienttime': (Date.now() / 1000).toFixed(3),
         'X-FB-HTTP-Engine': `Liger`,
         'Accept-Language': `ru-RU`,
       },
-      // overrides
+      overrides
     );
+  }
+
+  generateTemporaryGuid(seed, lifetime, deviceId) {
+    return new Chance(`${seed}${deviceId}${Math.round(Date.now() / lifetime)}`).guid();
   }
 }

@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 const Client = require('./client');
 const { usersUsernameInfo, usersInfo } = require('./users');
 const { friendshipsCreate } = require('./friendships');
-const { feedTimeline, feedReelsTray, feedUser } = require('./feed');
+const { feedTimeline, feedReelsTray, feedUser, feedPopular } = require('./feed');
 const { mediaSeen } = require('./media');
 const start = require('./start');
 const { sleepForDay, getFollowCountForDay } = require('./utils');
@@ -14,21 +14,28 @@ const { sleep } = require('../src/v2/utils/sleep');
 
 const VtopeAPI = require('../vtope/VtopeAPI');
 
-const api = new VtopeAPI();
+const vtopeApi = new VtopeAPI();
 
 const authorizeCommand = async (id, username) => {
   debug(`Authorizing ${username}`);
 
-  const data = await api.authorizeAccount({ id, username });
+  const data = await vtopeApi.authorizeAccount({ id, username });
   debug(data);
 
   return data.atoken;
 };
 
+const mockAuthorizeCommand = async (id, username) => {
+  debug(`[MOCK] Authorizing ${username}`);
+
+  return null;
+}
+
 const run = async (username) => {
   debug(`Starting ${username}`);
 
-  const accountManager = new AccountManager(username, authorizeCommand);
+  // const accountManager = new AccountManager(username, authorizeCommand);
+  const accountManager = new AccountManager(username, mockAuthorizeCommand);
 
   await accountManager.loadAttrs();
   await accountManager.calculateStage();
@@ -43,6 +50,9 @@ const run = async (username) => {
     debug(`Going to follow ${followCount} (${minFollowCount} ~ ${maxFollowCount})`);
   }
 
+  // TODO day off should happen every 10% of days
+  // TODO save the followCount in the account (or in a support collection), to not need to recalculate in case of re-run
+
   let data;
   let i = await accountManager.actionsToday() + 1;
   debug(`Actions today: ${i - 1}`);
@@ -51,12 +61,13 @@ const run = async (username) => {
 
   await start(client);
 
+  // TODO this will be removed once TODO #2 is done
   if ((i - 1) >= minFollowCount) {
     debug(`Already reached ${followCount} actions today`);
     return;
   }
 
-  // await api.requestLike({ atoken: accountManager.attrs.atoken });
+  // await vtopeApi.requestLike({ atoken: accountManager.attrs.atoken });
   // await sleep(30000);
 
   while (true) {
@@ -65,31 +76,34 @@ const run = async (username) => {
 
     try {
       // if (random(100) < 10) {
-      //   await api.requestLike({ atoken: accountManager.attrs.atoken });
+      //   await vtopeApi.requestLike({ atoken: accountManager.attrs.atoken });
       //   await sleep(30000);
       // }
 
       debug(`Requesting FOLLOW task...`);
-      data = await api.requestFollow({ atoken: accountManager.attrs.atoken });
+      // data = await vtopeApi.requestFollow({ atoken: accountManager.attrs.atoken });
       debug(`VTOPE API response:`);
+      data = { id: 0, shortcode: 'ricardokrieg' };
       debug(data);
 
       const { id, shortcode } = data;
       taskId = id;
 
+      // TODO, maybe needs to replace with :usersInfo?
       const { user } = await usersUsernameInfo(client, shortcode);
+      // TODO, only follow if account is public
       await friendshipsCreate(client, user.pk);
 
       await accountManager.saveAction(data);
 
       debug(`Sending TASK_SUCCESS request...`);
-      data = await api.taskSuccess({ atoken: accountManager.attrs.atoken, id: id });
+      // data = await vtopeApi.taskSuccess({ atoken: accountManager.attrs.atoken, id: id });
       debug(data);
 
       if (i >= followCount) break;
       i++;
 
-      const action = sample([`feedTimeline`, `feedUser`, `feedReelsTray`]);
+      const action = sample([`feedTimeline`, `feedUser`, `feedPopular`, `feedReelsTray`]);
       debug(`Random Action: ${action}`);
 
       switch (action) {
@@ -98,6 +112,9 @@ const run = async (username) => {
           break;
         case 'feedUser':
           await feedUser(client, accountManager.attrs.userId);
+          break;
+        case 'feedPopular':
+          await feedPopular(client, accountManager.attrs.userId);
           break;
         case 'feedReelsTray':
           const { tray } = await feedReelsTray(client);
@@ -108,13 +125,16 @@ const run = async (username) => {
       }
 
       await sleepForDay(accountManager.attrs.day);
+
+      console.log('Intentionally exiting');
+      process.exit(0);
     } catch (e) {
       console.error(`Error on Account ${username}`);
       console.error(e);
 
-      debug(`Sending TASK_ERROR request...`);
-      data = await api.taskError({ atoken: accountManager.attrs.atoken, id: taskId, errorType: 'doerror' });
-      debug(data);
+      // debug(`Sending TASK_ERROR request...`);
+      // data = await vtopeApi.taskError({ atoken: accountManager.attrs.atoken, id: taskId, errorType: 'doerror' });
+      // debug(data);
 
       break;
     }

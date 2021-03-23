@@ -19,7 +19,8 @@ const feedReelsTray = async (client) => {
     _uuid: client.attrs.uuid,
   };
 
-  const response = await client.send({ url: `/api/v1/feed/reels_tray/`, method: 'POST', form });
+  // TODO, the host Header for this call is b.i.instagram.com
+  const response = await client.send({ base_url: `https://b.i.instagram.com`, url: `/api/v1/feed/reels_tray/`, method: 'POST', form });
   debug(response);
 
   return response;
@@ -35,15 +36,22 @@ const feedTimeline = async (client) => {
     battery_level: batteryLevel(client.attrs.deviceId),
     timezone_offset: -10800,
     _csrftoken: client.attrs.token,
+    client_session_id: client.clientSessionId,
     device_id: client.attrs.deviceId,
     is_pull_to_refresh: '0',
     _uuid: client.attrs.uuid,
     is_on_screen: true,
     is_charging: 0,
+    is_async_ads_in_headload_enabled: 0,
+    rti_delivery_backend: 0,
+    recovered_from_crash: 1,
+    is_async_ads_double_request: 0,
     will_sound_on: 1,
+    is_async_ads_rti: 0,
   }));
 
-  const response = await client.sendGzip({ url: `/api/v1/feed/timeline/`, method: 'POST', body });
+  // TODO, the host Header for this call is b.i.instagram.com
+  const response = await client.sendGzip({ base_url: `https://b.i.instagram.com`, url: `/api/v1/feed/timeline/`, method: 'POST', body });
   debug(response);
 
   return response;
@@ -64,8 +72,24 @@ const feedUser = async (client, pk) => {
   return response;
 };
 
+const feedPopular = async (client, pk) => {
+  const debug = _debug('bot:soctool:feed:popular');
+
+  const qs = {
+    rank_token: `${pk}_${client.attrs.uuid}`,
+    ranked_content: `True`,
+    people_teaser_supported: 1,
+  };
+
+  const response = await client.send({ url: `/api/v1/feed/popular/`, qs });
+  debug(response);
+
+  return response;
+};
+
 module.exports = {
   feedReelsTray,
   feedTimeline,
   feedUser,
+  feedPopular,
 };

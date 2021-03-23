@@ -1,3 +1,5 @@
+// TODO maybe I will remove this file
+
 const accounts = {
   'promocoesthe_': {
     day: 2,

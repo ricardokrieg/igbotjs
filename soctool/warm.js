@@ -1,3 +1,5 @@
+// TODO maybe I will remove this file
+
 const { isEmpty, sample } = require('lodash');
 const debug = require('debug')('bot:soctool:warm');
 
