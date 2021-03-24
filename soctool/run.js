@@ -137,6 +137,7 @@ const run = async (username) => {
           break;
       }
 
+      debug(`Follow #${i} of ${followCount}`);
       await sleepForDay(accountManager.attrs.day);
     } catch (e) {
       console.error(`Error on Account ${username}`);
