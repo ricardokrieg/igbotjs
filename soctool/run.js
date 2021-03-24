@@ -137,9 +137,6 @@ const run = async (username) => {
       }
 
       await sleepForDay(accountManager.attrs.day);
-
-      console.log('Intentionally exiting');
-      process.exit(0);
     } catch (e) {
       console.error(`Error on Account ${username}`);
       console.error(e);
