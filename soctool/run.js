@@ -83,7 +83,7 @@ const run = async (username) => {
 
       debug(`Requesting FOLLOW task...`);
       // data = await vtopeApi.requestFollow({ atoken: accountManager.attrs.atoken });
-      const task = await (new DizuAPI()).getTask(process.env.DIZU_ACCOUNT_ID);
+      const task = await (new DizuAPI()).getTask(accountManager.attrs.dizuId);
       // debug(`Dizu API response:`);
       // data = { id: 0, shortcode: 'ricardokrieg' };
       debug(task);
