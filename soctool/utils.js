@@ -14,23 +14,23 @@ const sleepForDay = async (day) => {
     case 2:
     case 3:
       ms = random(70000, 140000);
-      ms = random(100) < 40 ? ms * 5 : ms;
+      ms = random(100) < 20 ? ms * 5 : ms;
       break;
     case 4:
     case 5:
     case 6:
       ms = random(60000, 120000);
-      ms = random(100) < 30 ? ms * 5 : ms;
+      ms = random(100) < 15 ? ms * 5 : ms;
       break;
     case 7:
     case 8:
     case 9:
       ms = random(50000, 100000);
-      ms = random(100) < 20 ? ms * 5 : ms;
+      ms = random(100) < 10 ? ms * 5 : ms;
       break;
     default:
       ms = random(45000, 90000);
-      ms = random(100) < 10 ? ms * 5 : ms;
+      ms = random(100) < 5 ? ms * 5 : ms;
       break;
   }
 
