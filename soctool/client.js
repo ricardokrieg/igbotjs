@@ -26,6 +26,7 @@ module.exports = class Client {
 
     for (let cookie of cookies) {
       cookieJar.setCookie(cookie, `https://i.instagram.com/`);
+      cookieJar.setCookie(cookie, `https://b.i.instagram.com/`);
     }
 
     this.clientSessionId = this.generateTemporaryGuid(`clientSessionId`, 1200000, attrs.deviceId);
