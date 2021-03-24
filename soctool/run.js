@@ -61,6 +61,7 @@ const run = async (username) => {
   const client = new Client(accountManager.attrs);
 
   await start(client);
+  await sleep(5000);
 
   // TODO this will be removed once TODO #2 is done
   if ((i - 1) >= minFollowCount) {
@@ -96,16 +97,16 @@ const run = async (username) => {
       // TODO, maybe needs to replace with :usersInfo?
       // const { user } = await usersUsernameInfo(client, shortcode);
       const { user } = await usersUsernameInfo(client, username);
+      await sleep(5000);
 
       if (user.is_private) {
         debug(`Account ${user.username} is private. Skipping.`);
-        await sleepForDay(accountManager.attrs.day);
         continue;
       }
 
       await friendshipsCreate(client, user.pk);
-
       await accountManager.saveAction(data);
+      await sleep(5000);
 
       debug(`Sending TASK_SUCCESS request...`);
       // data = await vtopeApi.taskSuccess({ atoken: accountManager.attrs.atoken, id: id });
