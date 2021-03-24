@@ -114,7 +114,6 @@ const run = async (username) => {
       debug(data);
 
       if (i >= followCount) break;
-      i++;
 
       const action = sample([`feedTimeline`, `feedUser`, `feedPopular`, `feedReelsTray`]);
       debug(`Random Action: ${action}`);
@@ -139,6 +138,8 @@ const run = async (username) => {
 
       debug(`Follow #${i} of ${followCount}`);
       await sleepForDay(accountManager.attrs.day);
+
+      i++;
     } catch (e) {
       console.error(`Error on Account ${username}`);
       console.error(e);
