@@ -13,6 +13,7 @@ const AccountManager = require('./AccountManager');
 const { sleep } = require('../src/v2/utils/sleep');
 
 const VtopeAPI = require('../vtope/VtopeAPI');
+const DizuAPI = require('../dizu/DizuAPI');
 
 const vtopeApi = new VtopeAPI();
 
@@ -82,22 +83,33 @@ const run = async (username) => {
 
       debug(`Requesting FOLLOW task...`);
       // data = await vtopeApi.requestFollow({ atoken: accountManager.attrs.atoken });
-      debug(`VTOPE API response:`);
-      data = { id: 0, shortcode: 'ricardokrieg' };
-      debug(data);
+      const task = await (new DizuAPI()).getTask(process.env.DIZU_ACCOUNT_ID);
+      // debug(`Dizu API response:`);
+      // data = { id: 0, shortcode: 'ricardokrieg' };
+      debug(task);
 
-      const { id, shortcode } = data;
-      taskId = id;
+      // const { id, shortcode } = data;
+      const { connectFormId, username, accountIdAction } = task;
+      // taskId = id;
+      taskId = connectFormId;
 
       // TODO, maybe needs to replace with :usersInfo?
-      const { user } = await usersUsernameInfo(client, shortcode);
-      // TODO, only follow if account is public
+      // const { user } = await usersUsernameInfo(client, shortcode);
+      const { user } = await usersUsernameInfo(client, username);
+
+      if (user.is_private) {
+        debug(`Account ${user.username} is private. Skipping.`);
+        await sleepForDay(accountManager.attrs.day);
+        continue;
+      }
+
       await friendshipsCreate(client, user.pk);
 
       await accountManager.saveAction(data);
 
       debug(`Sending TASK_SUCCESS request...`);
       // data = await vtopeApi.taskSuccess({ atoken: accountManager.attrs.atoken, id: id });
+      data = await (new DizuAPI()).submitTask(task.connectFormId, task.accountIdAction);
       debug(data);
 
       if (i >= followCount) break;

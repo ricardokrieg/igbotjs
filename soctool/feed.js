@@ -20,7 +20,7 @@ const feedReelsTray = async (client) => {
   };
 
   // TODO, the host Header for this call is b.i.instagram.com
-  const response = await client.send({ base_url: `https://b.i.instagram.com`, url: `/api/v1/feed/reels_tray/`, method: 'POST', form });
+  const response = await client.send({ baseUrl: `https://b.i.instagram.com`, url: `/api/v1/feed/reels_tray/`, method: 'POST', form });
   debug(response);
 
   return response;
@@ -51,7 +51,7 @@ const feedTimeline = async (client) => {
   }));
 
   // TODO, the host Header for this call is b.i.instagram.com
-  const response = await client.sendGzip({ base_url: `https://b.i.instagram.com`, url: `/api/v1/feed/timeline/`, method: 'POST', body });
+  const response = await client.sendGzip({ baseUrl: `https://b.i.instagram.com`, url: `/api/v1/feed/timeline/`, method: 'POST', body });
   debug(response);
 
   return response;
