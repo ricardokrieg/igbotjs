@@ -75,8 +75,8 @@
     "dizu/playground": "npx @babel/node dizu/playground.js",
     "dizu/run": "npx @babel/node dizu/run.js",
     "dizu/confirmTasks": "npx @babel/node dizu/confirmTasks.js",
-    "dizu/selenium/mac": "USER_DATA_DIR='/Users/wolf/Library/Application Support/Google/Chrome/Profile 2' npx @babel/node dizu_selenium/playground.js",
-    "dizu/selenium/windows": "USER_DATA_DIR='C:\\Users\\Dorinha Andrade\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1' npx @babel/node dizu_selenium/playground.js",
+    "dizu/selenium/mac": "npx @babel/node dizu_selenium/playground.js '/Users/wolf/Library/Application Support/Google/Chrome/Profile 2'",
+    "dizu/selenium/windows": "npx @babel/node dizu_selenium/playground.js 'C:\\Users\\Dorinha Andrade\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1'",
     "test": "jest"
   },
   "devDependencies": {

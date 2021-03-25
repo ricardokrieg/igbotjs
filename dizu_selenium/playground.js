@@ -13,8 +13,7 @@ const selectByVisibleText = async (element, text) => {
 };
 
 (async () => {
-  // const userDataDir = `/Users/wolf/Library/Application\ Support/Google/Chrome/Profile\ 2`;
-  const userDataDir = process.env.USER_DATA_DIR;
+  const userDataDir = process.argv[2];
   const chromeCapabilities = Capabilities.chrome();
   chromeCapabilities.set('goog:chromeOptions', {
     args: [
