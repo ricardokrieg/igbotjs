@@ -99,6 +99,11 @@ const run = async (username) => {
       const { user } = await usersUsernameInfo(client, username);
       await sleep(5000);
 
+      if (isUndefined(user)) {
+        debug(`Account ${user.username} is not valid. Skipping.`);
+        continue;
+      }
+
       if (user.is_private) {
         debug(`Account ${user.username} is private. Skipping.`);
         continue;
