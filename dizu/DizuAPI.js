@@ -61,14 +61,14 @@ class DizuAPI {
   }
 
   async getTask(accountId) {
-    const url = this.getTaskUrl(accountId);
-    const response = await this.send({ url });
-
-    const $ = cheerio.load(response.body);
-    let data = null;
-
     await retry(async () => {
       try {
+        const url = this.getTaskUrl(accountId);
+        const response = await this.send({ url });
+
+        const $ = cheerio.load(response.body);
+        let data = null;
+
         const username        = last($('a#conectar_step_4').attr('href').split('/'));
         const connectFormId   = $('#conectar_form_id').attr('value');
         const accountIdAction = $('#conta_id_acao').attr('value');
