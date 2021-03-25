@@ -62,11 +62,12 @@ class DizuAPI {
 
   async getTask(accountId) {
     let data = null;
+    let response = null;
 
     await retry(async () => {
       try {
         const url = this.getTaskUrl(accountId);
-        const response = await this.send({ url });
+        response = await this.send({ url });
 
         const $ = cheerio.load(response.body);
 
