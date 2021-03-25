@@ -13,7 +13,7 @@ const selectByVisibleText = async (element, text) => {
 };
 
 (async () => {
-  const userDataDir = process.argv[2] === 'mac' ? '/Users/wolf/Library/Application Support/Google/Chrome/Profile 2' : 'C:\Users\Dorinha Andrade\AppData\Local\Google\Chrome\User Data\Profile 1';
+  const userDataDir = process.argv[2] === 'mac' ? '/Users/wolf/Library/Application Support/Google/Chrome/Profile 2' : 'C:\\Users\\Dorinha Andrade\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1';
   const chromeCapabilities = Capabilities.chrome();
   chromeCapabilities.set('goog:chromeOptions', {
     args: [
