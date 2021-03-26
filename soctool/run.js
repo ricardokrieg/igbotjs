@@ -1,6 +1,7 @@
-const { isUndefined, isEmpty, sample, random } = require('lodash');
+const { isUndefined, isEmpty, sample, random, last } = require('lodash');
 const debug = require('debug')('bot:soctool:run');
 const Promise = require('bluebird');
+const {Capabilities, Builder, By, until} = require('selenium-webdriver');
 
 const Client = require('./client');
 const { usersUsernameInfo, usersInfo } = require('./users');
@@ -32,7 +33,29 @@ const mockAuthorizeCommand = async (id, username) => {
   return null;
 }
 
+const selectByVisibleText = async (element, text) => {
+  const options = await element.findElements(By.tagName('option'));
+  for (let option of options) {
+    const optionText = await option.getText();
+    if (optionText === text) {
+      option.click();
+      break;
+    }
+  }
+}
+
 const run = async (username) => {
+  const userDataDir = process.argv[2] === 'mac' ? '/Users/wolf/Library/Application Support/Google/Chrome/Profile 2' : 'C:\\Users\\Dorinha Andrade\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1';
+  const chromeCapabilities = Capabilities.chrome();
+  chromeCapabilities.set('goog:chromeOptions', {
+    args: [
+      `--user-data-dir=${userDataDir}`,
+    ],
+    w3c: false,
+  });
+  const driver = await new Builder().withCapabilities(chromeCapabilities).build();
+  let element;
+
   debug(`Starting ${username}`);
 
   // const accountManager = new AccountManager(username, authorizeCommand);
@@ -84,15 +107,24 @@ const run = async (username) => {
 
       debug(`Requesting FOLLOW task...`);
       // data = await vtopeApi.requestFollow({ atoken: accountManager.attrs.atoken });
-      const task = await (new DizuAPI()).getTask(accountManager.attrs.dizuId);
+      // const task = await (new DizuAPI()).getTask(accountManager.attrs.dizuId);
       // debug(`Dizu API response:`);
       // data = { id: 0, shortcode: 'ricardokrieg' };
-      debug(task);
+      // debug(task);
+      await driver.get('https://dizu.com.br/painel/conectar');
+      element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
+      await selectByVisibleText(element, 'michele_font_ana');
+      element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
+      element.click();
+      element = await driver.wait(until.elementLocated(By.linkText('Ver link')), 10000);
+      const href = await element.getAttribute('href');
+      const username = last(href.split('/'));
+      data = { username };
 
       // const { id, shortcode } = data;
-      const { connectFormId, username, accountIdAction } = task;
+      // const { connectFormId, username, accountIdAction } = task;
       // taskId = id;
-      taskId = connectFormId;
+      // taskId = connectFormId;
 
       // TODO, maybe needs to replace with :usersInfo?
       // const { user } = await usersUsernameInfo(client, shortcode);
@@ -115,8 +147,10 @@ const run = async (username) => {
 
       debug(`Sending TASK_SUCCESS request...`);
       // data = await vtopeApi.taskSuccess({ atoken: accountManager.attrs.atoken, id: id });
-      data = await (new DizuAPI()).submitTask(task.connectFormId, task.accountIdAction);
-      debug(data);
+      // data = await (new DizuAPI()).submitTask(task.connectFormId, task.accountIdAction);
+      // debug(data);
+      element = await driver.wait(until.elementLocated(By.id('conectar_form')), 10000);
+      await element.submit();
 
       if (i >= followCount) break;
 
