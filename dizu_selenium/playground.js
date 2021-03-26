@@ -17,7 +17,7 @@ const selectByVisibleText = async (element, text) => {
   const chromeCapabilities = Capabilities.chrome();
   chromeCapabilities.set('goog:chromeOptions', {
     args: [
-      `--user-data-dir="${userDataDir}"`,
+      `--user-data-dir=${userDataDir}`,
     ],
     w3c: false,
   });
