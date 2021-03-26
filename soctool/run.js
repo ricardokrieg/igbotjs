@@ -133,7 +133,7 @@ const run = async (username) => {
       await sleep(5000);
 
       if (isUndefined(user)) {
-        debug(`Account ${user.username} is not valid. Skipping.`);
+        debug(`Account is not valid. Skipping.`);
         continue;
       }
 
