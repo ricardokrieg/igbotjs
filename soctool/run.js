@@ -95,6 +95,12 @@ const run = async (username) => {
   // await vtopeApi.requestLike({ atoken: accountManager.attrs.atoken });
   // await sleep(30000);
 
+  await driver.get('https://dizu.com.br/painel/conectar');
+  element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
+  await selectByVisibleText(element, username);
+  element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
+  element.click();
+
   while (true) {
     debug(`Follow #${i} of ${followCount}`);
     let taskId;
@@ -111,11 +117,6 @@ const run = async (username) => {
       // debug(`Dizu API response:`);
       // data = { id: 0, shortcode: 'ricardokrieg' };
       // debug(task);
-      await driver.get('https://dizu.com.br/painel/conectar');
-      element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
-      await selectByVisibleText(element, username);
-      element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
-      element.click();
       element = await driver.wait(until.elementLocated(By.linkText('Ver link')), 10000);
       const href = await element.getAttribute('href');
       const targetUsername = last(href.split('/'));
