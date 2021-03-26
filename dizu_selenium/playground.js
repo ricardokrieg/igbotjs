@@ -27,21 +27,21 @@ const selectByVisibleText = async (element, text) => {
   try {
     await driver.get('https://dizu.com.br/painel/conectar');
 
-    // element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
-    // await selectByVisibleText(element, 'michele_font_ana');
-    //
-    // element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
-    // element.click();
-    //
-    // element = await driver.wait(until.elementLocated(By.linkText('Ver link')), 10000);
-    // const href = await element.getAttribute('href');
-    // const username = last(href.split('/'));
-    //
-    // console.log(username);
-    // // FOLLOW USING INSTAGRAM API
-    //
-    // element = await driver.wait(until.elementLocated(By.id('conectar_form')), 10000);
-    // element.submit();
+    element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
+    await selectByVisibleText(element, 'michele_font_ana');
+
+    element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
+    element.click();
+
+    element = await driver.wait(until.elementLocated(By.linkText('Ver link')), 10000);
+    const href = await element.getAttribute('href');
+    const username = last(href.split('/'));
+
+    console.log(username);
+    // FOLLOW USING INSTAGRAM API
+
+    element = await driver.wait(until.elementLocated(By.id('conectar_form')), 10000);
+    element.submit();
 
     await driver.wait(until.titleIs('webdriver - Google Search'), 60000);
   } finally {
