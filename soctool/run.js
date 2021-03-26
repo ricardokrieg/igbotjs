@@ -113,13 +113,13 @@ const run = async (username) => {
       // debug(task);
       await driver.get('https://dizu.com.br/painel/conectar');
       element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
-      await selectByVisibleText(element, 'michele_font_ana');
+      await selectByVisibleText(element, username);
       element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
       element.click();
       element = await driver.wait(until.elementLocated(By.linkText('Ver link')), 10000);
       const href = await element.getAttribute('href');
-      const username = last(href.split('/'));
-      data = { username };
+      const targetUsername = last(href.split('/'));
+      data = { targetUsername };
 
       // const { id, shortcode } = data;
       // const { connectFormId, username, accountIdAction } = task;
@@ -128,7 +128,7 @@ const run = async (username) => {
 
       // TODO, maybe needs to replace with :usersInfo?
       // const { user } = await usersUsernameInfo(client, shortcode);
-      const { user } = await usersUsernameInfo(client, username);
+      const { user } = await usersUsernameInfo(client, targetUsername);
       await sleep(5000);
 
       if (isUndefined(user)) {
