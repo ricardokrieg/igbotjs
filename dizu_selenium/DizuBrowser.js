@@ -1,7 +1,7 @@
 const {Capabilities, Builder, By, until} = require('selenium-webdriver');
 
 class DizuBrowser {
-  async constructor(platform) {
+  constructor(platform) {
     const userDataDir = DizuBrowser.getProfileFromPlatform(platform);
     this.chromeCapabilities = Capabilities.chrome();
     this.chromeCapabilities.set('goog:chromeOptions', {
