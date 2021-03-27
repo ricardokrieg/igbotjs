@@ -2,7 +2,7 @@ const { isUndefined, isEmpty, sample, random, last } = require('lodash');
 const debug = require('debug')('bot:soctool:run');
 const Promise = require('bluebird');
 // const {Capabilities, Builder, By, until} = require('selenium-webdriver');
-const Semaphore = require('semaphore-async-await');
+import Semaphore from 'semaphore-async-await';
 
 const Client = require('./client');
 const { usersUsernameInfo, usersInfo } = require('./users');
