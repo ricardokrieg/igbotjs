@@ -136,7 +136,6 @@ const run = async (username) => {
       // const { user } = await usersUsernameInfo(client, shortcode);
       const { user } = await usersUsernameInfo(client, targetUsername);
       debug(user);
-      await sleep(5000);
 
       if (isUndefined(user)) {
         debug(`Account is not valid. Skipping.`);
@@ -150,6 +149,7 @@ const run = async (username) => {
         continue;
       }
 
+      await sleep(5000);
       const friendshipStatus = await friendshipsCreate(client, user.pk);
       await accountManager.saveAction(data);
       debug(friendshipStatus);
