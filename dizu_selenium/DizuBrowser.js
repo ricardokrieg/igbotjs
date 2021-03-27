@@ -1,3 +1,4 @@
+const { last } = require('lodash');
 const {Capabilities, Builder, By, until} = require('selenium-webdriver');
 
 class DizuBrowser {
