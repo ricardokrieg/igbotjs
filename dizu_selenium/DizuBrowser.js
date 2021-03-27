@@ -3,14 +3,17 @@ const {Capabilities, Builder, By, until} = require('selenium-webdriver');
 class DizuBrowser {
   async constructor(platform) {
     const userDataDir = DizuBrowser.getProfileFromPlatform(platform);
-    const chromeCapabilities = Capabilities.chrome();
-    chromeCapabilities.set('goog:chromeOptions', {
+    this.chromeCapabilities = Capabilities.chrome();
+    this.chromeCapabilities.set('goog:chromeOptions', {
       args: [
         `--user-data-dir=${userDataDir}`,
       ],
       w3c: false,
     });
-    this.driver = await new Builder().withCapabilities(chromeCapabilities).build();
+  }
+
+  async build() {
+    this.driver = await new Builder().withCapabilities(this.chromeCapabilities).build();
   }
 
   async getTask(username) {

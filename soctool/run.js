@@ -204,10 +204,12 @@ const run = async (username) => {
   }
 };
 
-const dizuBrowser = await (process.argv[2] === 'mac' ? DizuBrowser.mac() : DizuBrowser.windows());
+const dizuBrowser = process.argv[2] === 'mac' ? DizuBrowser.mac() : DizuBrowser.windows();
 const lock = new Semaphore(1);
 
 (async () => {
+  await dizuBrowser.build();
+
   if (isUndefined(process.env.IG_USERNAME)) {
     const usernames = await AccountManager.allUsernames();
 
