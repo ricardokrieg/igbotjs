@@ -32,11 +32,11 @@ class DizuBrowser {
     return (await this.driver.wait(until.elementLocated(By.id('conectar_form')), 10000)).submit();
   }
 
-  static async mac() {
+  static mac() {
     return new DizuBrowser('mac');
   }
 
-  static async windows() {
+  static windows() {
     return new DizuBrowser('windows');
   }
 
