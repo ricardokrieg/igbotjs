@@ -1,7 +1,8 @@
 const { isUndefined, isEmpty, sample, random, last } = require('lodash');
 const debug = require('debug')('bot:soctool:run');
 const Promise = require('bluebird');
-const {Capabilities, Builder, By, until} = require('selenium-webdriver');
+// const {Capabilities, Builder, By, until} = require('selenium-webdriver');
+const Semaphore = require('semaphore-async-await');
 
 const Client = require('./client');
 const { usersUsernameInfo, usersInfo } = require('./users');
@@ -15,6 +16,7 @@ const { sleep } = require('../src/v2/utils/sleep');
 
 const VtopeAPI = require('../vtope/VtopeAPI');
 const DizuAPI = require('../dizu/DizuAPI');
+const DizuBrowser = require('../dizu_selenium/DizuBrowser');
 
 const vtopeApi = new VtopeAPI();
 
@@ -33,28 +35,28 @@ const mockAuthorizeCommand = async (id, username) => {
   return null;
 }
 
-const selectByVisibleText = async (element, text) => {
-  const options = await element.findElements(By.tagName('option'));
-  for (let option of options) {
-    const optionText = await option.getText();
-    if (optionText === text) {
-      option.click();
-      break;
-    }
-  }
-}
+// const selectByVisibleText = async (element, text) => {
+//   const options = await element.findElements(By.tagName('option'));
+//   for (let option of options) {
+//     const optionText = await option.getText();
+//     if (optionText === text) {
+//       option.click();
+//       break;
+//     }
+//   }
+// }
 
 const run = async (username) => {
-  const userDataDir = process.argv[2] === 'mac' ? '/Users/wolf/Library/Application Support/Google/Chrome/Profile 2' : 'C:\\Users\\Dorinha Andrade\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1';
-  const chromeCapabilities = Capabilities.chrome();
-  chromeCapabilities.set('goog:chromeOptions', {
-    args: [
-      `--user-data-dir=${userDataDir}`,
-    ],
-    w3c: false,
-  });
-  const driver = await new Builder().withCapabilities(chromeCapabilities).build();
-  let element;
+  // const userDataDir = process.argv[2] === 'mac' ? '/Users/wolf/Library/Application Support/Google/Chrome/Profile 2' : 'C:\\Users\\Dorinha Andrade\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1';
+  // const chromeCapabilities = Capabilities.chrome();
+  // chromeCapabilities.set('goog:chromeOptions', {
+  //   args: [
+  //     `--user-data-dir=${userDataDir}`,
+  //   ],
+  //   w3c: false,
+  // });
+  // const driver = await new Builder().withCapabilities(chromeCapabilities).build();
+  // let element;
 
   debug(`Starting ${username}`);
 
@@ -95,11 +97,11 @@ const run = async (username) => {
   // await vtopeApi.requestLike({ atoken: accountManager.attrs.atoken });
   // await sleep(30000);
 
-  await driver.get('https://dizu.com.br/painel/conectar');
-  element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
-  await selectByVisibleText(element, username);
-  element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
-  element.click();
+  // await driver.get('https://dizu.com.br/painel/conectar');
+  // element = await driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
+  // await selectByVisibleText(element, username);
+  // element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
+  // element.click();
 
   while (true) {
     debug(`Follow #${i} of ${followCount}`);
@@ -117,10 +119,13 @@ const run = async (username) => {
       // debug(`Dizu API response:`);
       // data = { id: 0, shortcode: 'ricardokrieg' };
       // debug(task);
-      element = await driver.wait(until.elementLocated(By.linkText('Ver link')), 10000);
-      const href = await element.getAttribute('href');
-      const targetUsername = last(href.split('/'));
+      // element = await driver.wait(until.elementLocated(By.linkText('Ver link')), 10000);
+      // const href = await element.getAttribute('href');
+      // const targetUsername = last(href.split('/'));
+      await lock.wait();
+      const targetUsername = await dizuBrowser.getTask(username);
       data = { targetUsername };
+      debug(data);
 
       // const { id, shortcode } = data;
       // const { connectFormId, username, accountIdAction } = task;
@@ -130,28 +135,34 @@ const run = async (username) => {
       // TODO, maybe needs to replace with :usersInfo?
       // const { user } = await usersUsernameInfo(client, shortcode);
       const { user } = await usersUsernameInfo(client, targetUsername);
+      debug(user);
       await sleep(5000);
 
       if (isUndefined(user)) {
         debug(`Account is not valid. Skipping.`);
+        lock.signal();
         continue;
       }
 
       if (user.is_private) {
         debug(`Account ${user.username} is private. Skipping.`);
+        lock.signal();
         continue;
       }
 
-      await friendshipsCreate(client, user.pk);
+      const friendshipStatus = await friendshipsCreate(client, user.pk);
       await accountManager.saveAction(data);
-      await sleep(5000);
+      debug(friendshipStatus);
 
       debug(`Sending TASK_SUCCESS request...`);
       // data = await vtopeApi.taskSuccess({ atoken: accountManager.attrs.atoken, id: id });
       // data = await (new DizuAPI()).submitTask(task.connectFormId, task.accountIdAction);
       // debug(data);
-      element = await driver.wait(until.elementLocated(By.id('conectar_form')), 10000);
-      await element.submit();
+      // element = await driver.wait(until.elementLocated(By.id('conectar_form')), 10000);
+      // await element.submit();
+      await dizuBrowser.submitTask();
+      lock.signal();
+      await sleep(5000);
 
       if (i >= followCount) break;
 
@@ -176,7 +187,7 @@ const run = async (username) => {
           break;
       }
 
-      debug(`Follow #${i} of ${followCount}`);
+      debug(`Follow #${i} of ${followCount}. Sleeping`);
       await sleepForDay(accountManager.attrs.day);
 
       i++;
@@ -193,6 +204,9 @@ const run = async (username) => {
   }
 };
 
+const dizuBrowser = await (process.argv[2] === 'mac' ? DizuBrowser.mac() : DizuBrowser.windows());
+const lock = new Semaphore(1);
+
 (async () => {
   if (isUndefined(process.env.IG_USERNAME)) {
     const usernames = await AccountManager.allUsernames();
@@ -200,6 +214,8 @@ const run = async (username) => {
     const accounts = [];
     for (let username of usernames) {
       accounts.push(run(username));
+      debug('Sleeping 5 minutes');
+      await sleep(300000);
     }
 
     Promise.all(accounts);
