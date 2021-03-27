@@ -2,7 +2,7 @@ const { isUndefined, isEmpty, sample, random, last } = require('lodash');
 const debug = require('debug')('bot:soctool:run');
 const Promise = require('bluebird');
 // const {Capabilities, Builder, By, until} = require('selenium-webdriver');
-const {Semaphore} = require('semaphore-async-await');
+const {Lock} = require('semaphore-async-await');
 
 const Client = require('./client');
 const { usersUsernameInfo, usersInfo } = require('./users');
@@ -205,7 +205,7 @@ const run = async (username) => {
 };
 
 const dizuBrowser = process.argv[2] === 'mac' ? DizuBrowser.mac() : DizuBrowser.windows();
-const lock = new Semaphore(1);
+const lock = new Lock(1);
 
 (async () => {
   await dizuBrowser.build();
