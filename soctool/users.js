@@ -7,7 +7,7 @@ const usersUsernameInfo = async (client, username) => {
   debug(response);
 
   if (response.status === 'fail' || response.challenge) {
-    throw response.message;
+    throw new Error(response.message);
   }
 
   return response;
