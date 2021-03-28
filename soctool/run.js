@@ -113,6 +113,7 @@ const run = async (username) => {
   // element = await driver.wait(until.elementLocated(By.id('iniciarTarefas')), 10000);
   // element.click();
 
+  let hasLock = false;
   while (true) {
     debug(`Follow #${i} of ${followCount}`);
     let taskId;
@@ -133,6 +134,7 @@ const run = async (username) => {
       // const href = await element.getAttribute('href');
       // const targetUsername = last(href.split('/'));
       await lock.wait();
+      hasLock = true;
       const targetUsername = await dizuBrowser.getTask(username);
       data = { targetUsername };
       debug(data);
@@ -150,12 +152,14 @@ const run = async (username) => {
       if (isUndefined(user)) {
         debug(`Account is not valid. Skipping.`);
         lock.signal();
+        hasLock = false;
         continue;
       }
 
       if (user.is_private) {
         debug(`Account ${user.username} is private. Skipping.`);
         lock.signal();
+        hasLock = false;
         continue;
       }
 
@@ -172,6 +176,7 @@ const run = async (username) => {
       // await element.submit();
       await dizuBrowser.submitTask();
       lock.signal();
+      hasLock = false;
       await sleep(5000);
 
       if (i >= followCount) break;
@@ -206,7 +211,10 @@ const run = async (username) => {
       console.error(e);
 
       await accountManager.saveAttrs({ status: 'error', errorMessage: e.message });
-      lock.signal();
+      if (hasLock) {
+        lock.signal();
+        hasLock = false;
+      }
 
       // debug(`Sending TASK_ERROR request...`);
       // data = await vtopeApi.taskError({ atoken: accountManager.attrs.atoken, id: taskId, errorType: 'doerror' });
