@@ -1,5 +1,6 @@
 const { isUndefined, isEmpty, sample, random, last } = require('lodash');
-const debug = require('debug')('bot:soctool:run');
+const _debug = require('debug');
+const debug = _debug('bot:soctool:run');
 const Promise = require('bluebird');
 // const {Capabilities, Builder, By, until} = require('selenium-webdriver');
 const {Lock} = require('semaphore-async-await');
@@ -47,6 +48,8 @@ const mockAuthorizeCommand = async (id, username) => {
 // }
 
 const run = async (username) => {
+  const debug = _debug(`bot:soctool:run:${username}`);
+
   // const userDataDir = process.argv[2] === 'mac' ? '/Users/wolf/Library/Application Support/Google/Chrome/Profile 2' : 'C:\\Users\\Dorinha Andrade\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1';
   // const chromeCapabilities = Capabilities.chrome();
   // chromeCapabilities.set('goog:chromeOptions', {

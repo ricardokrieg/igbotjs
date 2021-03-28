@@ -6,6 +6,10 @@ const usersUsernameInfo = async (client, username) => {
   const response = await client.send({ url: `/api/v1/users/${username}/usernameinfo/` });
   debug(response);
 
+  if (response.status === 'fail' || response.challenge) {
+    throw response.message;
+  }
+
   return response;
 };
 
