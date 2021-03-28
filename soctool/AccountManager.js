@@ -25,7 +25,7 @@ class AccountManager {
     const snapshot = await this.accountRef().get();
 
     if (!snapshot.exists) {
-      throw `Account ${this.username} not found!`;
+      throw new Error(`Account ${this.username} not found!`);
     }
 
     this.attrs = snapshot.data();
@@ -131,7 +131,7 @@ class AccountManager {
     const snapshot = await accountManager.accountRef().get();
 
     if (snapshot.exists) {
-      throw `Account ${username} already exists!`;
+      throw new Error(`Account ${username} already exists!`);
     }
 
     const addedAt = new Date();

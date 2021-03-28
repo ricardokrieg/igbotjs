@@ -19,12 +19,8 @@ const friendshipsCreate = async (client, pk) => {
   const response = await client.send({ url: `/api/v1/friendships/create/${pk}/`, method: `POST`, form });
   debug(response);
 
-  if (response.spam) {
-    throw response.message;
-  }
-
-  if (response.message === 'challenge_required' || response.status === 'fail') {
-    throw 'Challenge Required';
+  if (response.spam || response.message === 'challenge_required' || response.status === 'fail') {
+    throw new Error(response.message);
   }
 
   return response;
