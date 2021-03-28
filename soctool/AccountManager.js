@@ -43,6 +43,10 @@ class AccountManager {
     return this.accountRef().set(this.attrs, { merge: true });
   }
 
+  hasError() {
+    return this.attrs.status === 'error';
+  }
+
   async calculateStage() {
     let momentDate;
     if (isUndefined(this.attrs.addedAt) || isNull(this.attrs.addedAt)) {
@@ -90,8 +94,8 @@ class AccountManager {
     return snapshot.size;
   }
 
-  static async allUsernames() {
-    const docs = (await this.accountsCol().select('username').get()).docs;
+  static async allUsernames(group) {
+    const docs = (await this.accountsCol().where('group', '==', group).select('username').get()).docs;
     return map(docs, (doc) => doc.get('username'))
   }
 

@@ -67,6 +67,13 @@ const run = async (username) => {
   const accountManager = new AccountManager(username, mockAuthorizeCommand);
 
   await accountManager.loadAttrs();
+
+  if (accountManager.hasError()) {
+    debug(`Account ${username} has error. Skipping.`);
+    console.error(`Account ${username} has error. Skipping.`);
+    return;
+  }
+
   await accountManager.calculateStage();
 
   debug(`Day #${accountManager.attrs.day}`);
@@ -198,6 +205,9 @@ const run = async (username) => {
       console.error(`Error on Account ${username}`);
       console.error(e);
 
+      await accountManager.saveAttrs({ status: 'error', errorMessage: e.message });
+      lock.signal();
+
       // debug(`Sending TASK_ERROR request...`);
       // data = await vtopeApi.taskError({ atoken: accountManager.attrs.atoken, id: taskId, errorType: 'doerror' });
       // debug(data);
@@ -214,7 +224,7 @@ const lock = new Lock(1);
   await dizuBrowser.build();
 
   if (isUndefined(process.env.IG_USERNAME)) {
-    const usernames = await AccountManager.allUsernames();
+    const usernames = await AccountManager.allUsernames('1');
 
     const accounts = [];
     for (let username of usernames) {
