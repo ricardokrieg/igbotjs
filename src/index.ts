@@ -7,7 +7,7 @@ import {AccountManager, Account} from './AccountManager/AccountManager';
 (async () => {
   try {
     const username: string = process.env.IG_USERNAME;
-    const followCount: number = parseInt(process.env.FOLLOW_COUNT);
+    const followCount: number = parseInt(process.env.FOLLOW_COUNT, 10);
 
     const account: Account = await AccountManager.find(username);
     debug(account);

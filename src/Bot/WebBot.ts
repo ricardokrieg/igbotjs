@@ -66,7 +66,7 @@ export class WebBot {
     const cookieStore = new MemoryCookieStore();
     this.cookieJar = jar(cookieStore);
 
-    for (let cookie of cookies.split(`;`)) {
+    for (const cookie of cookies.split(`;`)) {
       this.cookieJar.setCookie(cookie.trim(), `https://www.instagram.com/`);
     }
 
