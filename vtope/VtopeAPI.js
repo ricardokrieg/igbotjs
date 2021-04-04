@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { retry } = require('@lifeomic/attempt');
-const { sleep } = require('../src/v2/utils/sleep');
+const { sleep } = require('../old_src/v2/utils/sleep');
 
 const VTOPE_USER_ID = `5018924`;
 const VTOPE_KEY     = `Rk5JnrXXr3pUOuwh`;

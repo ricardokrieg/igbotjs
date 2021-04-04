@@ -1,6 +1,6 @@
-const Bot = require('../src/Bot');
-const follow = require('../src/v2/actions/followByUsername');
-const { quickSleep, longSleep } = require('../src/v2/utils/sleep');
+const Bot = require('../old_src/Bot');
+const follow = require('../old_src/v2/actions/followByUsername');
+const { quickSleep, longSleep } = require('../old_src/v2/utils/sleep');
 const VtopeAPI = require('./VtopeAPI');
 const { random, sample } = require('lodash');
 const debug = require('debug')('bot:vtope:run');
@@ -59,7 +59,7 @@ const followCount = 27;
         await longSleep();
         continue;
       }
-      
+
       debug(`Follow #${i}`);
 
       data = await api.requestFollow({ atoken });

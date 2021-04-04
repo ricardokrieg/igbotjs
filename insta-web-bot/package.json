@@ -2,18 +2,30 @@
   "name": "insta-web-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.ts",
+  "main": "dist/InstaWebBot.js",
+  "types": "dist/InstaWebBot.d.ts",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dizu-selenium": "workspace:dizu-selenium"
+    "@lifeomic/attempt": "^3.0.0",
+    "debug": "^4.3.1",
+    "lodash": "^4.17.21",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "tough-cookie": "^4.0.0"
   },
   "devDependencies": {
+    "@types/debug": "^4",
+    "@types/lodash": "^4",
+    "@types/node": "^14.14.37",
+    "@types/request": "^2",
+    "@types/request-promise": "^4",
+    "@types/tough-cookie": "^4",
     "tslint": "^6.1.3",
     "typescript": "^4.2.3"
   }

@@ -1,6 +1,6 @@
-const Bot = require('../src/Bot');
-const follow = require('../src/v2/actions/followById');
-const { quickSleep } = require('../src/v2/utils/sleep');
+const Bot = require('../old_src/Bot');
+const follow = require('../old_src/v2/actions/followById');
+const { quickSleep } = require('../old_src/v2/utils/sleep');
 const VtopeAPI = require('./VtopeAPI');
 const debug = require('debug')('bot:vtope:run');
 

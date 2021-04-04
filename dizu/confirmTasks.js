@@ -1,7 +1,7 @@
 const fs = require('fs');
 const DizuAPI = require('./DizuAPI');
 const debug = require('debug')('bot:dizu:confirmTask');
-const { sleep } = require('../src/v2/utils/sleep');
+const { sleep } = require('../old_src/v2/utils/sleep');
 
 const accountUsername = process.argv[2];
 

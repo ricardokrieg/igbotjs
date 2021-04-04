@@ -13,7 +13,7 @@ const { mediaSeen } = require('./media');
 const start = require('./start');
 const { sleepForDay, getFollowCountForDay } = require('./utils');
 const AccountManager = require('./AccountManager');
-const { sleep } = require('../src/v2/utils/sleep');
+const { sleep } = require('../old_src/v2/utils/sleep');
 
 const VtopeAPI = require('../vtope/VtopeAPI');
 const DizuAPI = require('../dizu/DizuAPI');

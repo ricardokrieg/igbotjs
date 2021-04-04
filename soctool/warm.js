@@ -9,7 +9,7 @@ const { friendshipsCreate } = require('./friendships');
 const { feedTimeline, feedReelsTray, feedUser } = require('./feed');
 const { mediaSeen } = require('./media');
 const start = require('./start');
-const { quickSleep, longSleep } = require('../src/v2/utils/sleep');
+const { quickSleep, longSleep } = require('../old_src/v2/utils/sleep');
 
 const VtopeAPI = require('../vtope/VtopeAPI');
 
