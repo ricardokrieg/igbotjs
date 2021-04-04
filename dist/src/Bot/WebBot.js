@@ -43,9 +43,10 @@ const InvalidAccount_1 = require("../AccountManager/InvalidAccount");
 const UserNotFound_1 = require("./UserNotFound");
 const InvalidResponse_1 = require("./InvalidResponse");
 const TooManyRequests_1 = require("./TooManyRequests");
-const defaultOptions = (cookieJar, headers, customHeaders) => {
+const defaultOptions = (proxy, cookieJar, headers, customHeaders) => {
     return {
         baseUrl: 'https://www.instagram.com',
+        proxy,
         jar: cookieJar,
         gzip: true,
         headers: lodash_1.defaultsDeep({}, customHeaders, headers),
@@ -63,26 +64,19 @@ const attemptOptions = {
         console.error(options);
     }
 };
-// const makeRequest = async (attrs): Promise<any> => {
-//   try {
-//     await request(attrs)
-//   } catch (err) {
-//     if (err.response.statusCode === 404) {
-//       return Promise.resolve(err.response);
-//     } else {
-//       throw err;
-//     }
-//   }
-// }
 class WebBot {
     constructor(account) {
-        const { cookies, userAgent, csrfToken, igWwwClaim, instagramAjax, } = account;
+        const { username, proxy, cookies, userAgent, csrfToken, igWwwClaim, instagramAjax, } = account;
         if (!cookies || !userAgent || !csrfToken || !igWwwClaim || !instagramAjax) {
-            throw new InvalidAccount_1.InvalidAccount(account.username);
+            throw new InvalidAccount_1.InvalidAccount(username);
+        }
+        this.proxy = proxy;
+        if (!proxy) {
+            console.warn(`Account ${username} has no proxy`);
         }
         const cookieStore = new tough_cookie_1.MemoryCookieStore();
         this.cookieJar = request_1.jar(cookieStore);
-        for (let cookie of cookies.split(`;`)) {
+        for (const cookie of cookies.split(`;`)) {
             this.cookieJar.setCookie(cookie.trim(), `https://www.instagram.com/`);
         }
         this.headers = {
@@ -120,7 +114,7 @@ class WebBot {
             };
             const response = yield attempt_1.retry(() => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    return yield request_promise_1.default(lodash_1.defaultsDeep({}, options, defaultOptions(this.cookieJar, this.headers, {})));
+                    return yield request_promise_1.default(lodash_1.defaultsDeep({}, options, defaultOptions(this.proxy, this.cookieJar, this.headers, {})));
                 }
                 catch (err) {
                     if ([404, 429].includes(err.response.statusCode)) {
@@ -152,7 +146,7 @@ class WebBot {
                 method: `POST`,
             };
             const response = yield attempt_1.retry(() => __awaiter(this, void 0, void 0, function* () {
-                return request_promise_1.default(lodash_1.defaultsDeep({}, options, defaultOptions(this.cookieJar, this.headers, { 'Referer': referer })));
+                return request_promise_1.default(lodash_1.defaultsDeep({}, options, defaultOptions(this.proxy, this.cookieJar, this.headers, { 'Referer': referer })));
             }), attemptOptions);
             debug(response.body);
             return Promise.resolve(response);

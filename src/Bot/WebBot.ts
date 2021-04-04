@@ -12,9 +12,10 @@ import {UserNotFound} from './UserNotFound';
 import {InvalidResponse} from './InvalidResponse';
 import {TooManyRequests} from "./TooManyRequests";
 
-const defaultOptions = (cookieJar, headers, customHeaders) => {
+const defaultOptions = (proxy, cookieJar, headers, customHeaders) => {
   return {
     baseUrl: 'https://www.instagram.com',
+    proxy,
     jar: cookieJar,
     gzip: true,
     headers: defaultsDeep({}, customHeaders, headers),
@@ -34,24 +35,15 @@ const attemptOptions = {
   }
 };
 
-// const makeRequest = async (attrs): Promise<any> => {
-//   try {
-//     await request(attrs)
-//   } catch (err) {
-//     if (err.response.statusCode === 404) {
-//       return Promise.resolve(err.response);
-//     } else {
-//       throw err;
-//     }
-//   }
-// }
-
 export class WebBot {
   cookieJar: CookieJar;
   headers: any;
+  proxy?: string;
 
   constructor(account: Account) {
     const {
+      username,
+      proxy,
       cookies,
       userAgent,
       csrfToken,
@@ -60,7 +52,12 @@ export class WebBot {
     } = account;
 
     if (!cookies || !userAgent || !csrfToken || !igWwwClaim || !instagramAjax) {
-      throw new InvalidAccount(account.username);
+      throw new InvalidAccount(username);
+    }
+
+    this.proxy = proxy;
+    if (!proxy) {
+      console.warn(`Account ${username} has no proxy`);
     }
 
     const cookieStore = new MemoryCookieStore();
@@ -110,7 +107,7 @@ export class WebBot {
           defaultsDeep(
             {},
             options,
-            defaultOptions(this.cookieJar, this.headers, {})
+            defaultOptions(this.proxy, this.cookieJar, this.headers, {})
           )
         )
       } catch (err) {
@@ -151,7 +148,7 @@ export class WebBot {
         defaultsDeep(
           {},
           options,
-          defaultOptions(this.cookieJar, this.headers, { 'Referer': referer })
+          defaultOptions(this.proxy, this.cookieJar, this.headers, { 'Referer': referer })
         )
       )
     }, attemptOptions);

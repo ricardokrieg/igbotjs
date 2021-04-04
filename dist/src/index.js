@@ -35,7 +35,7 @@ const AccountManager_1 = require("./AccountManager/AccountManager");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const username = process.env.IG_USERNAME;
-        const followCount = parseInt(process.env.FOLLOW_COUNT);
+        const followCount = parseInt(process.env.FOLLOW_COUNT, 10);
         const account = yield AccountManager_1.AccountManager.find(username);
         debug(account);
         debug(`Starting ${username}`);

@@ -4,6 +4,7 @@ export interface Account {
     password: string;
     taskProvider: string;
     bot: string;
+    proxy?: string;
     cookies?: string;
     userAgent?: string;
     csrfToken?: string;
