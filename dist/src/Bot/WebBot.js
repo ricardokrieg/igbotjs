@@ -134,9 +134,15 @@ class WebBot {
             if (response.statusCode !== 200) {
                 throw new InvalidResponse_1.InvalidResponse(username, response.statusCode);
             }
-            const pk = response.body.match(/profilePage_(\d+)/)[1];
-            debug(pk);
-            return Promise.resolve(pk);
+            try {
+                const pk = response.body.match(/profilePage_(\d+)/)[1];
+                debug(pk);
+                return Promise.resolve(pk);
+            }
+            catch (err) {
+                debug(response);
+                throw err;
+            }
         });
     }
     _follow(pk, referer) {

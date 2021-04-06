@@ -26,6 +26,25 @@ export class DizuTaskProvider implements TaskProvider {
   async getTask(taskRequest: TaskRequest): Promise<Task> {
     await this.ensureDriver();
 
+    let task;
+    do {
+      const href = await this.getTaskLink(taskRequest);
+      debug(href);
+
+      const splitHref = href.split('/');
+      if (splitHref[splitHref.length - 2] === 'p') {
+        debug('Skipping "Like" task');
+        continue;
+      }
+      const username = last(splitHref);
+
+      task = { id: '', username, method: TaskMethod.Follow };
+    } while (!task);
+
+    return Promise.resolve(task);
+  }
+
+  async getTaskLink(taskRequest: TaskRequest): Promise<string> {
     await this.driver.get(this.GET_TASK_URL);
     let element = await this.driver.wait(until.elementLocated(By.id('instagram_id')), 10000);
     await DizuTaskProvider.selectByVisibleText(element, taskRequest.tasker.username);
@@ -45,12 +64,7 @@ export class DizuTaskProvider implements TaskProvider {
       throw err;
     }
 
-    const href = await element.getAttribute('href');
-    const username = last(href.split('/'));
-
-    const task = { id: '', username, method: TaskMethod.Follow };
-
-    return Promise.resolve(task);
+    return element.getAttribute('href');
   }
 
   async confirmTask(taskConfirmation: TaskConfirmation): Promise<void> {

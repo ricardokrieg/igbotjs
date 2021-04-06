@@ -131,10 +131,14 @@ export class WebBot {
       throw new InvalidResponse(username, response.statusCode);
     }
 
-    const pk = response.body.match(/profilePage_(\d+)/)[1];
-
-    debug(pk);
-    return Promise.resolve(pk);
+    try {
+      const pk = response.body.match(/profilePage_(\d+)/)[1];
+      debug(pk);
+      return Promise.resolve(pk);
+    } catch (err) {
+      debug(response);
+      throw err;
+    }
   }
 
   async _follow(pk: string, referer: string): Promise<any> {

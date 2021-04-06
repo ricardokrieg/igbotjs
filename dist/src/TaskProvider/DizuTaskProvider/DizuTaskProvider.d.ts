@@ -10,6 +10,7 @@ export declare class DizuTaskProvider implements TaskProvider {
     platform: SeleniumPlatform;
     constructor();
     getTask(taskRequest: TaskRequest): Promise<Task>;
+    getTaskLink(taskRequest: TaskRequest): Promise<string>;
     confirmTask(taskConfirmation: TaskConfirmation): Promise<void>;
     quit(): Promise<void>;
     private ensureDriver;

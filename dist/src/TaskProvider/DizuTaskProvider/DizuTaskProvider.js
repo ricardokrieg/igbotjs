@@ -53,6 +53,23 @@ class DizuTaskProvider {
     getTask(taskRequest) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.ensureDriver();
+            let task;
+            do {
+                const href = yield this.getTaskLink(taskRequest);
+                debug(href);
+                const splitHref = href.split('/');
+                if (splitHref[splitHref.length - 2] === 'p') {
+                    debug('Skipping "Like" task');
+                    continue;
+                }
+                const username = lodash_1.last(splitHref);
+                task = { id: '', username, method: TaskProvider_1.TaskMethod.Follow };
+            } while (!task);
+            return Promise.resolve(task);
+        });
+    }
+    getTaskLink(taskRequest) {
+        return __awaiter(this, void 0, void 0, function* () {
             yield this.driver.get(this.GET_TASK_URL);
             let element = yield this.driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.id('instagram_id')), 10000);
             yield DizuTaskProvider.selectByVisibleText(element, taskRequest.tasker.username);
@@ -70,10 +87,7 @@ class DizuTaskProvider {
                 }
                 throw err;
             }
-            const href = yield element.getAttribute('href');
-            const username = lodash_1.last(href.split('/'));
-            const task = { id: '', username, method: TaskProvider_1.TaskMethod.Follow };
-            return Promise.resolve(task);
+            return element.getAttribute('href');
         });
     }
     confirmTask(taskConfirmation) {
