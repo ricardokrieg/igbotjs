@@ -80,6 +80,7 @@
     "dizu/selenium/mac": "npx @babel/node dizu_selenium/playground.js mac",
     "dizu/selenium/windows": "npx @babel/node dizu_selenium/playground.js windows",
     "start": "tsc && DEBUG=* node dist/src/index.js",
+    "importFromCurl": "tsc && DEBUG=* FILE_PATH=res/curl.txt node dist/src/import.js",
     "test": "jest"
   },
   "devDependencies": {
