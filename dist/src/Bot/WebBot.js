@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -37,12 +18,13 @@ const request_promise_1 = __importDefault(require("request-promise"));
 const lodash_1 = require("lodash");
 const request_1 = require("request");
 const tough_cookie_1 = require("tough-cookie");
-const _debug = __importStar(require("debug"));
-const debug = _debug.debug('WebBot');
+const debug_1 = __importDefault(require("debug"));
+let debug = debug_1.default('WebBot');
 const InvalidAccount_1 = require("../AccountManager/InvalidAccount");
 const UserNotFound_1 = require("./UserNotFound");
 const InvalidResponse_1 = require("./InvalidResponse");
 const TooManyRequests_1 = require("./TooManyRequests");
+const FeedbackRequired_1 = require("./FeedbackRequired");
 const defaultOptions = (proxy, cookieJar, headers, customHeaders) => {
     return {
         baseUrl: 'https://www.instagram.com',
@@ -70,6 +52,8 @@ class WebBot {
         if (!cookies || !userAgent || !csrfToken || !igWwwClaim || !instagramAjax) {
             throw new InvalidAccount_1.InvalidAccount(username);
         }
+        debug = debug.extend(username);
+        this.username = username;
         this.proxy = proxy;
         if (!proxy) {
             console.warn(`Account ${username} has no proxy`);
@@ -114,7 +98,7 @@ class WebBot {
             };
             const response = yield attempt_1.retry(() => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    return yield request_promise_1.default(lodash_1.defaultsDeep({}, options, defaultOptions(this.proxy, this.cookieJar, this.headers, {})));
+                    return yield this._request(options, {});
                 }
                 catch (err) {
                     if ([404, 429].includes(err.response.statusCode)) {
@@ -129,18 +113,18 @@ class WebBot {
                 throw new UserNotFound_1.UserNotFound(username, response.statusMessage);
             }
             if (response.statusCode === 429) {
-                throw new TooManyRequests_1.TooManyRequests(username, response.statusMessage);
+                throw new TooManyRequests_1.TooManyRequests(options.url, response.statusMessage);
             }
             if (response.statusCode !== 200) {
-                throw new InvalidResponse_1.InvalidResponse(username, response.statusCode);
+                throw new InvalidResponse_1.InvalidResponse(options.url, response.statusCode);
             }
             try {
                 const pk = response.body.match(/profilePage_(\d+)/)[1];
-                debug(pk);
+                debug(`PK: ${pk}`);
                 return Promise.resolve(pk);
             }
             catch (err) {
-                debug(response);
+                debug(response.body);
                 throw err;
             }
         });
@@ -152,9 +136,31 @@ class WebBot {
                 method: `POST`,
             };
             const response = yield attempt_1.retry(() => __awaiter(this, void 0, void 0, function* () {
-                return request_promise_1.default(lodash_1.defaultsDeep({}, options, defaultOptions(this.proxy, this.cookieJar, this.headers, { 'Referer': referer })));
+                try {
+                    return yield this._request(options, { 'Referer': referer });
+                }
+                catch (err) {
+                    if ([400, 429].includes(err.response.statusCode)) {
+                        return err.response;
+                    }
+                    else {
+                        throw err;
+                    }
+                }
             }), attemptOptions);
+            if (response.statusCode === 400) {
+                throw new FeedbackRequired_1.FeedbackRequired(this.username, response.body);
+            }
+            if (response.statusCode === 429) {
+                throw new TooManyRequests_1.TooManyRequests(options.url, response.statusMessage);
+            }
             debug(response.body);
+            return Promise.resolve(response);
+        });
+    }
+    _request(options, headers) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield request_promise_1.default(lodash_1.defaultsDeep({}, options, defaultOptions(this.proxy, this.cookieJar, this.headers, headers)));
             return Promise.resolve(response);
         });
     }

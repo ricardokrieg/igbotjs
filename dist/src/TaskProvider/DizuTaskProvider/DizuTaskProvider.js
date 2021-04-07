@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,10 +17,10 @@ const lodash_1 = require("lodash");
 const selenium_webdriver_1 = require("selenium-webdriver");
 const chrome_1 = __importDefault(require("selenium-webdriver/chrome"));
 const path_1 = __importDefault(require("path"));
-const _debug = __importStar(require("debug"));
+const debug_1 = __importDefault(require("debug"));
 const TaskProvider_1 = require("../TaskProvider");
 const NoTask_1 = require("../NoTask");
-const debug = _debug.debug('DizuTaskProvider');
+const debug = debug_1.default('DizuTaskProvider');
 var SeleniumPlatform;
 (function (SeleniumPlatform) {
     SeleniumPlatform[SeleniumPlatform["Mac"] = 0] = "Mac";

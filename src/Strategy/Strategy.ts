@@ -1,4 +1,4 @@
-import * as _debug from 'debug';
+import _debug from 'debug';
 import {Account} from '../AccountManager/AccountStore';
 import {Sleep} from "../Utils/Sleep";
 import {TaskMethod, TaskStatus} from "../TaskProvider/TaskProvider";
@@ -7,13 +7,14 @@ import {WebBot} from "../Bot/WebBot";
 import {UserNotFound} from "../Bot/UserNotFound";
 import {TooManyRequests} from "../Bot/TooManyRequests";
 
-const debug = _debug.debug('Strategy');
+let debug = _debug('Strategy');
 
 export class Strategy {
   account: Account;
 
   constructor(account: Account) {
     this.account = account;
+    debug = debug.extend(account.username);
   }
 
   async start(followCount: number): Promise<void> {

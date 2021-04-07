@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InvalidResponse = void 0;
 class InvalidResponse extends Error {
-    constructor(username, statusCode) {
-        super(`Invalid Response: ${username}, status = ${statusCode}`);
+    constructor(url, statusCode) {
+        super(`Invalid Response: ${url}, status = ${statusCode}`);
     }
 }
 exports.InvalidResponse = InvalidResponse;

@@ -3,14 +3,15 @@ import request from 'request-promise';
 import { defaultsDeep } from 'lodash';
 import { CookieJar, jar } from 'request';
 import { MemoryCookieStore } from 'tough-cookie';
-import * as _debug from 'debug';
-const debug = _debug.debug('WebBot');
+import _debug from 'debug';
+let debug = _debug('WebBot');
 
 import {Account} from '../AccountManager/AccountStore';
 import {InvalidAccount} from '../AccountManager/InvalidAccount';
 import {UserNotFound} from './UserNotFound';
 import {InvalidResponse} from './InvalidResponse';
 import {TooManyRequests} from "./TooManyRequests";
+import {FeedbackRequired} from "./FeedbackRequired";
 
 const defaultOptions = (proxy, cookieJar, headers, customHeaders) => {
   return {
@@ -36,6 +37,7 @@ const attemptOptions = {
 };
 
 export class WebBot {
+  username: string;
   cookieJar: CookieJar;
   headers: any;
   proxy?: string;
@@ -55,6 +57,9 @@ export class WebBot {
       throw new InvalidAccount(username);
     }
 
+    debug = debug.extend(username);
+
+    this.username = username;
     this.proxy = proxy;
     if (!proxy) {
       console.warn(`Account ${username} has no proxy`);
@@ -103,13 +108,7 @@ export class WebBot {
 
     const response = await retry(async (): Promise<any> => {
       try {
-        return await request(
-          defaultsDeep(
-            {},
-            options,
-            defaultOptions(this.proxy, this.cookieJar, this.headers, {})
-          )
-        )
+        return await this._request(options, {});
       } catch (err) {
         if ([404, 429].includes(err.response.statusCode)) {
           return err.response;
@@ -124,19 +123,19 @@ export class WebBot {
     }
 
     if (response.statusCode === 429) {
-      throw new TooManyRequests(username, response.statusMessage);
+      throw new TooManyRequests(options.url, response.statusMessage);
     }
 
     if (response.statusCode !== 200) {
-      throw new InvalidResponse(username, response.statusCode);
+      throw new InvalidResponse(options.url, response.statusCode);
     }
 
     try {
       const pk = response.body.match(/profilePage_(\d+)/)[1];
-      debug(pk);
+      debug(`PK: ${pk}`);
       return Promise.resolve(pk);
     } catch (err) {
-      debug(response);
+      debug(response.body);
       throw err;
     }
   }
@@ -148,16 +147,38 @@ export class WebBot {
     };
 
     const response = await retry(async () => {
-      return request(
-        defaultsDeep(
-          {},
-          options,
-          defaultOptions(this.proxy, this.cookieJar, this.headers, { 'Referer': referer })
-        )
-      )
+      try {
+        return await this._request(options, { 'Referer': referer });
+      } catch (err) {
+        if ([400, 429].includes(err.response.statusCode)) {
+          return err.response;
+        } else {
+          throw err;
+        }
+      }
     }, attemptOptions);
 
+    if (response.statusCode === 400) {
+      throw new FeedbackRequired(this.username, response.body);
+    }
+
+    if (response.statusCode === 429) {
+      throw new TooManyRequests(options.url, response.statusMessage);
+    }
+
     debug(response.body);
+
+    return Promise.resolve(response);
+  }
+
+  async _request(options, headers): Promise<any> {
+    const response = await request(
+      defaultsDeep(
+        {},
+        options,
+        defaultOptions(this.proxy, this.cookieJar, this.headers, headers)
+      )
+    )
 
     return Promise.resolve(response);
   }

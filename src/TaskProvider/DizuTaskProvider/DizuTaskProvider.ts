@@ -2,11 +2,11 @@ import {last} from 'lodash';
 import {Builder, By, Capabilities, until, WebDriver, WebElement} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import path from 'path';
-import * as _debug from 'debug';
+import _debug from 'debug';
 import {Task, TaskConfirmation, TaskMethod, TaskProvider, TaskRequest, TaskStatus} from '../TaskProvider';
 import {NoTask} from '../NoTask';
 
-const debug = _debug.debug('DizuTaskProvider');
+const debug = _debug('DizuTaskProvider');
 
 enum SeleniumPlatform {
   Mac,
