@@ -22,7 +22,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sleep = void 0;
 const _debug = __importStar(require("debug"));
 const debug = _debug.debug('Sleep');
-const Sleep = (ms) => {
+const Sleep = (ms, maxMs) => {
+    if (maxMs) {
+        ms = Math.floor(Math.random() * (maxMs - ms + 1) + ms);
+    }
     debug(`Sleeping ${Math.round(ms / 1000)}s`);
     return new Promise(resolve => setTimeout(resolve, ms));
 };

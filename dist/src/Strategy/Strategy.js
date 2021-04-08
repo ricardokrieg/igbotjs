@@ -35,7 +35,7 @@ class Strategy {
                 while (i <= followCount) {
                     debug(`Task #${i}`);
                     if (i > 1) {
-                        yield Sleep_1.Sleep(5000);
+                        yield Sleep_1.Sleep(5000, 10000);
                     }
                     const task = yield taskProvider.getTask({ tasker: this.account });
                     debug(task);

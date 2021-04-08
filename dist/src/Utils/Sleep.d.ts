@@ -1,1 +1,1 @@
-export declare const Sleep: (ms: any) => Promise<unknown>;
+export declare const Sleep: (ms: number, maxMs?: number) => Promise<unknown>;

@@ -28,7 +28,7 @@ export class Strategy {
         debug(`Task #${i}`);
 
         if (i > 1) {
-          await Sleep(5000);
+          await Sleep(5000, 10000);
         }
 
         const task = await taskProvider.getTask({ tasker: this.account });
