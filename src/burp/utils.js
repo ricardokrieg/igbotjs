@@ -1,5 +1,6 @@
 const Chance = require('chance');
 const { toPairs } = require('lodash');
+const crypto = require('crypto');
 
 const extractCookie = (cookieJar, key) => {
   const cookies = cookieJar.getCookies(`https://i.instagram.com`);
@@ -61,14 +62,20 @@ const upCaseHeaders = (headers) => {
   return modifiedHeaders;
 };
 
-const appendDefaultHeaders = (headers, isGzip = false) => {
+const appendDefaultHeaders = (headers, method, isGzip = false) => {
   const gzipHeaders = {};
   if (isGzip) {
     gzipHeaders['Content-Encoding'] = 'gzip';
   }
 
-  const defaultHeaders = {
-    'Content-Type': `application/x-www-form-urlencoded; charset=UTF-8`,
+  let defaultHeaders = {};
+
+  if (method === 'POST') {
+    defaultHeaders['Content-Type'] = `application/x-www-form-urlencoded; charset=UTF-8`;
+  }
+
+  defaultHeaders = {
+    ...defaultHeaders,
     'Accept-Encoding': `gzip, deflate`,
     'Host': `i.instagram.com`,
     'X-FB-HTTP-Engine': `Liger`,
@@ -84,6 +91,55 @@ const appendDefaultHeaders = (headers, isGzip = false) => {
   };
 };
 
+const createJazoest = (input) => {
+  const buf = Buffer.from(input, 'ascii');
+  let sum = 0;
+  for (let i = 0; i < buf.byteLength; i++) {
+    sum += buf.readUInt8(i);
+  }
+  return `2${sum}`;
+};
+
+const encryptPassword = (client, password) => {
+  const randKey = crypto.randomBytes(32);
+  const iv = crypto.randomBytes(12);
+  const rsaEncrypted = crypto.publicEncrypt(
+    {
+      key: Buffer.from(client.attrs.passwordEncryptionPubKey, 'base64').toString(),
+      // @ts-ignore
+      padding: crypto.constants.RSA_PKCS1_PADDING,
+    },
+    randKey,
+  );
+  const cipher = crypto.createCipheriv('aes-256-gcm', randKey, iv);
+  const time = Math.floor(Date.now() / 1000).toString();
+  cipher.setAAD(Buffer.from(time));
+  const aesEncrypted = Buffer.concat([cipher.update(password, 'utf8'), cipher.final()]);
+  const sizeBuffer = Buffer.alloc(2, 0);
+  sizeBuffer.writeInt16LE(rsaEncrypted.byteLength, 0);
+  const authTag = cipher.getAuthTag();
+
+  const encrypted = Buffer.concat([
+    Buffer.from([1, client.attrs.passwordEncryptionKeyId]),
+    iv,
+    sizeBuffer,
+    rsaEncrypted,
+    authTag,
+    aesEncrypted,
+  ]).toString('base64');
+
+  return `#PWD_INSTAGRAM:4:${time}:${encrypted}`;
+};
+
+const getSnNonce = (id) => {
+  const timestamp = Math.floor(new Date().getTime() / 1000);
+  // const random = crypto.randomBytes(12);
+  const random = '123456789012';
+  const str = `${id}|${timestamp}|${random.toString()}`;
+
+  return Buffer.from(str).toString('base64');
+};
+
 module.exports = {
   extractCookieValue,
   getRandomId,
@@ -91,4 +147,7 @@ module.exports = {
   batteryLevel,
   upCaseHeaders,
   appendDefaultHeaders,
+  createJazoest,
+  encryptPassword,
+  getSnNonce,
 };

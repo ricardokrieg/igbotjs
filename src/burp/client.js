@@ -46,7 +46,7 @@ module.exports = class Client {
   async send(options) {
     options = {
       ...options,
-      headers: appendDefaultHeaders(options.headers),
+      headers: appendDefaultHeaders(options.headers, options.method),
     };
 
     return retry(async () => {
@@ -68,7 +68,7 @@ module.exports = class Client {
   async sendGzip(options) {
     options = {
       ...options,
-      headers: appendDefaultHeaders(options.headers, true),
+      headers: appendDefaultHeaders(options.headers, options.method, true),
     };
 
     return retry(async () => {
@@ -147,7 +147,9 @@ module.exports = class Client {
           this.attrs.igWwwClaim = value;
           break;
         case 'ig-set-authorization':
-          this.attrs.authorization = value;
+          if (!value.endsWith(':')) {
+            this.attrs.authorization = value;
+          }
           break;
         case 'ig-set-x-mid':
           this.attrs.mid = value;
@@ -166,6 +168,12 @@ module.exports = class Client {
           break;
         case 'ig-set-ig-u-ds-user-id':
           this.attrs.userId = value;
+          break;
+        case 'ig-set-password-encryption-key-id':
+          this.attrs.passwordEncryptionKeyId = value;
+          break;
+        case 'ig-set-password-encryption-pub-key':
+          this.attrs.passwordEncryptionPubKey = value;
           break;
       }
     }

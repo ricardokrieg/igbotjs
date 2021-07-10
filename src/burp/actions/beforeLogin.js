@@ -4,13 +4,16 @@ const Bluebird = require('bluebird');
 const {
   accountsContactPointPrefill,
   accountsGetPrefillCandidates,
+} = require('../requests/accounts');
+
+const {
   launcherSync,
   qeSync,
 } = require('../requests/generic');
 
 const debug = _debug('bot:beforeLogin');
 
-const afterLogin = async (client) => {
+const beforeLogin = async (client) => {
   debug(`Start`);
 
   let requests = [
@@ -25,4 +28,4 @@ const afterLogin = async (client) => {
   debug(`End`);
 };
 
-module.exports = afterLogin;
+module.exports = beforeLogin;
