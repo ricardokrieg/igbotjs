@@ -14,7 +14,6 @@ const qpBatchFetch = async (client) => {
     version: 1,
   }
 
-  // TODO check all requests with SIGNATURE
   const form = {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };

@@ -43,11 +43,17 @@ const debug = _debug('bot:simulate');
   const attrs = {
     // proxy: 'http://44.193.4.221:8888',
     proxy: 'http://192.168.15.30:8888',
+
+    locale: `en_US`,
+    language: `en-US`,
+    country: `US`,
+    timezoneOffset: 0,
+    igWwwClaim: `hmac.AR25Y__6VEUB35r51xd2ES1D4DTNQDeB50Z4oQIQroVIuh_b`,
     phoneId: '970f5113-bb0c-467e-a67e-fedf85ea38ad',
     token: token,
     userId: userId,
     uuid: '0362d54d-b663-47ba-97a6-96356e64c896',
-    deviceId: 'android-3c8a8d2f363a6ea',
+    androidId: 'android-3c8a8d2f363a6ea',
     mid: 'YOQ4QQABAAEiEQd_o3WdlkW9xE-s',
     familyDeviceId: '970f5113-bb0c-467e-a67e-fedf85ea38ad',
     userAgent: `Instagram 187.0.0.32.120 Android (26/8.0.0; 160dpi; 600x976; unknown/Android; Genymotion 'Phone' version; cloud; vbox86; en_US; 289692202)`,

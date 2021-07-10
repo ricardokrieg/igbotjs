@@ -89,7 +89,8 @@
     "soctool/import": "npx @babel/node old/soctool/import.js",
     "soctool/run": "npx @babel/node old/soctool/run.js",
 
-    "burp/simulate": "npx @babel/node src/burp/test.js"
+    "burp/simulate": "npx @babel/node src/burp/simulate.js",
+    "burp/beforeLogin": "npx @babel/node src/burp/beforeLogin.js"
   },
   "devDependencies": {
     "@types/node": "^14.14.37",
