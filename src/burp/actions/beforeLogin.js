@@ -1,5 +1,4 @@
 const _debug = require('debug');
-const { shuffle } = require('lodash');
 const Bluebird = require('bluebird');
 
 const {
@@ -14,12 +13,12 @@ const debug = _debug('bot:beforeLogin');
 const afterLogin = async (client) => {
   debug(`Start`);
 
-  let requests = shuffle([
-    // () => accountsContactPointPrefill(client),
-    // () => accountsGetPrefillCandidates(client),
-    // () => launcherSync(client),
+  let requests = [
+    () => accountsContactPointPrefill(client),
     () => qeSync(client),
-  ]);
+    () => launcherSync(client),
+    () => accountsGetPrefillCandidates(client),
+  ];
 
   await Bluebird.map(requests, request => request(), { concurrency: 1 });
 
