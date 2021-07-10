@@ -1,4 +1,4 @@
-const { defaults } = require('lodash');
+const { defaults, toPairs } = require('lodash');
 const request = require('request-promise');
 const { retry } = require('@lifeomic/attempt');
 const { jar } = require('request');
@@ -50,7 +50,10 @@ module.exports = class Client {
     };
 
     return retry(async () => {
-      const response = await request(defaults(options, this.defaultOptions()));
+      let response = await request(defaults(options, this.defaultOptions()));
+
+      this.parseHeaders(response);
+      response = JSON.parse(response.body);
 
       if (response.status === 'fail') {
         debug(response);
@@ -69,7 +72,10 @@ module.exports = class Client {
     };
 
     return retry(async () => {
-      const response = await request(defaults(options, this.defaultOptions()))
+      let response = await request(defaults(options, this.defaultOptions()))
+
+      this.parseHeaders(response);
+      response = JSON.parse(response.body);
 
       if (response.status === 'fail') {
         debug(response);
@@ -85,13 +91,13 @@ module.exports = class Client {
     return {
       baseUrl: 'https://i.instagram.com',
       proxy: this.attrs.proxy,
-      transform: JSON.parse,
       simple: false,
       jar: cookieJar,
       strictSSL: false,
       gzip: true,
       headers: this.headers(),
       method: 'GET',
+      resolveWithFullResponse: true,
     };
   }
 
@@ -129,6 +135,42 @@ module.exports = class Client {
       // 'Ig-U-Ds-User-Id': this.getUserId(),
       // 'Ig-U-Rur': `FRC`,
     };
+  }
+
+  parseHeaders(response) {
+    for (let kv of toPairs(response.headers)) {
+      const key = kv[0].toLowerCase();
+      const value = kv[1];
+
+      switch (key) {
+        case 'x-ig-set-www-claim':
+          this.attrs.igWwwClaim = value;
+          break;
+        case 'ig-set-authorization':
+          this.attrs.authorization = value;
+          break;
+        case 'ig-set-x-mid':
+          this.attrs.mid = value;
+          break;
+        case 'ig-set-ig-u-ig-direct-region-hint':
+          this.attrs.directRegionHint = value;
+          break;
+        case 'ig-set-ig-u-shbid':
+          this.attrs.shbid = value;
+          break;
+        case 'ig-set-ig-u-shbts':
+          this.attrs.shbts = value;
+          break;
+        case 'ig-set-ig-u-rur':
+          this.attrs.rur = value;
+          break;
+        case 'ig-set-ig-u-ds-user-id':
+          this.attrs.userId = value;
+          break;
+      }
+    }
+
+    debug(this.attrs);
   }
 
   generateTemporaryGuid(seed, lifetime, deviceId) {

@@ -15,13 +15,13 @@ const afterLogin = async (client) => {
   debug(`Start`);
 
   let requests = shuffle([
-    () => accountsContactPointPrefill(client),
+    // () => accountsContactPointPrefill(client),
     // () => accountsGetPrefillCandidates(client),
     // () => launcherSync(client),
-    // () => qeSync(client),
+    () => qeSync(client),
   ]);
 
-  await Bluebird.map(requests, request => request());
+  await Bluebird.map(requests, request => request(), { concurrency: 1 });
 
   debug(`End`);
 };

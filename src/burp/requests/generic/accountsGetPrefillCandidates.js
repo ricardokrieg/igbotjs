@@ -1,11 +1,13 @@
 const _debug = require('debug');
 
+const { upCaseHeaders } = require('../../utils');
+
 const accountsGetPrefillCandidates = async (client) => {
   const debug = _debug('bot:accountsGetPrefillCandidates');
 
   const data = {
-    android_device_id: "android-1d1ba5a07566ce0c",
-    phone_id: "d0b16d92-fc09-4ddc-beee-a9b88b85b288",
+    android_device_id: client.getAndroidId(),
+    phone_id: client.getFamilyDeviceId(),
     usages: "[\"account_recovery_omnibox\"]",
     device_id: client.getDeviceId(),
   };
@@ -14,7 +16,9 @@ const accountsGetPrefillCandidates = async (client) => {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };
 
-  const response = await client.send({ url: `/api/v1/accounts/get_prefill_candidates/`, method: 'POST', form });
+  const headers = upCaseHeaders(client.headers());
+
+  const response = await client.send({ url: `/api/v1/accounts/get_prefill_candidates/`, method: 'POST', form, headers });
   debug(response);
 
   return response;

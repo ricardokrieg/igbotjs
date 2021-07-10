@@ -1,6 +1,6 @@
-const { upCaseHeaders } = require('../../utils');
-
 const _debug = require('debug');
+
+const { upCaseHeaders } = require('../../utils');
 
 const accountsContactPointPrefill = async (client) => {
   const debug = _debug('bot:accountsContactPrefill');
