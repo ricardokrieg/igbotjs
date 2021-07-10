@@ -8,15 +8,13 @@ module.exports = async (client, phoneNumber) => {
   const data = {
     phone_id: client.getFamilyDeviceId(),
     login_nonce_map: `{}`,
-    phone_number: phoneNumber,
+    phone_number: `PHONE_NUMBER`,
     guid: client.getDeviceId(),
     device_id: client.getAndroidId(),
     prefill_shown: `False`,
   };
 
-  const form = {
-    signed_body: `SIGNATURE.${JSON.stringify(data)}`
-  };
+  const form = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`.replace('PHONE_NUMBER', phoneNumber.replace(/ /g, '+'));
 
   const headers = upCaseHeaders(client.headers());
 

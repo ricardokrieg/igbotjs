@@ -16,11 +16,11 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
     tos_version: `row`,
     suggestedUsername: ``,
     verification_code: verificationCode,
-    sn_result: `GOOGLE_PLAY_UNAVAILABLE:+SERVICE_INVALID`,
+    sn_result: `SN_RESULT`,
     do_not_auto_login_if_credentials_match: `true`,
     phone_id: client.getFamilyDeviceId(),
     enc_password: encryptPassword(client, password), // TODO #PWD_INSTAGRAM:4:1625927279:AVZtaaGgvDgTA2prF3...
-    phone_number: `${prefix}${phoneNumber}`,
+    phone_number: `PHONE_NUMBER`,
     username,
     first_name: name,
     day: `${day}`,
@@ -30,8 +30,7 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
     device_id: client.getAndroidId(),
     _uuid: client.getDeviceId(),
     month: `${month}`,
-    // sn_nonce: getSnNonce(phoneNumber.replace(/[^\+0-9]/g, '')), // TODO Kzc5MDg5ODkwMjc2fDE2MjU5MjcyMTN8iiiH4h3xYLRdv0UsLSTq9aBfDOddn9Bm
-    sn_nonce: getSnNonce('+79089890277'), // TODO Kzc5MDg5ODkwMjc2fDE2MjU5MjcyMTN8iiiH4h3xYLRdv0UsLSTq9aBfDOddn9Bm
+    sn_nonce: getSnNonce(`${prefix}${phoneNumber}`.replace(/[^\+0-9]/g, '')), // TODO Kzc5MDg5ODkwMjc2fDE2MjU5MjcyMTN8iiiH4h3xYLRdv0UsLSTq9aBfDOddn9Bm
     force_sign_up_code: ``,
     waterfall_id: waterfallId,
     qs_stamp: ``,
@@ -39,9 +38,7 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
     one_tap_opt_in: `true`,
   };
 
-  const form = {
-    signed_body: `SIGNATURE.${JSON.stringify(data)}`
-  };
+  const form = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`.replace('PHONE_NUMBER', `${prefix}${phoneNumber}`).replace('SN_RESULT', `GOOGLE_PLAY_UNAVAILABLE:+SERVICE_INVALID`);
 
   const headers = upCaseHeaders(client.headers());
 

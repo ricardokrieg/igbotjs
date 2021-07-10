@@ -22,7 +22,7 @@ const signUp = require("./actions/signUp");
 
   const client = new Client(attrs);
   const prefix = `+7`;
-  const phoneNumber = `9089890277`;
+  const phoneNumber = `908 989-02-76`;
 
   await signUp(client, prefix, phoneNumber);
 })();

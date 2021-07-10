@@ -34,7 +34,7 @@ const signUp = async (client, prefix, phoneNumber) => {
   const month = 7;
   const year = 1999;
 
-  const username = `sabujo2000`;
+  const username = `sabujo2000aloha`;
   const password = `xxx123xxx`;
 
   let requests = [
