@@ -23,33 +23,32 @@ const { getRandomId } = require('../utils');
 
 const debug = _debug('bot:signUp');
 
-const signUp = async (client, prefix, phoneNumber) => {
+const signUp = async (client, userInfo, getPrefix, getPhoneNumber, getVerificationCode) => {
   debug(`Start`);
 
   const waterfallId = getRandomId();
-  const verificationCode = `123456`;
-  const name = `S`;
 
-  const day = 10;
-  const month = 7;
-  const year = 1999;
+  const prefix = await getPrefix();
+  const phoneNumber = await getPhoneNumber();
 
-  const username = `sabujo2000aloha`;
-  const password = `xxx123xxx`;
+  await accountsCheckPhoneNumber(client, phoneNumber);
+  await accountsSendSignupSmsCode(client, prefix, phoneNumber, waterfallId);
 
-  let requests = [
-    // () => accountsCheckPhoneNumber(client, phoneNumber),
-    // () => accountsSendSignupSmsCode(client, prefix, phoneNumber, waterfallId),
-    // () => accountsValidateSignupSmsCode(client, prefix, phoneNumber, verificationCode, waterfallId),
-    // () => siFetchHeaders(client),
-    // () => accountsUsernameSuggestions(client, name, waterfallId),
-    // () => consentCheckAgeEligibility(client, day, month, year),
-    // () => consentNewUserFlowBegins(client),
-    // () => dynamicOnboardingGetSteps(client, waterfallId),
-    () => accountsCreateValidated(client, prefix, phoneNumber, verificationCode, name, username, password, day, month, year, waterfallId),
-  ];
+  const verificationCode = await getVerificationCode();
 
-  await Bluebird.map(requests, request => request(), { concurrency: 1 });
+  await accountsValidateSignupSmsCode(client, prefix, phoneNumber, verificationCode, waterfallId);
+
+  await siFetchHeaders(client);
+  const usernameSuggestions = await accountsUsernameSuggestions(client, userInfo.name, waterfallId);
+
+  const username = usernameSuggestions.suggestions_with_metadata.suggestions[0].username;
+
+  await consentCheckAgeEligibility(client, userInfo.day, userInfo.month, userInfo.year);
+  await consentNewUserFlowBegins(client);
+  await dynamicOnboardingGetSteps(client, waterfallId);
+
+  await accountsCreateValidated(client, prefix, phoneNumber, verificationCode,
+    userInfo.name, username, userInfo.password, userInfo.day, userInfo.month, userInfo.year, waterfallId);
 
   debug(`End`);
 };

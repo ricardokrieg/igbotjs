@@ -12,14 +12,14 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
 
   const data = {
     is_secondary_account_creation: `false`,
-    jazoest: createJazoest(client.getFamilyDeviceId()), // TODO
+    jazoest: createJazoest(client.getFamilyDeviceId()),
     tos_version: `row`,
     suggestedUsername: ``,
     verification_code: verificationCode,
     sn_result: `SN_RESULT`,
     do_not_auto_login_if_credentials_match: `true`,
     phone_id: client.getFamilyDeviceId(),
-    enc_password: encryptPassword(client, password), // TODO #PWD_INSTAGRAM:4:1625927279:AVZtaaGgvDgTA2prF3...
+    enc_password: encryptPassword(client, password),
     phone_number: `PHONE_NUMBER`,
     username,
     first_name: name,
@@ -30,7 +30,7 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
     device_id: client.getAndroidId(),
     _uuid: client.getDeviceId(),
     month: `${month}`,
-    sn_nonce: getSnNonce(`${prefix}${phoneNumber}`.replace(/[^\+0-9]/g, '')), // TODO Kzc5MDg5ODkwMjc2fDE2MjU5MjcyMTN8iiiH4h3xYLRdv0UsLSTq9aBfDOddn9Bm
+    sn_nonce: getSnNonce(`${prefix}${phoneNumber}`.replace(/[^\+0-9]/g, '')),
     force_sign_up_code: ``,
     waterfall_id: waterfallId,
     qs_stamp: ``,
@@ -47,7 +47,3 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
 
   return response;
 };
-
-
-// Kzc5MDg5ODkwMjc2fDE2MjU5MjcyMTN8iiiH4h3xYLRdv0UsLSTq9aBfDOddn9Bm
-// Kzc5MDg5ODkwMjc3fDE2MjU5NDUyOTF877+977+9VO+/ve+/vW0pS++/vXjvv70J
