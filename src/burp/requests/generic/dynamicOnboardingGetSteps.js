@@ -2,7 +2,7 @@ const _debug = require('debug');
 
 const { upCaseHeaders } = require('../../utils');
 
-module.exports = async (client, waterfallId) => {
+module.exports = async (client) => {
   const debug = _debug('bot:dynamicOnboardingGetSteps');
 
   const data = {
@@ -18,7 +18,7 @@ module.exports = async (client, waterfallId) => {
     guid: client.getDeviceId(),
     is_ci: `false`,
     android_id: client.getAndroidId(),
-    waterfall_id: waterfallId,
+    waterfall_id: client.getWaterfallId(),
     reg_flow_taken: `phone`,
     tos_accepted: `false`,
   };

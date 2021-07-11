@@ -2,7 +2,7 @@ const _debug = require('debug');
 
 const { upCaseHeaders } = require('../../utils');
 
-module.exports = async (client, prefix, phoneNumber, verificationCode, waterfallId) => {
+module.exports = async (client, prefix, phoneNumber, verificationCode) => {
   const debug = _debug('bot:accountsValidateSignupSmsCode');
 
   const data = {
@@ -10,7 +10,7 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, waterfall
     phone_number: `${prefix}${phoneNumber}`,
     guid: client.getDeviceId(),
     device_id: client.getAndroidId(),
-    waterfall_id: waterfallId,
+    waterfall_id: client.getWaterfallId(),
   };
 
   const form = {

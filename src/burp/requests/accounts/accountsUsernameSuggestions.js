@@ -2,7 +2,7 @@ const _debug = require('debug');
 
 const { upCaseHeaders } = require('../../utils');
 
-module.exports = async (client, name, waterfallId) => {
+module.exports = async (client, name) => {
   const debug = _debug('bot:accountsUsernameSuggestions');
 
   const data = {
@@ -11,7 +11,7 @@ module.exports = async (client, name, waterfallId) => {
     name,
     device_id: client.getAndroidId(),
     email: '',
-    waterfall_id: waterfallId,
+    waterfall_id: client.getWaterfallId(),
   };
 
   const form = {

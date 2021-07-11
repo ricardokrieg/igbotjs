@@ -7,7 +7,7 @@ const {
   getSnNonce,
 } = require('../../utils');
 
-module.exports = async (client, prefix, phoneNumber, verificationCode, name, username, password, day, month, year, waterfallId) => {
+module.exports = async (client, prefix, phoneNumber, verificationCode, name, username, password, day, month, year) => {
   const debug = _debug('bot:accountsCreateValidated');
 
   const data = {
@@ -32,7 +32,7 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
     month: `${month}`,
     sn_nonce: getSnNonce(`${prefix}${phoneNumber}`.replace(/[^\+0-9]/g, '')),
     force_sign_up_code: ``,
-    waterfall_id: waterfallId,
+    waterfall_id: client.getWaterfallId(),
     qs_stamp: ``,
     has_sms_consent: `true`,
     one_tap_opt_in: `true`,

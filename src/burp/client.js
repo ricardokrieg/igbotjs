@@ -46,7 +46,7 @@ module.exports = class Client {
   async send(options) {
     options = {
       ...options,
-      headers: appendDefaultHeaders(options.headers, options.method),
+      headers: appendDefaultHeaders(this.headers(), options.method),
     };
 
     return retry(async () => {
@@ -68,7 +68,7 @@ module.exports = class Client {
   async sendGzip(options) {
     options = {
       ...options,
-      headers: appendDefaultHeaders(options.headers, options.method, true),
+      headers: appendDefaultHeaders(this.headers(), options.method, true),
     };
 
     return retry(async () => {
@@ -102,39 +102,55 @@ module.exports = class Client {
   }
 
   headers() {
-    return {
-      'X-Ig-App-Locale': this.getLocale(),
-      'X-Ig-Device-Locale': this.getLocale(),
-      'X-Ig-Mapped-Locale': this.getLocale(),
+    const headersBlock1 = {
+      'X-IG-App-Locale': this.getLocale(),
+      'X-IG-Device-Locale': this.getLocale(),
+      'X-IG-Mapped-Locale': this.getLocale(),
       'X-Pigeon-Session-Id': this.getPigeonSessionId(),
       'X-Pigeon-Rawclienttime': (Date.now() / 1000).toFixed(3),
-      'X-Ig-Bandwidth-Speed-Kbps': `-1.000`,
-      'X-Ig-Bandwidth-Totalbytes-B': `0`,
-      'X-Ig-Bandwidth-Totaltime-Ms': `0`,
+      'X-IG-Bandwidth-Speed-KBPS': `-1.000`,
+      'X-IG-Bandwidth-TotalBytes-B': `0`,
+      'X-IG-Bandwidth-TotalTime-MS': `0`,
       // 'X-Ig-App-Startup-Country': this.getCountry(),
       'X-Bloks-Version-Id': bloksVersionId,
-      'X-Ig-Www-Claim': this.getIgWwwClaim(),
-      'X-Bloks-Is-Layout-Rtl': `false`,
+      'X-IG-WWW-Claim': this.getIgWwwClaim(),
+      'X-Bloks-Is-Layout-RTL': `false`,
       'X-Bloks-Is-Panorama-Enabled': `true`,
-      'X-Ig-Device-Id': this.getDeviceId(),
-      'X-Ig-Family-Device-Id': this.getFamilyDeviceId(),
-      'X-Ig-Android-Id': this.getAndroidId(),
-      'X-Ig-Timezone-Offset': this.getTimezoneOffset(),
+      'X-IG-Device-ID': this.getDeviceId(),
+      'X-IG-Family-Device-ID': this.getFamilyDeviceId(),
+      'X-IG-Android-ID': this.getAndroidId(),
+      'X-IG-Timezone-Offset': this.getTimezoneOffset(),
       // 'X-Ig-Salt-Ids': this.getIgSaltIds(),
-      'X-Ig-Connection-Type': `WIFI`,
-      'X-Ig-Capabilities': `3brTvx0=`,
-      'X-Ig-App-Id': `567067343352427`,
+      'X-IG-Connection-Type': `WIFI`,
+      'X-IG-Capabilities': `3brTvx0=`,
+      'X-IG-App-ID': `567067343352427`,
       // 'Priority': `u=3`,
       'User-Agent': this.getUserAgent(),
       'Accept-Language': this.getLanguage(),
-      // TODO this is auto generated?
-      // Authorization: Bearer IGT:2:eyJkc191c2VyX2lkIjoiNDg0MDU2NTMxMDEiLCJzZXNzaW9uaWQiOiI0ODQwNTY1MzEwMSUzQTdiUFpMVm1KUGRwVVlUJTNBMjUiLCJzaG91bGRfdXNlX2hlYWRlcl9vdmVyX2Nvb2tpZXMiOnRydWV9
-      'X-Mid': this.getMid(),
-      'Ig-Intended-User-Id': this.getUserId(),
+    };
+
+    const headersBlock2 = {
+      'X-MID': this.getMid(),
+      'IG-INTENDED-USER-ID': this.getUserId(),
       // 'Ig-U-Ig-Direct-Region-Hint': `FRC`,
       // 'Ig-U-Ds-User-Id': this.getUserId(),
       // 'Ig-U-Rur': `FRC`,
     };
+
+    let headers = {
+      ...headersBlock1,
+    };
+
+    if (this.attrs.authorization) {
+      headers['Authorization'] = this.attrs.authorization;
+    }
+
+    headers = {
+      ...headers,
+      ...headersBlock2,
+    };
+
+    return headers;
   }
 
   parseHeaders(response) {
@@ -253,6 +269,10 @@ module.exports = class Client {
 
   getUserId() {
     return this.attrs.userId || 0;
+  }
+
+  getWaterfallId() {
+    return this.attrs.waterfallId;
   }
 
   // TODO where this number come from? the amount of items keep increasing (ie: x,x -> x,x,x ...)

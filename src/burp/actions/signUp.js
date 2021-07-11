@@ -26,29 +26,27 @@ const debug = _debug('bot:signUp');
 const signUp = async (client, userInfo, getPrefix, getPhoneNumber, getVerificationCode) => {
   debug(`Start`);
 
-  const waterfallId = getRandomId();
-
   const prefix = await getPrefix();
   const phoneNumber = await getPhoneNumber();
 
   await accountsCheckPhoneNumber(client, phoneNumber);
-  await accountsSendSignupSmsCode(client, prefix, phoneNumber, waterfallId);
+  await accountsSendSignupSmsCode(client, prefix, phoneNumber);
 
   const verificationCode = await getVerificationCode();
 
-  await accountsValidateSignupSmsCode(client, prefix, phoneNumber, verificationCode, waterfallId);
+  await accountsValidateSignupSmsCode(client, prefix, phoneNumber, verificationCode);
 
   await siFetchHeaders(client);
-  const usernameSuggestions = await accountsUsernameSuggestions(client, userInfo.name, waterfallId);
+  const usernameSuggestions = await accountsUsernameSuggestions(client, userInfo.name);
 
   const username = usernameSuggestions.suggestions_with_metadata.suggestions[0].username;
 
   await consentCheckAgeEligibility(client, userInfo.day, userInfo.month, userInfo.year);
   await consentNewUserFlowBegins(client);
-  await dynamicOnboardingGetSteps(client, waterfallId);
+  await dynamicOnboardingGetSteps(client);
 
   await accountsCreateValidated(client, prefix, phoneNumber, verificationCode,
-    userInfo.name, username, userInfo.password, userInfo.day, userInfo.month, userInfo.year, waterfallId);
+    userInfo.name, username, userInfo.password, userInfo.day, userInfo.month, userInfo.year);
 
   debug(`End`);
 };

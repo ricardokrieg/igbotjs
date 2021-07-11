@@ -1,8 +1,6 @@
 const _debug = require('debug');
 
-const { upCaseHeaders } = require('../../utils');
-
-const accountsContactPointPrefill = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:accountsContactPrefill');
 
   const data = {
@@ -14,12 +12,8 @@ const accountsContactPointPrefill = async (client) => {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/accounts/contact_point_prefill/`, method: 'POST', form, headers });
+  const response = await client.send({ url: `/api/v1/accounts/contact_point_prefill/`, method: 'POST', form });
   debug(response);
 
   return response;
 };
-
-module.exports = accountsContactPointPrefill;
