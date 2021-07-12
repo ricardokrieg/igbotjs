@@ -1,5 +1,4 @@
 const _debug = require('debug');
-const Bluebird = require('bluebird');
 
 const {
   accountsCheckPhoneNumber,
@@ -19,8 +18,6 @@ const {
   consentNewUserFlowBegins,
 } = require('../requests/consent');
 
-const { getRandomId } = require('../utils');
-
 const debug = _debug('bot:signUp');
 
 const signUp = async (client, userInfo, getPrefix, getPhoneNumber, getVerificationCode) => {
@@ -37,8 +34,8 @@ const signUp = async (client, userInfo, getPrefix, getPhoneNumber, getVerificati
   await accountsValidateSignupSmsCode(client, prefix, phoneNumber, verificationCode);
 
   await siFetchHeaders(client);
-  const usernameSuggestions = await accountsUsernameSuggestions(client, userInfo.name);
 
+  let usernameSuggestions = await accountsUsernameSuggestions(client, userInfo.name);
   const username = usernameSuggestions.suggestions_with_metadata.suggestions[0].username;
 
   await consentCheckAgeEligibility(client, userInfo.day, userInfo.month, userInfo.year);

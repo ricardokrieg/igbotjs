@@ -1,5 +1,4 @@
 const _debug = require('debug');
-const Bluebird = require('bluebird');
 
 const {
   accountsContactPointPrefill,
@@ -16,14 +15,10 @@ const debug = _debug('bot:beforeLogin');
 const beforeLogin = async (client) => {
   debug(`Start`);
 
-  let requests = [
-    () => accountsContactPointPrefill(client),
-    () => qeSync(client),
-    () => launcherSync(client),
-    () => accountsGetPrefillCandidates(client),
-  ];
-
-  await Bluebird.map(requests, request => request(), { concurrency: 1 });
+  await accountsContactPointPrefill(client);
+  await launcherSync(client);
+  await qeSync(client);
+  await accountsGetPrefillCandidates(client);
 
   debug(`End`);
 };

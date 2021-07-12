@@ -1,13 +1,11 @@
 const _debug = require('debug');
 
-const { upCaseHeaders } = require('../../utils');
-
 module.exports = async (client, prefix, phoneNumber, verificationCode) => {
   const debug = _debug('bot:accountsValidateSignupSmsCode');
 
   const data = {
     verification_code: verificationCode,
-    phone_number: `${prefix}${phoneNumber}`,
+    phone_number: `${prefix}${phoneNumber}`.replace(/[^\+0-9]/g, ''),
     guid: client.getDeviceId(),
     device_id: client.getAndroidId(),
     waterfall_id: client.getWaterfallId(),
@@ -17,9 +15,7 @@ module.exports = async (client, prefix, phoneNumber, verificationCode) => {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/accounts/validate_signup_sms_code/`, method: 'POST', form, headers });
+  const response = await client.send({ url: `/api/v1/accounts/validate_signup_sms_code/`, method: 'POST', form });
   debug(response);
 
   return response;

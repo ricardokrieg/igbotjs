@@ -1,7 +1,5 @@
 const _debug = require('debug');
 
-const { upCaseHeaders } = require('../../utils');
-
 module.exports = async (client) => {
   const debug = _debug('bot:dynamicOnboardingGetSteps');
 
@@ -27,9 +25,7 @@ module.exports = async (client) => {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/dynamic_onboarding/get_steps/`, method: 'POST', form, headers });
+  const response = await client.send({ url: `/api/v1/dynamic_onboarding/get_steps/`, method: 'POST', form });
   debug(response);
 
   return response;

@@ -1,7 +1,5 @@
 const _debug = require('debug');
 
-const { upCaseHeaders } = require('../../utils');
-
 module.exports = async (client) => {
   const debug = _debug('bot:siFetchHeaders');
 
@@ -10,9 +8,7 @@ module.exports = async (client) => {
     challenge_type: `signup`,
   };
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/si/fetch_headers/`, qs, headers });
+  const response = await client.send({ url: `/api/v1/si/fetch_headers/`, qs });
   debug(response);
 
   return response;

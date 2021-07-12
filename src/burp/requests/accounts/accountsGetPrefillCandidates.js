@@ -2,7 +2,7 @@ const _debug = require('debug');
 
 const { upCaseHeaders } = require('../../utils');
 
-const accountsGetPrefillCandidates = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:accountsGetPrefillCandidates');
 
   const data = {
@@ -16,12 +16,8 @@ const accountsGetPrefillCandidates = async (client) => {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/accounts/get_prefill_candidates/`, method: 'POST', form, headers });
+  const response = await client.send({ url: `/api/v1/accounts/get_prefill_candidates/`, method: 'POST', form });
   debug(response);
 
   return response;
 };
-
-module.exports = accountsGetPrefillCandidates;

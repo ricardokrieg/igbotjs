@@ -1,8 +1,6 @@
 const _debug = require('debug');
 
-const { upCaseHeaders } = require('../../utils');
-
-module.exports = async (client, day, month, year) => {
+module.exports = async (client) => {
   const debug = _debug('bot:consentNewUserFlowBegins');
 
   const data = {
@@ -13,9 +11,7 @@ module.exports = async (client, day, month, year) => {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/consent/new_user_flow_begins/`, method: 'POST', form, headers });
+  const response = await client.send({ url: `/api/v1/consent/new_user_flow_begins/`, method: 'POST', form });
   debug(response);
 
   return response;

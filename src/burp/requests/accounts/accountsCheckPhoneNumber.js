@@ -1,7 +1,5 @@
 const _debug = require('debug');
 
-const { upCaseHeaders } = require('../../utils');
-
 module.exports = async (client, phoneNumber) => {
   const debug = _debug('bot:accountsCheckPhoneNumber');
 
@@ -16,10 +14,16 @@ module.exports = async (client, phoneNumber) => {
 
   const form = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`.replace('PHONE_NUMBER', phoneNumber.replace(/ /g, '+'));
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/accounts/check_phone_number/`, method: 'POST', form, headers });
-  debug(response);
+  let response;
+  try {
+    response = await client.send({ url: `/api/v1/accounts/check_phone_number/`, method: 'POST', form });
+    debug(response);
+  } catch (response) {
+    if (response.status !== `fail` || response.error_type !== `missing_parameters`) {
+      throw response;
+    }
+    debug(response);
+  }
 
   return response;
 };

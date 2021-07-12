@@ -1,7 +1,6 @@
 const _debug = require('debug');
 
 const {
-  upCaseHeaders,
   createJazoest,
   encryptPassword,
   getSnNonce,
@@ -22,7 +21,7 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
     enc_password: encryptPassword(client, password),
     phone_number: `PHONE_NUMBER`,
     username,
-    first_name: name,
+    first_name: `NAME`,
     day: `${day}`,
     adid: ``,
     guid: client.getDeviceId(),
@@ -38,11 +37,13 @@ module.exports = async (client, prefix, phoneNumber, verificationCode, name, use
     one_tap_opt_in: `true`,
   };
 
-  const form = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`.replace('PHONE_NUMBER', `${prefix}${phoneNumber}`).replace('SN_RESULT', `GOOGLE_PLAY_UNAVAILABLE:+SERVICE_INVALID`);
+  // TODO compare request again. check for phone_number "+ -> %2B", name "(space) -> +" and sn_result ": -> %3A"
+  const form = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`
+    .replace('PHONE_NUMBER', `${prefix}${phoneNumber}`.replace(/\+/, `%2B`))
+    .replace('NAME', name.replace(/ /, `+`))
+    .replace('SN_RESULT', `GOOGLE_PLAY_UNAVAILABLE%3A+SERVICE_INVALID`);
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/accounts/create_validated/`, method: 'POST', form, headers });
+  const response = await client.send({ url: `/api/v1/accounts/create_validated/`, method: 'POST', form });
   debug(response);
 
   return response;

@@ -1,9 +1,8 @@
 const { qeSyncExperiments } = require('../../settings');
-const { upCaseHeaders } = require('../../utils');
 
 const _debug = require('debug');
 
-const qeSync = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:qeSync');
 
   const data = {
@@ -18,7 +17,7 @@ const qeSync = async (client) => {
 
   const headers = {
     'X-DEVICE-ID': client.getDeviceId(),
-    ...upCaseHeaders(client.headers()),
+    ...client.headers(),
   };
 
   const response = await client.send({ url: `/api/v1/qe/sync/`, method: 'POST', form, headers });
@@ -26,5 +25,3 @@ const qeSync = async (client) => {
 
   return response;
 };
-
-module.exports = qeSync;

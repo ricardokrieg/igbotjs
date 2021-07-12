@@ -44,47 +44,45 @@ module.exports = class Client {
   }
 
   async send(options) {
+    const headers = options.headers || this.headers();
+
     options = {
       ...options,
-      headers: appendDefaultHeaders(this.headers(), options.method),
+      headers: appendDefaultHeaders(headers, options.method),
     };
 
-    return retry(async () => {
-      let response = await request(defaults(options, this.defaultOptions()));
+    let response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
 
-      this.parseHeaders(response);
-      response = JSON.parse(response.body);
+    this.parseHeaders(response);
+    response = JSON.parse(response.body);
 
-      if (response.status === 'fail') {
-        debug(response);
-        console.error(`Failed response. Exiting`);
-        process.exit(1);
-      }
+    if (response.status === 'fail') {
+      debug(response);
+      return Promise.reject(response);
+    }
 
-      return Promise.resolve(response);
-    }, { maxAttempts: 10, delay: 10000 });
+    return Promise.resolve(response);
   }
 
   async sendGzip(options) {
+    const headers = options.headers || this.headers();
+
     options = {
       ...options,
-      headers: appendDefaultHeaders(this.headers(), options.method, true),
+      headers: appendDefaultHeaders(headers, options.method, true),
     };
 
-    return retry(async () => {
-      let response = await request(defaults(options, this.defaultOptions()))
+    let response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
 
-      this.parseHeaders(response);
-      response = JSON.parse(response.body);
+    this.parseHeaders(response);
+    response = JSON.parse(response.body);
 
-      if (response.status === 'fail') {
-        debug(response);
-        console.error(`Failed response. Exiting`);
-        process.exit(1);
-      }
+    if (response.status === 'fail') {
+      debug(response);
+      return Promise.reject(response);
+    }
 
-      return Promise.resolve(response);
-    }, { maxAttempts: 10, delay: 10000 });
+    return Promise.resolve(response);
   }
 
   defaultOptions() {
@@ -95,7 +93,7 @@ module.exports = class Client {
       jar: cookieJar,
       strictSSL: false,
       gzip: true,
-      headers: this.headers(),
+      // headers: this.headers(),
       method: 'GET',
       resolveWithFullResponse: true,
     };
