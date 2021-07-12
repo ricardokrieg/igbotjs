@@ -5,6 +5,7 @@ const launcherSync = require('./launcherSync');
 const loomFetchConfig = require('./loomFetchConfig');
 const notificationsBadge = require('./notificationsBadge');
 const nuxNewAccountNuxSeen = require('./nuxNewAccountNuxSeen');
+const pushRegister = require('./pushRegister');
 const qeSync = require('./qeSync');
 const qpBatchFetch = require('./qpBatchFetch');
 const scoresBootstrapUsers = require('./scoresBootstrapUsers');
@@ -21,6 +22,7 @@ module.exports = {
   loomFetchConfig,
   notificationsBadge,
   nuxNewAccountNuxSeen,
+  pushRegister,
   qeSync,
   qpBatchFetch,
   scoresBootstrapUsers,

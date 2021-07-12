@@ -1,7 +1,5 @@
 const _debug = require('debug');
 
-const { upCaseHeaders } = require('../../utils');
-
 module.exports = async (client) => {
   const debug = _debug('bot:accountsGetPrefillCandidates');
 

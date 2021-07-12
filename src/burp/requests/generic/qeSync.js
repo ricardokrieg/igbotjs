@@ -1,15 +1,31 @@
-const { qeSyncExperiments } = require('../../settings');
+const {
+  qeSyncExperiments,
+  qeSyncExperimentsLoggedIn,
+} = require('../../settings');
 
 const _debug = require('debug');
 
 module.exports = async (client) => {
   const debug = _debug('bot:qeSync');
 
-  const data = {
-    id: client.getDeviceId(),
-    server_config_retrieval: `1`,
-    experiments: qeSyncExperiments,
-  };
+  let data;
+  const userId = client.getUserId() || null;
+
+  if (userId) {
+    data = {
+      id: `${userId}`,
+      _uid: `${userId}`,
+      _uuid: client.getDeviceId(),
+      server_config_retrieval: `1`,
+      experiments: qeSyncExperimentsLoggedIn,
+    };
+  } else {
+    data = {
+      id: client.getDeviceId(),
+      server_config_retrieval: `1`,
+      experiments: qeSyncExperiments,
+    };
+  }
 
   const form = {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`

@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const notificationsBadge = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:notificationsBadge');
 
   const form = {
@@ -16,5 +16,3 @@ const notificationsBadge = async (client) => {
 
   return response;
 };
-
-module.exports = notificationsBadge;

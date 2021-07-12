@@ -93,7 +93,6 @@ module.exports = class Client {
       jar: cookieJar,
       strictSSL: false,
       gzip: true,
-      // headers: this.headers(),
       method: 'GET',
       resolveWithFullResponse: true,
     };
@@ -129,10 +128,9 @@ module.exports = class Client {
 
     const headersBlock2 = {
       'X-MID': this.getMid(),
+      'IG-U-DS-USER-ID': this.getUserId(),
+      'IG-U-RUR': this.getRur(),
       'IG-INTENDED-USER-ID': this.getUserId(),
-      // 'Ig-U-Ig-Direct-Region-Hint': `FRC`,
-      // 'Ig-U-Ds-User-Id': this.getUserId(),
-      // 'Ig-U-Rur': `FRC`,
     };
 
     let headers = {
@@ -178,7 +176,12 @@ module.exports = class Client {
           this.attrs.shbts = value;
           break;
         case 'ig-set-ig-u-rur':
-          this.attrs.rur = value;
+          if (value.includes(',')) {
+            this.attrs.rur = value.split(',')[0];
+          } else {
+            this.attrs.rur = value;
+          }
+
           break;
         case 'ig-set-ig-u-ds-user-id':
           this.attrs.userId = value;
@@ -271,6 +274,10 @@ module.exports = class Client {
 
   getWaterfallId() {
     return this.attrs.waterfallId;
+  }
+
+  getRur() {
+    return this.attrs.rur;
   }
 
   // TODO where this number come from? the amount of items keep increasing (ie: x,x -> x,x,x ...)

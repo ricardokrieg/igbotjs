@@ -3,10 +3,22 @@ const _debug = require('debug');
 module.exports = async (client) => {
   const debug = _debug('bot:accountsContactPrefill');
 
-  const data = {
-    phone_id: client.getFamilyDeviceId(),
-    usage: `prefill`,
-  };
+  let data;
+  const userId = client.getUserId() || null;
+
+  if (userId) {
+    data = {
+      _uid: `${userId}`,
+      device_id: client.getDeviceId(),
+      _uuid: client.getDeviceId(),
+      usage: `auto_confirmation`,
+    };
+  } else {
+    data = {
+      phone_id: client.getFamilyDeviceId(),
+      usage: `prefill`,
+    };
+  }
 
   const form = {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`

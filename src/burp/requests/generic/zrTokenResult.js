@@ -1,5 +1,4 @@
 const _debug = require('debug');
-const {upCaseHeaders} = require("../../utils");
 
 module.exports = async (client) => {
   const debug = _debug('bot:zrTokenResult');
@@ -11,9 +10,7 @@ module.exports = async (client) => {
     fetch_reason: `token_expired`,
   };
 
-  const headers = upCaseHeaders(client.headers());
-
-  const response = await client.send({ url: `/api/v1/zr/token/result/`, qs, headers });
+  const response = await client.send({ url: `/api/v1/zr/token/result/`, qs });
   debug(response);
 
   return response;
