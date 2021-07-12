@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const banyanBanyan = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:banyanBanyan');
 
   const qs = {
@@ -12,5 +12,3 @@ const banyanBanyan = async (client) => {
 
   return response;
 };
-
-module.exports = banyanBanyan;

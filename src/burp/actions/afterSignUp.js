@@ -1,8 +1,12 @@
 const Bluebird = require('bluebird');
 const _debug = require('debug');
+const { readFile } = require('fs');
+const { promisify } = require('util');
+const readFileAsync = promisify(readFile);
 
 const {
   dynamicOnboardingGetSteps,
+  fbFbEntrypointInfo,
   launcherSync,
   nuxNewAccountNuxSeen,
   pushRegister,
@@ -11,16 +15,21 @@ const {
 } = require('../requests/generic');
 
 const {
+  discoverAyml,
+} = require('../requests/discover');
+
+const {
   multipleAccountsGetAccountFamily,
 } = require('../requests/multipleAccounts');
 
 const {
+  accountsChangeProfilePicture,
   accountsContactPointPrefill,
 } = require('../requests/accounts');
 
 const debug = _debug('bot:afterSignUp');
 
-module.exports = async (client) => {
+module.exports = async (client, userInfo) => {
   debug(`Start`);
 
   let requests = [
@@ -35,6 +44,18 @@ module.exports = async (client) => {
   ];
 
   await Bluebird.map(requests, request => request());
+
+  if (userInfo.profileImage) {
+    const photo = await readFileAsync(userInfo.profileImage);
+
+    requests = [
+      () => fbFbEntrypointInfo(client),
+      () => discoverAyml(client),
+      () => accountsChangeProfilePicture(client, photo, userInfo.shareToFeed),
+    ];
+
+    await Bluebird.map(requests, request => request());
+  }
 
   debug(`End`);
 };

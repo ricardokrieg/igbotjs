@@ -70,7 +70,12 @@ const appendDefaultHeaders = (headers, method, isGzip = false) => {
 
   let defaultHeaders = {};
 
-  if (method === 'POST') {
+  const contentType = headers['Content-Type'];
+  delete headers['Content-Type'];
+
+  if (contentType !== undefined) {
+    defaultHeaders['Content-Type'] = contentType;
+  } else if (method === 'POST') {
     defaultHeaders['Content-Type'] = `application/x-www-form-urlencoded; charset=UTF-8`;
   }
 

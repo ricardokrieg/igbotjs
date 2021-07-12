@@ -176,11 +176,12 @@ module.exports = class Client {
           this.attrs.shbts = value;
           break;
         case 'ig-set-ig-u-rur':
-          if (value.includes(',')) {
-            this.attrs.rur = value.split(',')[0];
-          } else {
-            this.attrs.rur = value;
-          }
+          // if (value.includes(',')) {
+          //   this.attrs.rur = value.split(',')[0];
+          // } else {
+          //   this.attrs.rur = value;
+          // }
+          this.attrs.rur = value;
 
           break;
         case 'ig-set-ig-u-ds-user-id':

@@ -90,7 +90,7 @@ const getVerificationCode = async () => {
     directRegionHint: '',
     shbid: '',
     shbts: '',
-    rur: 'ODN',
+    rur: 'RVA,48782794833,1657657387:01f7f2852584252945b007d9047f6e1186ec346c218ff63267a0cfedb6636e9b8425e0d3',
     userId: '48782794833',
     passwordEncryptionKeyId: '177',
     passwordEncryptionPubKey: 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF2ZkF6MnBUb1FTdWpHRjU1ZVZEMApMR3hoT0hMcTR2T2VwbW5kSHNIZ2tCQkN4UWpISm96aENjb1RFbUNrRjl1cXNFL2FIcWNHVXpnTTBsZyt5RUVFCi9sYUZ6amJrMEFHbWd2d21YcjRzaWFhS2FuUEtFRXdYQnpzVUg2dzgwVDNwS3l1eWt0WVU2bC9BZklmQjZlbXAKMXNxclJxb2tRd0ZaVHRaSnJoK1hmNjQyVzdhcGJKNDg0Z040YzJLK1NzM2tLU0hqS1dIclZQSlYrUWo0ajZDeAo4eldzVDQxT0lRQjdvTTdDakJydjV6Nm5xaVJ1N082eGszbW5BVTJ6WjZnNTBtRTlYclBmeWw1T1BqUmgyVHl3CjFUbE5RbGdoS2hoOFZLQ3ovQThQMnFSWXNtQjYrb1ViT0cxMXdTYVFBQ1dkUXF1cWMzekZkK2pnZkt2cnkwR3YKN3dJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==',
@@ -105,9 +105,11 @@ const getVerificationCode = async () => {
     day: 12,
     month: 7,
     year: 1995,
+    profileImage: `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2568837392715646174.jpg`,
+    shareToFeed: true,
   };
 
   // await beforeLogin(client);
   // await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode);
-  await afterSignUp(client);
+  await afterSignUp(client, userInfo);
 })();

@@ -1,6 +1,7 @@
 const banyanBanyan = require('./banyanBanyan');
 const commerceDestinationPrefetchEligible = require('./commerceDestinationPrefetchEligible');
 const dynamicOnboardingGetSteps = require('./dynamicOnboardingGetSteps');
+const fbFbEntrypointInfo = require('./fbFbEntrypointInfo');
 const launcherSync = require('./launcherSync');
 const loomFetchConfig = require('./loomFetchConfig');
 const notificationsBadge = require('./notificationsBadge');
@@ -18,6 +19,7 @@ module.exports = {
   banyanBanyan,
   commerceDestinationPrefetchEligible,
   dynamicOnboardingGetSteps,
+  fbFbEntrypointInfo,
   launcherSync,
   loomFetchConfig,
   notificationsBadge,
