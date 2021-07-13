@@ -27,6 +27,10 @@ const {
   accountsContactPointPrefill,
 } = require('../requests/accounts');
 
+const {
+  followRecommended,
+} = require('../requests/friendships');
+
 const debug = _debug('bot:afterSignUp');
 
 module.exports = async (client, userInfo) => {
@@ -43,7 +47,7 @@ module.exports = async (client, userInfo) => {
     () => pushRegister(client),
   ];
 
-  await Bluebird.map(requests, request => request());
+  // await Bluebird.map(requests, request => request());
 
   if (userInfo.profileImage) {
     const photo = await readFileAsync(userInfo.profileImage);
@@ -54,7 +58,11 @@ module.exports = async (client, userInfo) => {
       () => accountsChangeProfilePicture(client, photo, userInfo.shareToFeed),
     ];
 
-    await Bluebird.map(requests, request => request());
+    // await Bluebird.map(requests, request => request());
+  }
+
+  if (userInfo.followRecommendedCount && userInfo.followRecommendedCount > 0) {
+    // await followRecommended(client, userInfo.followRecommendedCount);
   }
 
   debug(`End`);

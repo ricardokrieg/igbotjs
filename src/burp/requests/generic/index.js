@@ -4,6 +4,7 @@ const dynamicOnboardingGetSteps = require('./dynamicOnboardingGetSteps');
 const fbFbEntrypointInfo = require('./fbFbEntrypointInfo');
 const launcherSync = require('./launcherSync');
 const loomFetchConfig = require('./loomFetchConfig');
+const newsInbox = require('./newsInbox');
 const notificationsBadge = require('./notificationsBadge');
 const nuxNewAccountNuxSeen = require('./nuxNewAccountNuxSeen');
 const pushRegister = require('./pushRegister');
@@ -22,6 +23,7 @@ module.exports = {
   fbFbEntrypointInfo,
   launcherSync,
   loomFetchConfig,
+  newsInbox,
   notificationsBadge,
   nuxNewAccountNuxSeen,
   pushRegister,

@@ -1,15 +1,15 @@
 const _debug = require('debug');
 
-const friendshipsCreate = async (client, userId) => {
+module.exports = async (client, userId) => {
   const debug = _debug('bot:friendshipsCreate');
 
   const data = {
-    _csrftoken: client.csrfToken(),
-    user_id: userId,
+    // _csrftoken: client.csrfToken(),
+    user_id: `${userId}`,
     radio_type: `wifi-none`,
-    _uid: client.attrs.userId,
-    device_id: client.attrs.deviceId,
-    _uuid: client.attrs.uuid,
+    _uid: client.getUserId(),
+    device_id: client.getAndroidId(),
+    _uuid: client.getDeviceId(),
   };
 
   const form = {
@@ -21,5 +21,3 @@ const friendshipsCreate = async (client, userId) => {
 
   return response;
 };
-
-module.exports = friendshipsCreate;

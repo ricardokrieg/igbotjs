@@ -107,6 +107,7 @@ const getVerificationCode = async () => {
     year: 1995,
     profileImage: `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2568837392715646174.jpg`,
     shareToFeed: true,
+    followRecommendedCount: 3,
   };
 
   // await beforeLogin(client);
