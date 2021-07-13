@@ -110,7 +110,7 @@ const getVerificationCode = async () => {
     followRecommendedCount: 3,
   };
 
-  // await beforeLogin(client);
-  // await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode);
+  await beforeLogin(client);
+  await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode);
   await afterSignUp(client, userInfo);
 })();
