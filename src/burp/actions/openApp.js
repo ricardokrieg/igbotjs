@@ -15,7 +15,7 @@ const debug = _debug('bot:openApp');
 module.exports = async (client) => {
   debug(`Start`);
 
-  await accountsContactPointPrefill(client);
+  await accountsContactPointPrefill(client, `prefill`);
   await launcherSync(client);
   await qeSync(client);
   await accountsGetPrefillCandidates(client);

@@ -9,6 +9,7 @@ const devicesNdxApiAsyncGetNdxIgSteps = require('./devicesNdxApiAsyncGetNdxIgSte
 const dynamicOnboardingGetSteps = require('./dynamicOnboardingGetSteps');
 const fbFbEntrypointInfo = require('./fbFbEntrypointInfo');
 const fbGetInviteSuggestions = require('./fbGetInviteSuggestions');
+const fundraiserCanCreatePersonalFundraisers = require('./fundraiserCanCreatePersonalFundraisers');
 const fundraiserStandaloneFundraiserInfo = require('./fundraiserStandaloneFundraiserInfo');
 const launcherSync = require('./launcherSync');
 const loomFetchConfig = require('./loomFetchConfig');
@@ -40,6 +41,7 @@ module.exports = {
   dynamicOnboardingGetSteps,
   fbFbEntrypointInfo,
   fbGetInviteSuggestions,
+  fundraiserCanCreatePersonalFundraisers,
   fundraiserStandaloneFundraiserInfo,
   launcherSync,
   loomFetchConfig,

@@ -31,7 +31,7 @@ const {
   followRecommended,
 } = require('../requests/friendships');
 
-const debug = _debug('bot:afterSignUp');
+const debug = _debug('bot:signUpCompleteProfile');
 
 module.exports = async (client, userInfo) => {
   debug(`Start`);
@@ -43,7 +43,7 @@ module.exports = async (client, userInfo) => {
     () => launcherSync(client),
     () => qeSync(client),
     () => nuxNewAccountNuxSeen(client),
-    () => accountsContactPointPrefill(client),
+    () => accountsContactPointPrefill(client, `auto_confirmation`),
     () => pushRegister(client),
   ];
 
