@@ -1,3 +1,4 @@
+const androidModulesDownload = require('./androidModulesDownload');
 const banyanBanyan = require('./banyanBanyan');
 const commerceDestinationFuchsia = require('./commerceDestinationFuchsia');
 const commerceDestinationPrefetchEligible = require('./commerceDestinationPrefetchEligible');
@@ -17,10 +18,12 @@ const qpGetCooldowns = require('./qpGetCooldowns');
 const scoresBootstrapUsers = require('./scoresBootstrapUsers');
 const siFetchHeaders = require('./siFetchHeaders');
 const statusGetViewableStatuses = require('./statusGetViewableStatuses');
+const usersArlinkDownloadInfo = require('./usersArlinkDownloadInfo');
 const wwwgraphqlIgQuery = require('./wwwgraphqlIgQuery');
 const zrTokenResult = require('./zrTokenResult');
 
 module.exports = {
+  androidModulesDownload,
   banyanBanyan,
   commerceDestinationFuchsia,
   commerceDestinationPrefetchEligible,
@@ -40,6 +43,7 @@ module.exports = {
   scoresBootstrapUsers,
   siFetchHeaders,
   statusGetViewableStatuses,
+  usersArlinkDownloadInfo,
   wwwgraphqlIgQuery,
   zrTokenResult,
 };

@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const feedUser = async (client, userId) => {
+module.exports = async (client, userId) => {
   const debug = _debug('bot:feedUser');
 
   const qs = {
@@ -13,5 +13,3 @@ const feedUser = async (client, userId) => {
 
   return response;
 };
-
-module.exports = feedUser;

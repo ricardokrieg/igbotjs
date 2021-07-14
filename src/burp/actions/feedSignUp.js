@@ -6,6 +6,7 @@ const {getRandomId, sleep} = require("../utils");
 const { compact, map, get } = require('lodash');
 
 const {
+  androidModulesDownload,
   banyanBanyan,
   commerceDestinationFuchsia,
   devicesNdxApiAsyncGetNdxIgSteps,
@@ -13,14 +14,18 @@ const {
   loomFetchConfig,
   mediaBlocked,
   notificationsBadge,
+  qpBatchFetch,
   qpGetCooldowns,
   scoresBootstrapUsers,
+  usersArlinkDownloadInfo,
+  wwwgraphqlIgQuery,
 } = require('../requests/generic');
 
 const {
   feedTimeline,
   feedReelsTray,
   feedInjectedReelsMedia,
+  feedUser,
 } = require('../requests/feed');
 
 const {
@@ -34,6 +39,17 @@ const {
 const {
   discoverTopicalExplore,
 } = require('../requests/discover');
+
+const {
+  directV2GetPresence,
+  directV2HasInteropUpgraded,
+  directV2Inbox,
+} = require('../requests/direct');
+
+const {
+  accountsGetPresenceDisabled,
+  accountsProcessContactPointSignals,
+} = require('../requests/accounts');
 
 const debug = _debug('bot:feedSignUp');
 
@@ -132,6 +148,12 @@ const notificationsBadgeThread = async (client) => {
   await notificationsBadge(client, true);
 }
 
+const directThread = async (client) => {
+  await directV2Inbox(client);
+  await directV2GetPresence(client);
+  await directV2HasInteropUpgraded(client);
+}
+
 module.exports = async (client) => {
   debug(`Start`);
 
@@ -141,6 +163,7 @@ module.exports = async (client) => {
     // () => userThread(client),
     // () => banyanBanyanThread(client),
     // () => notificationsBadgeThread(client),
+    // () => directThread(client),
     // () => devicesNdxApiAsyncGetNdxIgSteps(client),
     // () => dynamicOnboardingGetSteps(client, true),
     // () => mediaBlocked(client),
@@ -149,9 +172,21 @@ module.exports = async (client) => {
     // () => commerceDestinationFuchsia(client),
     // () => loomFetchConfig(client),
     // () => scoresBootstrapUsers(client),
+    // () => usersArlinkDownloadInfo(client),
+    // () => qpBatchFetch(client, true),
+    // () => accountsProcessContactPointSignals(client),
+    // () => accountsGetPresenceDisabled(client),
   ];
 
   await Bluebird.map(shuffle(requests), request => request(), { concurrency: 5 });
+
+  requests = [
+    () => feedUser(client, client.getUserId()),
+    () => wwwgraphqlIgQuery(client),
+    () => androidModulesDownload(client),
+  ];
+
+  // await Bluebird.map(requests, request => request());
 
   debug(`End`);
 };

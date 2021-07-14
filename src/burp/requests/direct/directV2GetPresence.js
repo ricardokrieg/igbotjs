@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const directV2GetPresence = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:directV2GetPresence');
 
   const response = await client.send({ url: `/api/v1/direct_v2/get_presence/` });
@@ -8,5 +8,3 @@ const directV2GetPresence = async (client) => {
 
   return response;
 };
-
-module.exports = directV2GetPresence;

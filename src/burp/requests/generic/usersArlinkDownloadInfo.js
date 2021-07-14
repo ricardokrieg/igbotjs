@@ -2,12 +2,10 @@ const _debug = require('debug');
 const {toPairs} = require("lodash");
 
 module.exports = async (client) => {
-  const debug = _debug('bot:directV2Inbox');
+  const debug = _debug('bot:usersArlinkDownloadInfo');
 
   const qs = {
-    visual_message_return_type: `unseen`,
-    persistentBadging: true,
-    limit: 0,
+    version_override: `2.2.1`,
   };
 
   const headers = {};
@@ -19,7 +17,7 @@ module.exports = async (client) => {
     }
   }
 
-  const response = await client.send({ url: `/api/v1/direct_v2/inbox/`, qs, headers });
+  const response = await client.send({ url: `/api/v1/users/arlink_download_info/`, qs, headers });
   debug(response);
 
   return response;
