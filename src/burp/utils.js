@@ -35,33 +35,6 @@ const batteryLevel = (seed) => {
   return 100 - (Math.round(Date.now() / 1000 / percentTime) % 100);
 }
 
-// const upCaseHeaders = (headers) => {
-//   const modifiedHeaders = {};
-//
-//   for (let kv of toPairs(headers)) {
-//     const newKey = kv[0]
-//       .replace(/x-ig/i, 'X-IG')
-//       .replace(/x-ig-device-id/i, 'X-IG-Device-ID')
-//       .replace(/x-ig-family-device-id/i, 'X-IG-Family-Device-ID')
-//       .replace(/x-ig-android-id/i, 'X-IG-Android-ID')
-//       .replace(/x-ig-app-id/i, 'X-IG-App-ID')
-//       .replace(/x-mid/i, 'X-MID')
-//       .replace(/x-fb-http-engine/i, 'X-FB-HTTP-Engine')
-//       .replace(/x-fb-client-ip/i, 'X-FB-Client-IP')
-//       .replace(/x-fb-server-cluster/i, 'X-FB-Server-Cluster')
-//       .replace(/x-bloks-is-layout-rtl/i, 'X-Bloks-Is-Layout-RTL')
-//       .replace(/x-ig-bandwidth-speed-kbps/i, 'X-IG-Bandwidth-Speed-KBPS')
-//       .replace(/x-ig-bandwidth-totalbytes-b/i, 'X-IG-Bandwidth-TotalBytes-B')
-//       .replace(/x-ig-bandwidth-totaltime-ms/i, 'X-IG-Bandwidth-TotalTime-MS')
-//       .replace(/x-ig-www/i, 'X-IG-WWW')
-//       .replace(/ig-intended-user-id/i, 'IG-INTENDED-USER-ID')
-//       .replace(/content-type/i, 'Content-Type');
-//     modifiedHeaders[newKey] = kv[1];
-//   }
-//
-//   return modifiedHeaders;
-// };
-
 const appendDefaultHeaders = (headers, method, isGzip = false) => {
   const gzipHeaders = {};
   if (isGzip) {
@@ -164,15 +137,19 @@ const stringifyForGzip = (data) => {
   return output;
 };
 
+const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 module.exports = {
   extractCookieValue,
   getRandomId,
   getRandomAndroidId,
   batteryLevel,
-  // upCaseHeaders,
   appendDefaultHeaders,
   createJazoest,
   encryptPassword,
   getSnNonce,
   stringifyForGzip,
+  sleep,
 };

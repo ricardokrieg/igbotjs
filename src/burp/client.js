@@ -281,8 +281,7 @@ module.exports = class Client {
     return this.attrs.rur;
   }
 
-  // TODO where this number come from? the amount of items keep increasing (ie: x,x -> x,x,x ...)
-  getIgSaltIds() {
-    return `1061163349,1061163349`;
+  getDirectRegionHint() {
+    return this.attrs.directRegionHint;
   }
 }

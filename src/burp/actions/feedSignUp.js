@@ -2,7 +2,7 @@ const Bluebird = require('bluebird');
 const chance = require('chance').Chance();
 const _debug = require('debug');
 const {shuffle} = require("lodash");
-const {getRandomId} = require("../utils");
+const {getRandomId, sleep} = require("../utils");
 const { compact, map, get } = require('lodash');
 
 const {
@@ -120,6 +120,18 @@ const userThread = async (client) => {
   await highlightsHighlightsTray(client, client.getUserId());
 };
 
+const banyanBanyanThread = async (client) => {
+  await banyanBanyan(client, true);
+  await sleep(10000);
+  await banyanBanyan(client, true, true);
+};
+
+const notificationsBadgeThread = async (client) => {
+  await notificationsBadge(client);
+  await sleep(5000);
+  await notificationsBadge(client, true);
+}
+
 module.exports = async (client) => {
   debug(`Start`);
 
@@ -127,10 +139,10 @@ module.exports = async (client) => {
     // () => reelsThread(client),
     // () => feedTimelineThread(client),
     // () => userThread(client),
+    // () => banyanBanyanThread(client),
+    // () => notificationsBadgeThread(client),
     // () => devicesNdxApiAsyncGetNdxIgSteps(client),
     // () => dynamicOnboardingGetSteps(client, true),
-    // () => banyanBanyan(client, true),
-    // () => notificationsBadge(client),
     // () => mediaBlocked(client),
     // () => discoverTopicalExplore(client),
     // () => qpGetCooldowns(client),
