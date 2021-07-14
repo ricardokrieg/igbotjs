@@ -2,6 +2,7 @@ const accountsChangeProfilePicture = require('./accountsChangeProfilePicture');
 const accountsCheckPhoneNumber = require('./accountsCheckPhoneNumber');
 const accountsContactPointPrefill = require('./accountsContactPointPrefill');
 const accountsCreateValidated = require('./accountsCreateValidated');
+const accountsFetchOnetap = require('./accountsFetchOnetap');
 const accountsGetPrefillCandidates = require('./accountsGetPrefillCandidates');
 const accountsGetPresenceDisabled = require('./accountsGetPresenceDisabled');
 const accountsProcessContactPointSignals = require('./accountsProcessContactPointSignals');
@@ -15,6 +16,7 @@ module.exports = {
   accountsCheckPhoneNumber,
   accountsContactPointPrefill,
   accountsCreateValidated,
+  accountsFetchOnetap,
   accountsGetPrefillCandidates,
   accountsGetPresenceDisabled,
   accountsProcessContactPointSignals,

@@ -1,5 +1,5 @@
-const Client = require('./client');
-const feedSignUp = require("./actions/feedSignUp");
+const Client = require('../client');
+const feedSignUp = require("../actions/feedSignUp");
 
 (async () => {
 

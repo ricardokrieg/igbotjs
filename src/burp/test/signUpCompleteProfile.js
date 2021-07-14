@@ -1,5 +1,5 @@
-const Client = require('./client');
-const afterSignUp = require("./actions/afterSignUp");
+const Client = require('../client');
+const signUpCompleteProfile = require("../actions/signUpCompleteProfile");
 
 (async () => {
   const attrs = {
@@ -28,5 +28,16 @@ const afterSignUp = require("./actions/afterSignUp");
 
   const client = new Client(attrs);
 
-  await afterSignUp(client);
+  const userInfo = {
+    name: 'Awesome Sabujo',
+    password: 'xxx123xxx',
+    day: 12,
+    month: 7,
+    year: 1995,
+    profileImage: `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2568837392715646174.jpg`,
+    shareToFeed: true,
+    followRecommendedCount: 3,
+  };
+
+  await signUpCompleteProfile(client, userInfo);
 })();

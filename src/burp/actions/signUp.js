@@ -20,7 +20,7 @@ const {
 
 const debug = _debug('bot:signUp');
 
-const signUp = async (client, userInfo, getPrefix, getPhoneNumber, getVerificationCode) => {
+module.exports = async (client, userInfo, getPrefix, getPhoneNumber, getVerificationCode) => {
   debug(`Start`);
 
   const prefix = await getPrefix();
@@ -47,5 +47,3 @@ const signUp = async (client, userInfo, getPrefix, getPhoneNumber, getVerificati
 
   debug(`End`);
 };
-
-module.exports = signUp;

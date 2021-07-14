@@ -4,6 +4,14 @@ const {toPairs} = require("lodash");
 module.exports = async (client, policy= 0) => {
   const debug = _debug('bot:wwwgraphqlIgQuery');
 
+  const fbHeaders = [
+    `IGFxLinkedAccountsQuery`,
+    `IGFxLinkedAccountsQuery`,
+    `IGPaymentsAccountDisabledRiskQuery`,
+    `IGFBPayExperienceEnabled`,
+    `IgDonationsEligibilityQuery`,
+  ];
+
   const policies = [
     {
       doc_id: '4324170747611977',
@@ -25,13 +33,40 @@ module.exports = async (client, policy= 0) => {
         integration_point_id: `449092836056930`,
         session_id: client.getPigeonSessionId(),
       }),
-    }
-  ]
+    },
+    {
+      doc_id: '2897674770271335',
+      locale: 'en_US',
+      vc_policy: 'default',
+      signed_body: `SIGNATURE.`,
+      strip_nulls: `true`,
+      strip_defaults: `true`,
+      query_params: JSON.stringify({}),
+    },
+    {
+      doc_id: '3801135729903457',
+      locale: 'en_US',
+      vc_policy: 'default',
+      signed_body: `SIGNATURE.`,
+      strip_nulls: `true`,
+      strip_defaults: `true`,
+      query_params: JSON.stringify({}),
+    },
+    {
+      doc_id: '2615360401861024',
+      locale: 'en_US',
+      vc_policy: 'default',
+      signed_body: `SIGNATURE.`,
+      strip_nulls: `true`,
+      strip_defaults: `true`,
+      query_params: JSON.stringify({}),
+    },
+  ];
 
   const form = policies[policy];
 
   let headers = {
-    'X-FB-Friendly-Name': `IGFxLinkedAccountsQuery`,
+    'X-FB-Friendly-Name': fbHeaders[policy],
     ...client.headers(),
   };
 

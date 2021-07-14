@@ -10,9 +10,9 @@ const {
   qeSync,
 } = require('../requests/generic');
 
-const debug = _debug('bot:beforeLogin');
+const debug = _debug('bot:openApp');
 
-const beforeSignIn = async (client) => {
+module.exports = async (client) => {
   debug(`Start`);
 
   await accountsContactPointPrefill(client);
@@ -22,5 +22,3 @@ const beforeSignIn = async (client) => {
 
   debug(`End`);
 };
-
-module.exports = beforeSignIn;

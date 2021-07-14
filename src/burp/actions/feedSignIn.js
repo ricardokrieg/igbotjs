@@ -35,8 +35,6 @@ const {
   userInfo,
 } = require('../requests/user');
 
-const debug = _debug('bot:afterLogin');
-
 const requestsTimeline = async (client) => {
   let response = await feedTimeline(client);
 
@@ -123,7 +121,7 @@ const requestsGraphQL = async (client) => {
 const requestsGeneric = async (client) => {
   const requests = shuffle([
     () => notificationsBadge(client),
-    () => qpBatchFetch(client),
+    () => qpBatchFetch(client, `explore`),
     () => loomFetchConfig(client),
     () => multipleAccountsGetAccountFamily(client),
     () => banyanBanyan(client),
@@ -143,6 +141,9 @@ const requestsDirect = async (client) => {
   await directV2GetPresence(client);
 };
 
+const debug = _debug('bot:OpenApp');
+
+// TODO probably is wrong
 module.exports = async (client) => {
   debug(`Start`);
 

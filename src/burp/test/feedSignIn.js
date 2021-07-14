@@ -1,14 +1,12 @@
-const Client = require('./client');
-const feedSignIn = require("./actions/feedSignIn");
+const Client = require('../client');
+const feedSignIn = require("../actions/feedSignIn");
 
 (async () => {
   const token = 'qfK9ydCVubNBMLrnaOYdPD0BQ40CDsNs';
   const userId = '48405653101';
 
   const attrs = {
-    // proxy: 'http://44.193.4.221:8888',
     proxy: 'http://192.168.15.30:8888',
-
     locale: `en_US`,
     language: `en-US`,
     country: `US`,

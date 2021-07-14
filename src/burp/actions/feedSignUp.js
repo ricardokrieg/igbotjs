@@ -177,7 +177,7 @@ module.exports = async (client) => {
     () => loomFetchConfig(client),
     () => scoresBootstrapUsers(client),
     () => usersArlinkDownloadInfo(client),
-    () => qpBatchFetch(client, true),
+    () => qpBatchFetch(client, `feed`),
     () => accountsProcessContactPointSignals(client),
     () => accountsGetPresenceDisabled(client),
     () => statusGetViewableStatuses(client),

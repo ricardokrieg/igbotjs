@@ -1,4 +1,5 @@
 const androidModulesDownload = require('./androidModulesDownload');
+const archiveReelProfileArchiveBadge = require('./archiveReelProfileArchiveBadge');
 const attributionLogResurrectAttribution = require('./attributionLogResurrectAttribution');
 const banyanBanyan = require('./banyanBanyan');
 const commerceDestinationFuchsia = require('./commerceDestinationFuchsia');
@@ -7,6 +8,8 @@ const creativesWriteSupportedCapabilities = require('./creativesWriteSupportedCa
 const devicesNdxApiAsyncGetNdxIgSteps = require('./devicesNdxApiAsyncGetNdxIgSteps');
 const dynamicOnboardingGetSteps = require('./dynamicOnboardingGetSteps');
 const fbFbEntrypointInfo = require('./fbFbEntrypointInfo');
+const fbGetInviteSuggestions = require('./fbGetInviteSuggestions');
+const fundraiserStandaloneFundraiserInfo = require('./fundraiserStandaloneFundraiserInfo');
 const launcherSync = require('./launcherSync');
 const loomFetchConfig = require('./loomFetchConfig');
 const mediaBlocked = require('./mediaBlocked');
@@ -27,6 +30,7 @@ const zrTokenResult = require('./zrTokenResult');
 
 module.exports = {
   androidModulesDownload,
+  archiveReelProfileArchiveBadge,
   attributionLogResurrectAttribution,
   banyanBanyan,
   commerceDestinationFuchsia,
@@ -35,6 +39,8 @@ module.exports = {
   devicesNdxApiAsyncGetNdxIgSteps,
   dynamicOnboardingGetSteps,
   fbFbEntrypointInfo,
+  fbGetInviteSuggestions,
+  fundraiserStandaloneFundraiserInfo,
   launcherSync,
   loomFetchConfig,
   mediaBlocked,

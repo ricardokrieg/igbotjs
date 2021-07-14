@@ -1,14 +1,11 @@
 const _debug = require('debug');
 
-module.exports = async (client, userId, isFromSearch = false) => {
+module.exports = async (client, userId, module = null) => {
   const debug = _debug('bot:userInfo');
 
-  let qs;
-  if (isFromSearch) {
-    qs = {
-      from_module: `blended_search`,
-    };
-  }
+  const qs = {
+    from_module: module,
+  };
 
   const response = await client.send({ url: `/api/v1/users/${userId}/info/`, qs });
   debug(response);
