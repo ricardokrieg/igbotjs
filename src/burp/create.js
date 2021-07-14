@@ -2,8 +2,9 @@ const inquirer = require('inquirer');
 
 const Client = require('./client');
 const signUp = require("./actions/signUp");
-const beforeLogin = require("./actions/beforeLogin");
+const beforeSignIn = require("./actions/beforeSignIn");
 const afterSignUp = require("./actions/afterSignUp");
+const feedSignUp = require("./actions/feedSignUp");
 const {
   getRandomId,
   getRandomAndroidId,
@@ -110,7 +111,8 @@ const getVerificationCode = async () => {
     followRecommendedCount: 3,
   };
 
-  await beforeLogin(client);
+  await beforeSignIn(client);
   await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode);
   await afterSignUp(client, userInfo);
+  await feedSignUp(client);
 })();

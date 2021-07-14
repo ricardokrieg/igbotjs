@@ -85,10 +85,11 @@
     "vtope/playground": "npx @babel/node old/vtope/playground.js",
     "soctool/import": "npx @babel/node old/soctool/import.js",
     "soctool/run": "npx @babel/node old/soctool/run.js",
-    "burp/simulate": "npx @babel/node src/burp/simulate.js",
-    "burp/beforeLogin": "npx @babel/node src/burp/beforeLogin.js",
+    "burp/beforeSignIn": "npx @babel/node src/burp/beforeSignIn.js",
+    "burp/feedSignIn": "npx @babel/node src/burp/feedSignIn.js",
     "burp/signUp": "npx @babel/node src/burp/signUp.js",
     "burp/afterSignUp": "npx @babel/node src/burp/afterSignUp.js",
+    "burp/feedSignUp": "npx @babel/node src/burp/feedSignUp.js",
     "burp/create": "npx @babel/node src/burp/create.js"
   },
   "devDependencies": {

@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 
 const Client = require('./client');
 const signUp = require("./actions/signUp");
-const beforeLogin = require("./actions/beforeLogin");
+const beforeSignIn = require("./actions/beforeSignIn");
 const {
   getRandomId,
   getRandomAndroidId,
@@ -59,6 +59,6 @@ const getVerificationCode = async () => {
     year: 1999,
   };
 
-  await beforeLogin(client);
+  await beforeSignIn(client);
   await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode);
 })();

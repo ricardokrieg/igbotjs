@@ -81,6 +81,7 @@ const appendDefaultHeaders = (headers, method, isGzip = false) => {
 
   defaultHeaders = {
     ...defaultHeaders,
+    ...gzipHeaders,
     'Accept-Encoding': `gzip, deflate`,
     'Host': `i.instagram.com`,
     'X-FB-HTTP-Engine': `Liger`,
@@ -91,7 +92,6 @@ const appendDefaultHeaders = (headers, method, isGzip = false) => {
 
   return {
     ...headers,
-    ...gzipHeaders,
     ...defaultHeaders,
   };
 };
@@ -145,6 +145,25 @@ const getSnNonce = (id) => {
   return Buffer.from(str).toString('base64');
 };
 
+const stringifyForGzip = (data) => {
+  let output = ``;
+
+  for (let kv of toPairs(data)) {
+    if (kv[1] === undefined) {
+      continue;
+    }
+
+    if (output.length > 0) {
+      output += `&`;
+    }
+
+    const value = typeof kv[1] === 'object' ? JSON.stringify(kv[1]) : kv[1];
+    output += `${kv[0]}=${value}`;
+  }
+
+  return output;
+};
+
 module.exports = {
   extractCookieValue,
   getRandomId,
@@ -155,4 +174,5 @@ module.exports = {
   createJazoest,
   encryptPassword,
   getSnNonce,
+  stringifyForGzip,
 };

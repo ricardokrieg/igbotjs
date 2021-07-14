@@ -1,5 +1,5 @@
 const Client = require('./client');
-const afterLogin = require("./actions/afterLogin");
+const feedSignIn = require("./actions/feedSignIn");
 
 (async () => {
   const token = 'qfK9ydCVubNBMLrnaOYdPD0BQ40CDsNs';
@@ -28,5 +28,5 @@ const afterLogin = require("./actions/afterLogin");
 
   const client = new Client(attrs);
 
-  await afterLogin(client);
+  await feedSignIn(client);
 })();

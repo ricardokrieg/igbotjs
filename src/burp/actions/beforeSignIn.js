@@ -12,7 +12,7 @@ const {
 
 const debug = _debug('bot:beforeLogin');
 
-const beforeLogin = async (client) => {
+const beforeSignIn = async (client) => {
   debug(`Start`);
 
   await accountsContactPointPrefill(client);
@@ -23,4 +23,4 @@ const beforeLogin = async (client) => {
   debug(`End`);
 };
 
-module.exports = beforeLogin;
+module.exports = beforeSignIn;

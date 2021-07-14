@@ -1,5 +1,5 @@
 const Client = require('./client');
-const beforeLogin = require("./actions/beforeLogin");
+const beforeSignIn = require("./actions/beforeSignIn");
 
 const {
   getRandomId,
@@ -31,5 +31,5 @@ const {
 
   const client = new Client(attrs);
 
-  await beforeLogin(client);
+  await beforeSignIn(client);
 })();

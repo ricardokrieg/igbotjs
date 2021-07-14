@@ -1,4 +1,3 @@
-const querystring = require('querystring');
 const _debug = require('debug');
 
 const wwwgraphqlIgQuery = async (client, policy=0) => {

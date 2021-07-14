@@ -143,7 +143,7 @@ const requestsDirect = async (client) => {
   await directV2GetPresence(client);
 };
 
-const afterLogin = async (client) => {
+module.exports = async (client) => {
   debug(`Start`);
 
   let requests = [
@@ -164,5 +164,3 @@ const afterLogin = async (client) => {
 
   debug(`End`);
 };
-
-module.exports = afterLogin;

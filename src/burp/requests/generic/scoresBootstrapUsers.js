@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const scoresBootstrapUsers = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:scoresBootstrapUsers');
 
   const qs = {
@@ -12,5 +12,3 @@ const scoresBootstrapUsers = async (client) => {
 
   return response;
 };
-
-module.exports = scoresBootstrapUsers;

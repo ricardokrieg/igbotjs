@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const loomFetchConfig = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:loomFetchConfig');
 
   const response = await client.send({ url: `/api/v1/loom/fetch_config/` });
@@ -8,5 +8,3 @@ const loomFetchConfig = async (client) => {
 
   return response;
 };
-
-module.exports = loomFetchConfig;
