@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const statusGetViewableStatuses = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:statusGetViewableStatuses');
 
   const qs = {
@@ -12,5 +12,3 @@ const statusGetViewableStatuses = async (client) => {
 
   return response;
 };
-
-module.exports = statusGetViewableStatuses;

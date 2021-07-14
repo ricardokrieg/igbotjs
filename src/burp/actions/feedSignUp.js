@@ -1,22 +1,25 @@
 const Bluebird = require('bluebird');
 const chance = require('chance').Chance();
 const _debug = require('debug');
-const {shuffle} = require("lodash");
 const {getRandomId, sleep} = require("../utils");
 const { compact, map, get } = require('lodash');
 
 const {
   androidModulesDownload,
+  attributionLogResurrectAttribution,
   banyanBanyan,
   commerceDestinationFuchsia,
+  creativesWriteSupportedCapabilities,
   devicesNdxApiAsyncGetNdxIgSteps,
   dynamicOnboardingGetSteps,
   loomFetchConfig,
   mediaBlocked,
   notificationsBadge,
+  notificationsStoreClientPushPermissions,
   qpBatchFetch,
   qpGetCooldowns,
   scoresBootstrapUsers,
+  statusGetViewableStatuses,
   usersArlinkDownloadInfo,
   wwwgraphqlIgQuery,
 } = require('../requests/generic');
@@ -37,6 +40,7 @@ const {
 } = require('../requests/highlights');
 
 const {
+  clipsDiscover,
   discoverTopicalExplore,
 } = require('../requests/discover');
 
@@ -158,27 +162,32 @@ module.exports = async (client) => {
   debug(`Start`);
 
   let requests = [
-    // () => reelsThread(client),
-    // () => feedTimelineThread(client),
-    // () => userThread(client),
-    // () => banyanBanyanThread(client),
-    // () => notificationsBadgeThread(client),
-    // () => directThread(client),
-    // () => devicesNdxApiAsyncGetNdxIgSteps(client),
-    // () => dynamicOnboardingGetSteps(client, true),
-    // () => mediaBlocked(client),
-    // () => discoverTopicalExplore(client),
-    // () => qpGetCooldowns(client),
-    // () => commerceDestinationFuchsia(client),
-    // () => loomFetchConfig(client),
-    // () => scoresBootstrapUsers(client),
-    // () => usersArlinkDownloadInfo(client),
-    // () => qpBatchFetch(client, true),
-    // () => accountsProcessContactPointSignals(client),
-    // () => accountsGetPresenceDisabled(client),
+    () => reelsThread(client),
+    () => feedTimelineThread(client),
+    () => userThread(client),
+    () => banyanBanyanThread(client),
+    () => notificationsBadgeThread(client),
+    () => directThread(client),
+    () => devicesNdxApiAsyncGetNdxIgSteps(client),
+    () => dynamicOnboardingGetSteps(client, true),
+    () => mediaBlocked(client),
+    () => discoverTopicalExplore(client),
+    () => qpGetCooldowns(client),
+    () => commerceDestinationFuchsia(client),
+    () => loomFetchConfig(client),
+    () => scoresBootstrapUsers(client),
+    () => usersArlinkDownloadInfo(client),
+    () => qpBatchFetch(client, true),
+    () => accountsProcessContactPointSignals(client),
+    () => accountsGetPresenceDisabled(client),
+    () => statusGetViewableStatuses(client),
+    () => clipsDiscover(client),
+    () => notificationsStoreClientPushPermissions(client),
+    () => creativesWriteSupportedCapabilities(client),
+    () => attributionLogResurrectAttribution(client),
   ];
 
-  await Bluebird.map(shuffle(requests), request => request(), { concurrency: 5 });
+  await Bluebird.map(requests, request => request(), { concurrency: 5 });
 
   requests = [
     () => feedUser(client, client.getUserId()),
@@ -186,7 +195,7 @@ module.exports = async (client) => {
     () => androidModulesDownload(client),
   ];
 
-  // await Bluebird.map(requests, request => request());
+  await Bluebird.map(requests, request => request());
 
   debug(`End`);
 };
