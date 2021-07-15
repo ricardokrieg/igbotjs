@@ -1,3 +1,4 @@
+const {sleep} = require('../utils');
 const Client = require('../client');
 const addPost = require("../actions/addPost");
 
@@ -29,5 +30,15 @@ const addPost = require("../actions/addPost");
 
   const client = new Client(attrs);
 
-  await addPost(client, `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2526775449037478520.jpg`, `This is awesome`);
+  await addPost(client, `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2526410175675292776.jpg`, `I love this pic`);
+  await sleep(60000);
+  await addPost(client, `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2526776031215325472.jpg`, `Do you like this one`);
+  await sleep(60000);
+  await addPost(client, `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2527119503625550981.jpg`, `Its about this`);
+  await sleep(60000);
+  await addPost(client, `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2527869090728446566_1.jpg`, `Wonderful day`);
+  await sleep(60000);
+  await addPost(client, `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2528233284426319220.jpg`);
+  await sleep(60000);
+  await addPost(client, `/Users/wolf/Downloads/cats/fitchicksinworkoutgear/2528460712524418851.jpg`);
 })();
