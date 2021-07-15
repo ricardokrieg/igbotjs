@@ -2,6 +2,7 @@ const { readFile } = require('fs');
 const { promisify } = require('util');
 const readFileAsync = promisify(readFile);
 const _debug = require('debug');
+const {isEmpty} = require('lodash');
 
 const {
   sleep,
@@ -12,14 +13,17 @@ const {
 } = require('../requests/accounts');
 
 const {
-  creativesCameraEffectsGraphql,
-  creativesCameraModels,
   creativesGetUnlockableStickerNux,
+  creativesStickerTray,
 } = require('../requests/creatives');
 
 const {
-  qpBatchFetch,
+  statusGetViewableStatuses,
 } = require('../requests/generic');
+
+const {
+  highlightsCreateReel,
+} = require('../requests/highlights');
 
 const {
   igFbXpostingAccountLinkingUserXpostingDestination,
@@ -30,47 +34,51 @@ const {
 } = require('../requests/live');
 
 const {
-  mediaConfigure,
-  mediaUpdateMediaWithPdqHashInfo,
+  mediaConfigureToStory,
 } = require('../requests/media');
-
-const {
-  warningCheckOffensiveText,
-} = require('../requests/warning');
 
 const {
   usersReelSettings,
 } = require('../requests/users');
 
-const debug = _debug('bot:addPost');
+const debug = _debug('bot:addStory');
 
-module.exports = async (client, photoPath, caption = ``) => {
+module.exports = async (client, photoPath, reelTitle = ``) => {
   debug(`Start`);
 
   const photo = await readFileAsync(photoPath);
 
   await creativesGetUnlockableStickerNux(client);
   await livePreLiveTools(client);
-  await creativesCameraModels(client);
-  await creativesCameraEffectsGraphql(client);
+  await igFbXpostingAccountLinkingUserXpostingDestination(client);
   await usersReelSettings(client);
+
+  await sleep(5000);
+
+  await statusGetViewableStatuses(client);
   await igFbXpostingAccountLinkingUserXpostingDestination(client);
 
   await sleep(5000);
 
-  await igFbXpostingAccountLinkingUserXpostingDestination(client);
+  await creativesStickerTray(client);
 
   await sleep(5000);
 
-  await qpBatchFetch(client, `share_post`);
-  await igFbXpostingAccountLinkingUserXpostingDestination(client);
   const { uploadId } = await ruploadIgphoto(client, photo);
 
   await sleep(5000);
-  await warningCheckOffensiveText(client, caption);
-  await mediaConfigure(client, caption, uploadId);
+
+  const { media: { id } } = await mediaConfigureToStory(client, uploadId);
+
   await sleep(5000);
-  // await mediaUpdateMediaWithPdqHashInfo(client);
+
+  await igFbXpostingAccountLinkingUserXpostingDestination(client);
+
+  if (!isEmpty(reelTitle)) {
+    await sleep(10000);
+
+    await highlightsCreateReel(client, id, reelTitle);
+  }
 
   debug(`End`);
 };
