@@ -29,5 +29,5 @@ const updateBiography = require("../actions/updateBiography");
 
   const client = new Client(attrs);
 
-  await updateBiography(client, `123456`);
+  await updateBiography(client, `815904`);
 })();
