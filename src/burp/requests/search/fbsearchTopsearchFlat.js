@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const fbsearchTopsearchFlat = async (client, query, params = {}) => {
+module.exports = async (client, query, params = {}) => {
   const debug = _debug('bot:fbsearchTopsearchFlat');
 
   const rank_token = params.rank_token;
@@ -12,7 +12,6 @@ const fbsearchTopsearchFlat = async (client, query, params = {}) => {
     count: 30,
     query: query,
     context: `blended`,
-
     rank_token,
     page_token,
   };
@@ -22,5 +21,3 @@ const fbsearchTopsearchFlat = async (client, query, params = {}) => {
 
   return response;
 };
-
-module.exports = fbsearchTopsearchFlat;

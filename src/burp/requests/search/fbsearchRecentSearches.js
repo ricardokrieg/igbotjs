@@ -1,12 +1,18 @@
 const _debug = require('debug');
 
-const fbsearchRecentSearches = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:fbsearchRecentSearches');
 
-  const response = await client.send({ url: `/api/v1/fbsearch/recent_searches/` });
-  debug(response);
+  let response;
+  try {
+    response = await client.send({ url: `/api/v1/fbsearch/recent_searches/` });
+    debug(response);
+  } catch (response) {
+    if (response.status !== `fail` || response.message !== `Please wait a few minutes before you try again.`) {
+      throw response;
+    }
+    debug(response);
+  }
 
   return response;
 };
-
-module.exports = fbsearchRecentSearches;

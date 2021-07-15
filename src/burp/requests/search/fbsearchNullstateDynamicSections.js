@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const fbsearchNullstateDynamicSections = async (client) => {
+module.exports = async (client) => {
   const debug = _debug('bot:fbsearchNullstateDynamicSections');
 
   const qs = {
@@ -12,5 +12,3 @@ const fbsearchNullstateDynamicSections = async (client) => {
 
   return response;
 };
-
-module.exports = fbsearchNullstateDynamicSections;

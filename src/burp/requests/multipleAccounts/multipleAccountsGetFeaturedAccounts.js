@@ -1,6 +1,6 @@
 const _debug = require('debug');
 
-const multipleAccountsGetFeaturedAccounts = async (client, userId) => {
+module.exports = async (client, userId) => {
   const debug = _debug('bot:multipleAccountsGetFeaturedAccounts');
 
   const qs = {
@@ -12,5 +12,3 @@ const multipleAccountsGetFeaturedAccounts = async (client, userId) => {
 
   return response;
 };
-
-module.exports = multipleAccountsGetFeaturedAccounts;

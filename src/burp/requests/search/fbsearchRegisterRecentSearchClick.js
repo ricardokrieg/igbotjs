@@ -1,12 +1,12 @@
 const _debug = require('debug');
 
-const fbsearchRegisterRecentSearchClick = async (client, userId) => {
+module.exports = async (client, userId) => {
   const debug = _debug('bot:fbsearchRegisterRecentSearchClick');
 
   const form = {
     entity_id: userId,
-    _csrftoken: client.csrfToken(),
-    _uuid: client.attrs.uuid,
+    // _csrftoken: client.csrfToken(),
+    _uuid: client.getDeviceId(),
     entity_type: `user`,
   };
 
@@ -15,5 +15,3 @@ const fbsearchRegisterRecentSearchClick = async (client, userId) => {
 
   return response;
 };
-
-module.exports = fbsearchRegisterRecentSearchClick;
