@@ -1,14 +1,18 @@
 const { defaultsDeep, last } = require('lodash');
 const request = require('request-promise');
+// const requestCloudflare = require('request-cloudflare');
 const { retry } = require('@lifeomic/attempt');
 const { jar } = require('request');
 const { MemoryCookieStore } = require('tough-cookie');
 const cheerio = require('cheerio');
 const debug = require('debug')('bot:dizu:api');
+const {sleep} = require('./utils');
 
 const defaultOptions = (cookieJar, headers) => {
   return {
-    baseUrl: 'https://dizu.com.br',
+    // proxy: `http://52.67.6.234:8888`,
+    // baseUrl: 'https://dizu.com.br',
+    baseUrl: 'https://51.222.154.230/',
     jar: cookieJar,
     gzip: true,
     headers: headers,
@@ -42,6 +46,7 @@ class DizuAPI {
     const cookies = `crsftoken=58542c443c6ad4de84292213dfe98426:aac62446a8a096242a17ff0af259817c`;
     for (let cookie of cookies.split(`;`)) {
       this.cookieJar.setCookie(cookie, `https://dizu.com.br/`);
+      this.cookieJar.setCookie(cookie, `https://51.222.154.230/`);
     }
 
     this.attemptOptions = {
@@ -58,6 +63,20 @@ class DizuAPI {
 
   async send(options) {
     return retry(async () => request(defaultsDeep({}, options, defaultOptions(this.cookieJar, headers))), this.attemptOptions);
+    // const cloudflareOptions = defaultsDeep({
+    //   challengesToSolve: 3,
+    //   followAllRedirects: true,
+    // }, defaultOptions(this.cookieJar, headers));
+    //
+    // return retry(async () => {
+    //   return requestCloudflare.request(cloudflareOptions, (err, response, body) => {
+    //     if (err) {
+    //       return Promise.reject(err);
+    //     }
+    //
+    //     return Promise.resolve(response);
+    //   });
+    // }, this.attemptOptions);
   }
 
   async getTask(accountId) {
@@ -70,8 +89,22 @@ class DizuAPI {
         response = await this.send({ url });
 
         const $ = cheerio.load(response.body);
+        const link = $('a#conectar_step_4').attr('href');
 
-        const username        = last($('a#conectar_step_4').attr('href').split('/'));
+        if (!link) {
+          console.error(`Dizu returned invalid response`);
+          console.error(response.body);
+          await sleep(10000);
+          return;
+        }
+
+        if (link.includes(`/p/`)) {
+          console.error(`Dizu returned a LIKE task`);
+          console.error(link);
+          return;
+        }
+
+        const username        = last(link.split('/'));
         const connectFormId   = $('#conectar_form_id').attr('value');
         const accountIdAction = $('#conta_id_acao').attr('value');
 
