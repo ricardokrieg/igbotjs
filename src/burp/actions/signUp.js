@@ -46,4 +46,6 @@ module.exports = async (client, userInfo, getPrefix, getPhoneNumber, getVerifica
     userInfo.name, username, userInfo.password, userInfo.day, userInfo.month, userInfo.year);
 
   debug(`End`);
+
+  return Promise.resolve(username);
 };

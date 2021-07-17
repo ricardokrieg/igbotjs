@@ -1,6 +1,7 @@
 const Chance = require('chance');
-const { toPairs } = require('lodash');
+const { toPairs, sampleSize, sample } = require('lodash');
 const crypto = require('crypto');
+const fs = require('fs');
 
 const extractCookie = (cookieJar, key) => {
   const cookies = cookieJar.getCookies(`https://i.instagram.com`);
@@ -141,6 +142,24 @@ const sleep = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+const randomFilesFromPath = (path, count) => {
+  const files = fs.readdirSync(path);
+  return sampleSize(files, count).map(file => `${path}${file}`);
+};
+
+const generateName = () => {
+  const firstNameData = fs.readFileSync('./src/burp/res/female_first_name.txt', 'utf8');
+  const lastNameData = fs.readFileSync('./src/burp/res/last_name.txt', 'utf8');
+
+  const firstName = sample(firstNameData.split("\n"));
+  const lastName = sample(lastNameData.split("\n"));
+
+  return {
+    first_name: firstName,
+    last_name: lastName,
+  };
+};
+
 module.exports = {
   extractCookieValue,
   getRandomId,
@@ -152,4 +171,6 @@ module.exports = {
   getSnNonce,
   stringifyForGzip,
   sleep,
+  randomFilesFromPath,
+  generateName,
 };

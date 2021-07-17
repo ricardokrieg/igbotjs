@@ -273,6 +273,14 @@ module.exports = class Client {
     return this.attrs.userId || 0;
   }
 
+  setUsername(username) {
+    this.attrs.username = username;
+  }
+
+  getUsername() {
+    return this.attrs.username;
+  }
+
   getWaterfallId() {
     return this.attrs.waterfallId;
   }

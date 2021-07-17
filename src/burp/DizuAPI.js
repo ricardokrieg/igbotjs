@@ -1,6 +1,6 @@
+const querystring = require("querystring");
 const { defaultsDeep, last } = require('lodash');
 const request = require('request-promise');
-// const requestCloudflare = require('request-cloudflare');
 const { retry } = require('@lifeomic/attempt');
 const { jar } = require('request');
 const { MemoryCookieStore } = require('tough-cookie');
@@ -10,8 +10,6 @@ const {sleep} = require('./utils');
 
 const defaultOptions = (cookieJar, headers) => {
   return {
-    // proxy: `http://52.67.6.234:8888`,
-    // baseUrl: 'https://dizu.com.br',
     baseUrl: 'https://51.222.154.230/',
     jar: cookieJar,
     gzip: true,
@@ -63,20 +61,46 @@ class DizuAPI {
 
   async send(options) {
     return retry(async () => request(defaultsDeep({}, options, defaultOptions(this.cookieJar, headers))), this.attemptOptions);
-    // const cloudflareOptions = defaultsDeep({
-    //   challengesToSolve: 3,
-    //   followAllRedirects: true,
-    // }, defaultOptions(this.cookieJar, headers));
-    //
-    // return retry(async () => {
-    //   return requestCloudflare.request(cloudflareOptions, (err, response, body) => {
-    //     if (err) {
-    //       return Promise.reject(err);
-    //     }
-    //
-    //     return Promise.resolve(response);
-    //   });
-    // }, this.attemptOptions);
+  }
+
+  async addAccount(username) {
+    // fetch("https://dizu.com.br/painel/cadastrar_conta", {
+    //   "headers": {
+    //     "accept": "*/*",
+    //     "accept-language": "en-US,en;q=0.9",
+    //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+    //     "sec-fetch-dest": "empty",
+    //     "sec-fetch-mode": "cors",
+    //     "sec-fetch-site": "same-origin",
+    //     "sec-gpc": "1",
+    //     "x-requested-with": "XMLHttpRequest",
+    //     "cookie": "crsftoken=58542c443c6ad4de84292213dfe98426:aac62446a8a096242a17ff0af259817c"
+    //   },
+    //   "referrerPolicy": "no-referrer",
+    //   "body": "site=1&conta=jessicadiniz312&gender=2&perfil_texto=815904&conta20=1&recaptcha_token=03AGdBq24X6NlRIUdOC3qMBxlvr5fwQt5Wwu6PZFQRcTNdGxpxTuxPSCWX-kY6WaTgx4T7D5-XPtgsvaWVKqhVT3F5YRaxW4emYytniq1fWsXcC6jEQB9Kkzly3IuRKfjM-U4L2EdaaHTlPnog8p0PVN23DfBoPdxJ9itDxg1bLDC-Q_he9C21nz1Dh-GFzVan7u9JcO9d4dcpjOCphvGK_3jodsG8xoyPgbbBYINdn4UcxK_Y_esTeZ7kbK-O26xCrwsu8FXobSuYIWVwvbPZxSgqPGhaovL3o7ZBcy_wF8IRXrcQS9aPc6P_iWOW3INJHH1Z7cCwD9kB-M6Yhb8zJUs-g6WuUa85h4ldBPxdbE6aMxZBTfZrH4yhFfvOyqzJvRqZ-SL4x8MFapGhOcOjxVeRzdCeyaRv2gJMDClVwejsBTFHbiHvC6c",
+    //   "method": "POST",
+    //   "mode": "cors"
+    // });
+
+    // const body = querystring.stringify({
+    //   site: 1,
+    //   conta: username,
+    //   gender: 2,
+    //   perfil_texto: `815904`,
+    //   conta20: 1,
+    // });
+
+    const form = {
+      site: 1,
+      conta: username,
+      gender: 2,
+      perfil_texto: `815904`,
+      conta20: 1,
+    };
+
+    const response = await this.send({ url: `/painel/cadastrar_conta`, method: `POST`, form });
+    debug(response.body);
+    return response.body;
   }
 
   async getTask(accountId) {
@@ -131,6 +155,19 @@ class DizuAPI {
       tarefa_id: taskId,
       conta_id: accountId,
       realizado: 1,
+    };
+
+    const response = await this.send({ url: '/painel/confirmar_pedido', method: 'POST', form });
+    debug(response.body);
+    return response.body;
+  }
+
+  async skipTask(taskId, accountId) {
+    const form = {
+      tarefa_token: null,
+      tarefa_id: taskId,
+      conta_id: accountId,
+      realizado: 3,
     };
 
     const response = await this.send({ url: '/painel/confirmar_pedido', method: 'POST', form });
