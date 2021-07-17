@@ -5,7 +5,7 @@ const Client = require('../client');
 const openApp = require("../actions/openApp");
 const signUp = require("../actions/signUp");
 const signUpCompleteProfile = require("../actions/signUpCompleteProfile");
-const feedSignup = require("../actions/feedSignup");
+const feedSignup = require("../actions/feedSignUp");
 const visitSelfProfile = require("../actions/visitSelfProfile");
 const visitEditProfile = require("../actions/visitEditProfile");
 const updateBiography = require("../actions/updateBiography");
@@ -47,7 +47,7 @@ const getVerificationCode = async () => {
 (async () => {
   const attrs = {
     // proxy: 'http://192.168.15.30:8888',
-    proxy: 'http://44.192.59.89:8888',
+    proxy: 'http://34.201.29.212:8888',
     locale: `en_US`,
     // locale: `pt_BR`,
     language: `en-US`,
@@ -63,7 +63,7 @@ const getVerificationCode = async () => {
     mid: 0,
     familyDeviceId: getRandomId(),
     // userAgent: `Instagram 187.0.0.32.120 Android (26/8.0.0; 480dpi; 1080x1920; samsung; GT-I9500; ja3g; universal5410; en_US; 93117670)`,
-    userAgent: `Instagram 187.0.0.32.120 Android (21/5.0.1; 480dpi; 1080x1920; samsung; SAMSUNG-SGH-I537; jactivelteatt; qcom; en_US; 100986894)`,
+    userAgent: `Instagram 187.0.0.32.120 Android (24/7.0; 480dpi; 1080x1920; samsung; SM-G935F; hero2lte; samsungexynos8890; en_US; 105842053)`,
     waterfallId: getRandomId(),
   };
 
@@ -93,10 +93,10 @@ const getVerificationCode = async () => {
   // };
 
   const client = new Client(attrs);
-  const images = randomFilesFromPath(`/Users/wolf/Downloads/cats/fitchicksinworkoutgear/`, 10);
+  const images = randomFilesFromPath(`/home/ec2-user/environment/ig-adb-bot/aws/fitness/images/`, 10);
 
   const userInfo = {
-    name: 'Gabriela Garcia',
+    name: 'Gabriela Fernandes',
     password: 'xxx123xxx',
     day: 10,
     month: 7,
