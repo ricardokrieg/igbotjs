@@ -14,11 +14,14 @@ const addStory = require("../actions/addStory");
 const search = require("../actions/search");
 const follow = require("../actions/follow");
 const DizuAPI = require('../DizuAPI');
+const SMSService = require('../SMSService');
 const {sleep, getRandomId, getRandomAndroidId, randomFilesFromPath} = require('../utils');
 
 const debug = _debug('bot:dizu');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const smsService = new SMSService();
 
 const getInput = async (message) => {
   const { input } = (await inquirer.prompt([
@@ -33,21 +36,25 @@ const getInput = async (message) => {
 }
 
 const getPrefix = async () => {
-  return getInput('Prefix');
+  // return getInput('Prefix');
+  return smsService.getPrefix();
 };
 
 const getPhoneNumber = async () => {
-  return getInput('Phone Number');
+  // return getInput('Phone Number');
+  return smsService.getPhoneNumber();
 };
 
 const getVerificationCode = async () => {
-  return getInput('Verification Code');
+  // return getInput('Verification Code');
+  return smsService.getVerificationCode();
 };
 
 (async () => {
   const attrs = {
     // proxy: 'http://192.168.15.30:8888',
-    proxy: 'http://34.201.29.212:8888',
+    // proxy: 'http://hjraz:eBTeYwiM@conn4.trs.ai:56807',
+    proxy: 'http://192.168.42.243:8080',
     locale: `en_US`,
     // locale: `pt_BR`,
     language: `en-US`,
@@ -62,8 +69,8 @@ const getVerificationCode = async () => {
     androidId: getRandomAndroidId(),
     mid: 0,
     familyDeviceId: getRandomId(),
-    // userAgent: `Instagram 187.0.0.32.120 Android (26/8.0.0; 480dpi; 1080x1920; samsung; GT-I9500; ja3g; universal5410; en_US; 93117670)`,
-    userAgent: `Instagram 187.0.0.32.120 Android (24/7.0; 480dpi; 1080x1920; samsung; SM-G935F; hero2lte; samsungexynos8890; en_US; 105842053)`,
+    userAgent: `Instagram 187.0.0.32.120 Android (26/8.0.0; 480dpi; 1080x1920; samsung; GT-I9500; ja3g; universal5410; en_US; 93117670)`,
+    // userAgent: `Instagram 187.0.0.32.120 Android (24/7.0; 480dpi; 1080x1920; samsung; SM-G935F; hero2lte; samsungexynos8890; en_US; 105842053)`,
     waterfallId: getRandomId(),
   };
 
@@ -93,7 +100,7 @@ const getVerificationCode = async () => {
   // };
 
   const client = new Client(attrs);
-  const images = randomFilesFromPath(`/home/ec2-user/environment/ig-adb-bot/aws/fitness/images/`, 10);
+  const images = randomFilesFromPath(`/Users/wolf/Downloads/cats/fitchicksinworkoutgear/`, 10);
 
   const userInfo = {
     name: 'Gabriela Fernandes',
@@ -105,6 +112,8 @@ const getVerificationCode = async () => {
     shareToFeed: true,
     followRecommendedCount: 3,
   };
+
+  await smsService.getBalance();
 
   await openApp(client);
   await sleep(2000);

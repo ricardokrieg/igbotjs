@@ -8,7 +8,7 @@ module.exports = async (client) => {
     response = await client.send({ url: `/api/v1/fbsearch/recent_searches/` });
     debug(response);
   } catch (response) {
-    if (response.status !== `fail` || response.message !== `Please wait a few minutes before you try again.`) {
+    if (response.status !== `fail` || (response.message !== `Please wait a few minutes before you try again.` && response.message !== `Aguarde alguns minutos antes de tentar novamente.`)) {
       throw response;
     }
     debug(response);

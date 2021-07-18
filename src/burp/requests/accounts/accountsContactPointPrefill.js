@@ -36,16 +36,8 @@ module.exports = async (client, usage) => {
     signed_body: `SIGNATURE.${JSON.stringify(data)}`
   };
 
-  let response;
-  try {
-    response = await client.send({ url: `/api/v1/accounts/contact_point_prefill/`, method: 'POST', form });
-    debug(response);
-  } catch (response) {
-    if (response.status !== `fail` || response.message !== `Please wait a few minutes before you try again.`) {
-      throw response;
-    }
-    debug(response);
-  }
+  const response = await client.send({ url: `/api/v1/accounts/contact_point_prefill/`, method: 'POST', form });
+  debug(response);
 
   return response;
 };
