@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, query, params = {}) => {
-  const debug = _debug('bot:fbsearchTopsearchFlat');
+  const debug = _debug('bot:requests:fbsearchTopsearchFlat');
 
   const rank_token = params.rank_token;
   const page_token = params.page_token;

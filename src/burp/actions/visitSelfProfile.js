@@ -42,7 +42,7 @@ const inviteThread = async (client) => {
   await fbGetInviteSuggestions(client, true);
 };
 
-const debug = _debug('bot:visitSelfProfile');
+const debug = _debug('bot:actions:visitSelfProfile');
 
 module.exports = async (client) => {
   debug(`Start`);

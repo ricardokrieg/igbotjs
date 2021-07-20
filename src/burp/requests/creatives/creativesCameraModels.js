@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:creativesCameraModels');
+  const debug = _debug('bot:requests:creativesCameraModels');
 
   const data = {
     _uid: client.getUserId(),

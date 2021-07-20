@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, text) => {
-  const debug = _debug('bot:warningCheckOffensiveText');
+  const debug = _debug('bot:requests:warningCheckOffensiveText');
 
   const data = {
     _uid: client.getUserId(),

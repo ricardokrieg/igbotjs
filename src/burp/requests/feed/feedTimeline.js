@@ -5,7 +5,7 @@ const {batteryLevel, getRandomId, stringifyForGzip} = require("../../utils");
 
 
 module.exports = async (client, params={}) => {
-  const debug = _debug('bot:feedTimeline');
+  const debug = _debug('bot:requests:feedTimeline');
 
   const feed_view_info = params.feed_view_info || [];
   const reason = params.reason || `cold_start_fetch`;

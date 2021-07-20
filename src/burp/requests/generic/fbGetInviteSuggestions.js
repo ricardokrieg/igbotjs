@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, countOnly = false) => {
-  const debug = _debug('bot:fbGetInviteSuggestions');
+  const debug = _debug('bot:requests:fbGetInviteSuggestions');
 
   let form;
   if (countOnly) {

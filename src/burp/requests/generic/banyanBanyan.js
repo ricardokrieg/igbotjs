@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs, random} = require("lodash");
 
 module.exports = async (client, afterSignup = false, modifyHeaders = false) => {
-  const debug = _debug('bot:banyanBanyan');
+  const debug = _debug('bot:requests:banyanBanyan');
 
   let views;
   if (afterSignup) {

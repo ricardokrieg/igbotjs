@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:archiveReelProfileArchiveBadge');
+  const debug = _debug('bot:requests:archiveReelProfileArchiveBadge');
 
   const form = {
     timezone_offset: client.getTimezoneOffset(),

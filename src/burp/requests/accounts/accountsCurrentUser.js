@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, isEdit = false) => {
-  const debug = _debug('bot:accountsCurrentUser');
+  const debug = _debug('bot:requests:accountsCurrentUser');
 
   let qs = {};
   if (isEdit) {

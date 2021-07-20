@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:attributionLogResurrectAttribution');
+  const debug = _debug('bot:requests:attributionLogResurrectAttribution');
 
   const data = {
     _uid: client.getUserId(),
@@ -17,7 +17,7 @@ module.exports = async (client) => {
     response = await client.send({ url: `/api/v1/attribution/log_resurrect_attribution/`, method: 'POST', form });
     debug(response);
   } catch (response) {
-    if (response.status !== `fail` || response.message !== `missing param`) {
+    if (response.status !== `fail`) {
       throw response;
     }
     debug(response);

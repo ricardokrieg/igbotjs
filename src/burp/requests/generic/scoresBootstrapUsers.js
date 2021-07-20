@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:scoresBootstrapUsers');
+  const debug = _debug('bot:requests:scoresBootstrapUsers');
 
   const qs = {
     surfaces: JSON.stringify(["autocomplete_user_list","coefficient_besties_list_ranking","coefficient_rank_recipient_user_suggestion","coefficient_ios_section_test_bootstrap_ranking","coefficient_direct_recipients_ranking_variant_2"]),

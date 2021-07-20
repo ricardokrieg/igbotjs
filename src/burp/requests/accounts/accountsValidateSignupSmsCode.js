@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, prefix, phoneNumber, verificationCode) => {
-  const debug = _debug('bot:accountsValidateSignupSmsCode');
+  const debug = _debug('bot:requests:accountsValidateSignupSmsCode');
 
   const data = {
     verification_code: verificationCode,

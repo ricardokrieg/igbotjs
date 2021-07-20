@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:qpGetCooldowns');
+  const debug = _debug('bot:requests:qpGetCooldowns');
 
   const qs = {
     signed_body: `SIGNATURE.{}`,

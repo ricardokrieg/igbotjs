@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, caption, uploadId) => {
-  const debug = _debug('bot:mediaConfigure');
+  const debug = _debug('bot:requests:mediaConfigure');
 
   const data = {
     camera_entry_point: `164`,

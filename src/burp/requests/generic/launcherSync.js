@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:launcherSync');
+  const debug = _debug('bot:requests:launcherSync');
 
   let data;
   const userId = client.getUserId() || null;

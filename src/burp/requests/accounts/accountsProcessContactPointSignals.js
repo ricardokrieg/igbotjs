@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:accountsProcessContactPointSignals');
+  const debug = _debug('bot:requests:accountsProcessContactPointSignals');
 
   const data = {
     phone_id: client.getFamilyDeviceId(),
@@ -20,7 +20,7 @@ module.exports = async (client) => {
     response = await client.send({ url: `/api/v1/accounts/process_contact_point_signals/`, method: 'POST', form });
     debug(response);
   } catch (response) {
-    if (response.status !== `fail` || (response.message !== `Please wait a few minutes before you try again.` && response.message !== `Aguarde alguns minutos antes de tentar novamente.`)) {
+    if (response.status !== `fail`) {
       throw response;
     }
     debug(response);

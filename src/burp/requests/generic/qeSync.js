@@ -6,7 +6,7 @@ const {
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:qeSync');
+  const debug = _debug('bot:requests:qeSync');
 
   let data;
   const userId = client.getUserId() || null;

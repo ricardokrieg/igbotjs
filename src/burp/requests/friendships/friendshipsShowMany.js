@@ -2,7 +2,7 @@ const _debug = require('debug');
 const querystring = require("querystring");
 
 module.exports = async (client, userIds) => {
-  const debug = _debug('bot:friendshipsShowMany');
+  const debug = _debug('bot:requests:friendshipsShowMany');
 
   const data = {
     user_ids: `USER_IDS`,

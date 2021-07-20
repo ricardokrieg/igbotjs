@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs} = require("lodash");
 
 module.exports = async (client) => {
-  const debug = _debug('bot:clipsDiscover');
+  const debug = _debug('bot:requests:clipsDiscover');
 
   const form = {
     _uuid: client.getDeviceId(),

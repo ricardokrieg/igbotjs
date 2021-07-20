@@ -13,19 +13,25 @@ const {
   fbsearchTopsearchFlat,
 } = require('../requests/search');
 
-const debug = _debug('bot:search');
+const debug = _debug('bot:actions:search');
 
-module.exports = async (client, query, stopOnTarget = true) => {
+module.exports = async (client, query, stopOnTarget = true, isFirstSearch = false) => {
   debug(`Start`);
 
-  const requests = shuffle([
+  let requests = [
     () => fbsearchNullstateDynamicSections(client),
-    () => fbsearchRecentSearches(client),
-    () => fbsearchIgShopRecentSearches(client),
     () => commerceDestinationPrefetchEligible(client),
-  ]);
+  ];
 
-  await Bluebird.map(requests, request => request());
+  if (isFirstSearch) {
+    requests = [
+      ...requests,
+      () => fbsearchRecentSearches(client),
+      () => fbsearchIgShopRecentSearches(client),
+    ];
+  }
+
+  await Bluebird.map(shuffle(requests), request => request());
 
   let searchResults = { has_more: false };
   let params = {};
@@ -44,13 +50,13 @@ module.exports = async (client, query, stopOnTarget = true) => {
 
       debug(`#${item.position} => ${username} (private? ${isPrivate}) (following? ${following})`);
 
-      if (stopOnTarget && username === query) {
+      if (stopOnTarget && username.toLowerCase() === query.toLowerCase()) {
         return Promise.resolve({ user: item.user, is_private: isPrivate, following });
       }
     }
 
     if (stopOnTarget) {
-      return Promise.reject();
+      return Promise.reject(new Error(`${query} not found`));
     }
 
     params = {

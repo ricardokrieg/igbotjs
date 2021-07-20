@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:commerceDestinationFuchsia');
+  const debug = _debug('bot:requests:commerceDestinationFuchsia');
 
   const qs = {
     is_prefetch: true,

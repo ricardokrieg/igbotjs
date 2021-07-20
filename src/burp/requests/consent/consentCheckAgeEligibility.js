@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, day, month, year) => {
-  const debug = _debug('bot:consentCheckAgeEligibility');
+  const debug = _debug('bot:requests:consentCheckAgeEligibility');
 
   const form = {
     day,

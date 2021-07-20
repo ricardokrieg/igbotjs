@@ -125,6 +125,13 @@ class DizuAPI {
         if (link.includes(`/p/`)) {
           console.error(`Dizu returned a LIKE task`);
           console.error(link);
+
+          const connectFormId = $('#conectar_form_id').attr('value');
+          if (connectFormId) {
+            debug(`Rejecting LIKE task`);
+            await this.skipTask(connectFormId, accountId);
+          }
+
           return;
         }
 

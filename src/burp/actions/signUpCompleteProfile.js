@@ -31,7 +31,7 @@ const {
   followRecommended,
 } = require('../requests/friendships');
 
-const debug = _debug('bot:signUpCompleteProfile');
+const debug = _debug('bot:actions:signUpCompleteProfile');
 
 module.exports = async (client, userInfo) => {
   debug(`Start`);
@@ -50,6 +50,7 @@ module.exports = async (client, userInfo) => {
   await Bluebird.map(requests, request => request());
 
   if (userInfo.profileImage) {
+    debug(`Loading photo from disk: ${userInfo.profileImage}`);
     const photo = await readFileAsync(userInfo.profileImage);
 
     requests = [
@@ -62,6 +63,7 @@ module.exports = async (client, userInfo) => {
   }
 
   if (userInfo.followRecommendedCount && userInfo.followRecommendedCount > 0) {
+    debug(`Following ${userInfo.followRecommendedCount} recommended`);
     await followRecommended(client, userInfo.followRecommendedCount);
   }
 

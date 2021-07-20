@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:newsInbox');
+  const debug = _debug('bot:requests:newsInbox');
 
   const qs = {
     mark_as_seen: false,

@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {random, toPairs} = require("lodash");
 
 module.exports = async (client) => {
-  const debug = _debug('bot:androidModulesDownload');
+  const debug = _debug('bot:requests:androidModulesDownload');
 
   const data = {
     _uid: client.getUserId(),

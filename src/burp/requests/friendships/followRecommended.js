@@ -9,7 +9,7 @@ const {
 } = require('../generic');
 
 module.exports = async (client, count) => {
-  const debug = _debug('bot:followRecommended');
+  const debug = _debug('bot:requests:followRecommended');
 
   const recommendations = await newsInbox(client);
   debug(recommendations);

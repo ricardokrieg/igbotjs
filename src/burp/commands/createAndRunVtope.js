@@ -14,6 +14,7 @@ const addStory = require("../actions/addStory");
 const search = require("../actions/search");
 const follow = require("../actions/follow");
 const DizuAPI = require('../DizuAPI');
+const VtopeAPI = require('../VtopeAPI');
 const SMSService = require('../SMSService');
 const SubscriptionService = require('../SubscriptionService');
 const {
@@ -24,7 +25,7 @@ const {
   randomReelsTitle,
 } = require('../utils');
 
-const debug = _debug('bot:dizu');
+const debug = _debug('bot:vtope');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -44,7 +45,7 @@ const getInput = async (message) => {
 }
 
 const getPrefix = async (country) => {
-  if (country === 'BR') {
+  if (country === 'BR' && false) {
     return getInput('Prefix');
   } else {
     return smsService.getPrefix();
@@ -52,7 +53,7 @@ const getPrefix = async (country) => {
 };
 
 const getPhoneNumber = async (country) => {
-  if (country === 'BR') {
+  if (country === 'BR' && false) {
     return getInput('Phone Number');
   } else {
     return smsService.getPhoneNumber();
@@ -60,7 +61,7 @@ const getPhoneNumber = async (country) => {
 };
 
 const getVerificationCode = async (country) => {
-  if (country === 'BR') {
+  if (country === 'BR' && false) {
     return getInput('Verification Code');
   } else {
     return smsService.getVerificationCode();
@@ -68,14 +69,14 @@ const getVerificationCode = async (country) => {
 };
 
 const confirmSMS = async (country) => {
-  if (country === 'RU') {
+  if (country === 'RU' || true) {
     return smsService.setStatusDone();
   }
 };
 
 (async () => {
   try {
-    const attrs = generateAttrs(`BR`);
+    const attrs = generateAttrs(`RU`);
     debug(attrs);
 
     const client = new Client(attrs);
@@ -113,81 +114,99 @@ const confirmSMS = async (country) => {
     await feedSignup(client);
     await sleep(2000);
 
-    await visitSelfProfile(client);
-    await sleep(2000);
+    // await visitSelfProfile(client);
+    // await sleep(2000);
+    //
+    // await visitEditProfile(client);
+    // await sleep(2000);
+    //
+    // await updateBiography(client, `815904`);
+    // await sleep(2000);
 
-    await visitEditProfile(client);
-    await sleep(2000);
-
-    await updateBiography(client, `815904`);
-    await sleep(2000);
-
-    const orderInfo = await subscriptionService.order(username);
-    const orderId = orderInfo.order;
+    // const orderInfo = await subscriptionService.order(username);
+    // const orderId = orderInfo.order;
 
     await addPost(client, images[1]);
     await sleep(60000);
-    await addPost(client, images[2]);
-    await sleep(60000);
-    await addPost(client, images[3]);
-    await sleep(60000);
-    await addPost(client, images[4]);
-    await sleep(60000);
-    await addPost(client, images[5]);
-    await sleep(60000);
-    await addPost(client, images[6]);
-    await sleep(60000);
+    // await addPost(client, images[2]);
+    // await sleep(60000);
+    // await addPost(client, images[3]);
+    // await sleep(60000);
+    // await addPost(client, images[4]);
+    // await sleep(60000);
+    // await addPost(client, images[5]);
+    // await sleep(60000);
+    // await addPost(client, images[6]);
+    // await sleep(60000);
 
-    await addStory(client, images[7], randomReelsTitle());
-    await sleep(60000);
-    await addStory(client, images[8], randomReelsTitle());
-    await sleep(60000);
-    await addStory(client, images[9], randomReelsTitle());
-    await sleep(60000);
+    // await addStory(client, images[7], randomReelsTitle());
+    // await sleep(60000);
+    // await addStory(client, images[8], randomReelsTitle());
+    // await sleep(60000);
+    // await addStory(client, images[9], randomReelsTitle());
+    // await sleep(60000);
 
     const accountId = client.getUserId();
-    const dizu = new DizuAPI();
+    // const dizu = new DizuAPI();
+    const vtope = new VtopeAPI();
 
-    const orderStatus = await subscriptionService.status(orderId);
+    // const orderStatus = await subscriptionService.status(orderId);
     // if (orderStatus.status !== 'Completed') {
     //   await getInput(`Account ${username} is ready to be added to Dizu?`);
     // }
 
-    await dizu.addAccount(username);
-    await sleep(15000);
+    // await dizu.addAccount(username);
+    const { atoken } = await vtope.addAccount(username, accountId);
+    if (!atoken) {
+      console.error(`Account ${username} (${accountId}) not added correctly`);
+      return Promise.reject();
+    }
+
+    let status = 'validating';
+    while (status === 'validating') {
+      await sleep(10000);
+      const accountInfo = await vtope.accountInfo(atoken);
+      status = accountInfo.status;
+    }
+
+    if (status !== 'ok') {
+      console.error(`Account ${username} (${accountId}) with bad status: ${status}`);
+      return Promise.reject();
+    }
 
     let count = 0;
     while (count < 6000) {
       debug(`Follow #${count + 1}`);
 
-      const data = await dizu.getTask(accountId);
+      // const data = await dizu.getTask(accountId);
+      const data = await vtope.getTask(atoken);
 
-      if (data === null) {
-        debug(`Got invalid task from Dizu`);
+      if (!data.shortcode || !data.id) {
+        debug(`Got invalid task from VTope`);
         continue;
       }
 
       try {
-        debug(`Searching ${data.username}`);
-        const {user, is_private, following} = await search(client, data.username, true, count === 0);
+        debug(`Searching ${data.shortcode}`);
+        const {user, is_private, following} = await search(client, data.shortcode, true, count === 0);
 
         if (!is_private && !following) {
-          debug(`Following ${data.username}`);
+          debug(`Following ${data.shortcode}`);
           await follow(client, user);
-          const result = await dizu.submitTask(data.connectFormId, accountId);
+          const result = await vtope.submitTask(data.id, atoken);
           debug(result);
           count++;
 
           await sleep(10000);
         } else {
-          debug(`Skipped ${data.username} isPrivate=${is_private} following=${following}`);
-          await dizu.skipTask(data.connectFormId, accountId);
+          debug(`Skipped ${data.shortcode} isPrivate=${is_private} following=${following}`);
+          await vtope.skipTask(data.id, atoken);
         }
       } catch (error) {
         debug(`Error when searching/following:`);
         debug(error);
 
-        await dizu.skipTask(data.connectFormId, accountId);
+        await vtope.skipTask(data.id, atoken);
 
         if (error.message === 'challenge_required' || error.message === 'feedback_required') {
           break;

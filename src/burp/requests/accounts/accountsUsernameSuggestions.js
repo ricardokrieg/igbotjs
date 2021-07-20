@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, name) => {
-  const debug = _debug('bot:accountsUsernameSuggestions');
+  const debug = _debug('bot:requests:accountsUsernameSuggestions');
 
   const data = {
     phone_id: client.getFamilyDeviceId(),

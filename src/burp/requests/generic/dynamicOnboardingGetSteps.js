@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {signupSeenSteps} = require("../../settings");
 
 module.exports = async (client, afterSignup = false) => {
-  const debug = _debug('bot:dynamicOnboardingGetSteps');
+  const debug = _debug('bot:requests:dynamicOnboardingGetSteps');
 
   let data;
   const userId = client.getUserId() || null;

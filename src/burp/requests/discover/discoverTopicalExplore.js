@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs} = require("lodash");
 
 module.exports = async (client, isFromSearch = false) => {
-  const debug = _debug('bot:discoverTopicalExplore');
+  const debug = _debug('bot:requests:discoverTopicalExplore');
 
   const max_id = isFromSearch ? 0 : undefined;
   const module = isFromSearch ? `explore_popular` : undefined;

@@ -3,7 +3,7 @@ const _debug = require('debug');
 const ruploadIgphoto = require('./ruploadIgphoto');
 
 module.exports = async (client, photo, shareToFeed) => {
-  const debug = _debug('bot:accountsChangeProfilePicture');
+  const debug = _debug('bot:requests:accountsChangeProfilePicture');
 
   const { uploadId } = await ruploadIgphoto(client, photo);
 

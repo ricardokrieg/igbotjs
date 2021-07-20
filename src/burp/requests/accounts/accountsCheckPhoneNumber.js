@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, phoneNumber) => {
-  const debug = _debug('bot:accountsCheckPhoneNumber');
+  const debug = _debug('bot:requests:accountsCheckPhoneNumber');
 
   const data = {
     phone_id: client.getFamilyDeviceId(),
@@ -19,7 +19,7 @@ module.exports = async (client, phoneNumber) => {
     response = await client.send({ url: `/api/v1/accounts/check_phone_number/`, method: 'POST', form });
     debug(response);
   } catch (response) {
-    if (response.status !== `fail` || response.error_type !== `missing_parameters`) {
+    if (response.status !== `fail`) {
       throw response;
     }
     debug(response);

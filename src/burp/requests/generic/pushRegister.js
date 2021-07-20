@@ -3,7 +3,7 @@ const _debug = require('debug');
 const { getRandomId } = require('../../utils');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:pushRegister');
+  const debug = _debug('bot:requests:pushRegister');
 
   const token = {
     ck: `327690121831187`,

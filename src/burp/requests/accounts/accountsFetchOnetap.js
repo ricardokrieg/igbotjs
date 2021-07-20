@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:accountsFetchOnetap');
+  const debug = _debug('bot:requests:accountsFetchOnetap');
 
   const data = {
     phone_id: client.getFamilyDeviceId(),

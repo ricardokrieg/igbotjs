@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:siFetchHeaders');
+  const debug = _debug('bot:requests:siFetchHeaders');
 
   const qs = {
     guid: client.getDeviceId().replace(/-/g, ''),

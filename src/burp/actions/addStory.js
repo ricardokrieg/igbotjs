@@ -41,11 +41,12 @@ const {
   usersReelSettings,
 } = require('../requests/users');
 
-const debug = _debug('bot:addStory');
+const debug = _debug('bot:actions:addStory');
 
 module.exports = async (client, photoPath, reelTitle = ``) => {
   debug(`Start`);
 
+  debug(`Loading photo from disk: ${photoPath}`);
   const photo = await readFileAsync(photoPath);
 
   await creativesGetUnlockableStickerNux(client);
@@ -64,10 +65,13 @@ module.exports = async (client, photoPath, reelTitle = ``) => {
 
   await sleep(5000);
 
+  debug(`Uploading photo`);
   const { uploadId } = await ruploadIgphoto(client, photo);
+  debug(`UploadID: ${uploadId}`);
 
   await sleep(5000);
 
+  debug(`Configuring media`);
   const { media: { id } } = await mediaConfigureToStory(client, uploadId);
 
   await sleep(5000);
@@ -75,6 +79,7 @@ module.exports = async (client, photoPath, reelTitle = ``) => {
   await igFbXpostingAccountLinkingUserXpostingDestination(client);
 
   if (!isEmpty(reelTitle)) {
+    debug(`Saving reel: ${reelTitle}`);
     await sleep(10000);
 
     await highlightsCreateReel(client, id, reelTitle);

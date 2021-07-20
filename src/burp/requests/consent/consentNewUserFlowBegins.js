@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:consentNewUserFlowBegins');
+  const debug = _debug('bot:requests:consentNewUserFlowBegins');
 
   const data = {
     device_id: client.getDeviceId(),

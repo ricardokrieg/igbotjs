@@ -10,10 +10,11 @@ const {
   fundraiserCanCreatePersonalFundraisers,
 } = require('../requests/generic');
 
-const debug = _debug('bot:updateBiography');
+const debug = _debug('bot:actions:updateBiography');
 
 module.exports = async (client, biography) => {
   debug(`Start`);
+  debug(`Biography: ${biography}`);
 
   await accountsSetBiography(client, biography);
 

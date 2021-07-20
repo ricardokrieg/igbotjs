@@ -141,7 +141,7 @@ const requestsDirect = async (client) => {
   await directV2GetPresence(client);
 };
 
-const debug = _debug('bot:OpenApp');
+const debug = _debug('bot:actions:OpenApp');
 
 // TODO probably is wrong
 module.exports = async (client) => {

@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 const commerceDestinationPrefetchEligible = async (client) => {
-  const debug = _debug('bot:commerceDestinationPrefetchEligible');
+  const debug = _debug('bot:requests:commerceDestinationPrefetchEligible');
 
   const qs = {
     is_tab: true,

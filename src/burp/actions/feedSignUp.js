@@ -55,7 +55,7 @@ const {
   accountsProcessContactPointSignals,
 } = require('../requests/accounts');
 
-const debug = _debug('bot:feedSignUp');
+const debug = _debug('bot:actions:feedSignUp');
 
 const feedTimelineThread = async (client) => {
   let response = await feedTimeline(client);

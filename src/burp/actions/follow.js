@@ -27,12 +27,13 @@ const {
   userInfo,
 } = require('../requests/user');
 
-const debug = _debug('bot:follow');
+const debug = _debug('bot:actions:follow');
 
 module.exports = async (client, user) => {
   debug(`Start`);
 
   const userId = user.pk;
+  debug(`UserID: ${userId}`);
 
   let requests = [
     () => fbsearchRegisterRecentSearchClick(client, userId),
@@ -46,6 +47,7 @@ module.exports = async (client, user) => {
 
   await Bluebird.map(requests, request => request());
 
+  debug(`Following ${userId}`);
   await friendshipsCreate(client, userId);
 
   debug(`End`);

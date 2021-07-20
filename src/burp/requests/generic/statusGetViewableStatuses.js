@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:statusGetViewableStatuses');
+  const debug = _debug('bot:requests:statusGetViewableStatuses');
 
   const qs = {
     include_authors: true,

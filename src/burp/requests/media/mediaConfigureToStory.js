@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {getRandomId} = require("../../utils");
 
 module.exports = async (client, uploadId) => {
-  const debug = _debug('bot:mediaConfigureToStory');
+  const debug = _debug('bot:requests:mediaConfigureToStory');
 
   const timestamp = Math.floor(new Date().getTime() / 1000);
 

@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, userId) => {
-  const debug = _debug('bot:multipleAccountsGetFeaturedAccounts');
+  const debug = _debug('bot:requests:multipleAccountsGetFeaturedAccounts');
 
   const qs = {
     target_user_id: userId,

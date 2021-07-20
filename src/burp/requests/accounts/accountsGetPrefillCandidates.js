@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:accountsGetPrefillCandidates');
+  const debug = _debug('bot:requests:accountsGetPrefillCandidates');
 
   const data = {
     android_device_id: client.getAndroidId(),

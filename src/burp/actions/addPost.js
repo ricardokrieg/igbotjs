@@ -42,11 +42,12 @@ const {
   usersReelSettings,
 } = require('../requests/users');
 
-const debug = _debug('bot:addPost');
+const debug = _debug('bot:actions:addPost');
 
 module.exports = async (client, photoPath, caption = ``) => {
   debug(`Start`);
 
+  debug(`Loading photo from disk: ${photoPath}`);
   const photo = await readFileAsync(photoPath);
 
   await creativesGetUnlockableStickerNux(client);
@@ -64,10 +65,13 @@ module.exports = async (client, photoPath, caption = ``) => {
 
   await qpBatchFetch(client, `share_post`);
   await igFbXpostingAccountLinkingUserXpostingDestination(client);
+  debug(`Uploading photo`);
   const { uploadId } = await ruploadIgphoto(client, photo);
+  debug(`UploadID: ${uploadId}`);
 
   await sleep(5000);
   await warningCheckOffensiveText(client, caption);
+  debug(`Configuring media`);
   await mediaConfigure(client, caption, uploadId);
   await sleep(5000);
   // await mediaUpdateMediaWithPdqHashInfo(client);

@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs, random} = require("lodash");
 
 module.exports = async (client, modifyHeaders = false) => {
-  const debug = _debug('bot:notificationsBadge');
+  const debug = _debug('bot:requests:notificationsBadge');
 
   const form = {
     phone_id: client.getFamilyDeviceId(),

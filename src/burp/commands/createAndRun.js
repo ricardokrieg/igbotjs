@@ -14,6 +14,7 @@ const addStory = require("../actions/addStory");
 const search = require("../actions/search");
 const follow = require("../actions/follow");
 const DizuAPI = require('../DizuAPI');
+const VtopeAPI = require('../VtopeAPI');
 const SMSService = require('../SMSService');
 const SubscriptionService = require('../SubscriptionService');
 const {
@@ -24,7 +25,7 @@ const {
   randomReelsTitle,
 } = require('../utils');
 
-const debug = _debug('bot:dizu');
+const debug = _debug('bot:run');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -44,7 +45,7 @@ const getInput = async (message) => {
 }
 
 const getPrefix = async (country) => {
-  if (country === 'BR') {
+  if (country === 'BR' && false) {
     return getInput('Prefix');
   } else {
     return smsService.getPrefix();
@@ -52,7 +53,7 @@ const getPrefix = async (country) => {
 };
 
 const getPhoneNumber = async (country) => {
-  if (country === 'BR') {
+  if (country === 'BR' && false) {
     return getInput('Phone Number');
   } else {
     return smsService.getPhoneNumber();
@@ -60,7 +61,7 @@ const getPhoneNumber = async (country) => {
 };
 
 const getVerificationCode = async (country) => {
-  if (country === 'BR') {
+  if (country === 'BR' && false) {
     return getInput('Verification Code');
   } else {
     return smsService.getVerificationCode();
@@ -68,18 +69,18 @@ const getVerificationCode = async (country) => {
 };
 
 const confirmSMS = async (country) => {
-  if (country === 'RU') {
+  if (country === 'RU' || true) {
     return smsService.setStatusDone();
   }
 };
 
 (async () => {
   try {
-    const attrs = generateAttrs(`BR`);
+    const attrs = generateAttrs(`RU`);
     debug(attrs);
 
     const client = new Client(attrs);
-    const images = randomFilesFromPath(`/Users/wolf/Downloads/cats/fitchicksinworkoutgear/`, 10);
+    const images = randomFilesFromPath(`/Users/wolf/Downloads/cats/fitchicksinworkoutgear/`, 20);
 
     const { first_name, last_name, suggested_username } = generateName();
 
@@ -125,69 +126,119 @@ const confirmSMS = async (country) => {
     const orderInfo = await subscriptionService.order(username);
     const orderId = orderInfo.order;
 
-    await addPost(client, images[1]);
-    await sleep(60000);
-    await addPost(client, images[2]);
-    await sleep(60000);
-    await addPost(client, images[3]);
-    await sleep(60000);
-    await addPost(client, images[4]);
-    await sleep(60000);
-    await addPost(client, images[5]);
-    await sleep(60000);
-    await addPost(client, images[6]);
-    await sleep(60000);
+    let n = 1;
+    for (let i = 0; i < 15; i++) {
+      await addPost(client, images[n]);
+      await sleep(60000);
+      n++;
+    }
 
-    await addStory(client, images[7], randomReelsTitle());
-    await sleep(60000);
-    await addStory(client, images[8], randomReelsTitle());
-    await sleep(60000);
-    await addStory(client, images[9], randomReelsTitle());
-    await sleep(60000);
+    for (let i = 0; i < 3; i++) {
+      await addStory(client, images[n], randomReelsTitle());
+      await sleep(60000);
+      n++;
+    }
 
     const accountId = client.getUserId();
     const dizu = new DizuAPI();
+    const vtope = new VtopeAPI();
 
     const orderStatus = await subscriptionService.status(orderId);
-    // if (orderStatus.status !== 'Completed') {
-    //   await getInput(`Account ${username} is ready to be added to Dizu?`);
-    // }
+    if (orderStatus.status !== 'Completed') {
+      // await getInput(`Account ${username} is ready to be added to Dizu?`);
+    }
 
     await dizu.addAccount(username);
-    await sleep(15000);
+    const { atoken } = await vtope.addAccount(username, accountId);
+    if (!atoken) {
+      console.error(`Account ${username} (${accountId}) not added correctly`);
+      return Promise.reject();
+    }
 
+    let status = 'validating';
+    while (status === 'validating') {
+      await sleep(10000);
+      const accountInfo = await vtope.accountInfo(atoken);
+      status = accountInfo.status;
+    }
+
+    if (status !== 'ok') {
+      console.error(`Account ${username} (${accountId}) with bad status: ${status}`);
+      return Promise.reject();
+    }
+
+    let vtopeTasks = 0;
+    let isVtopeTask = false;
     let count = 0;
     while (count < 6000) {
       debug(`Follow #${count + 1}`);
 
-      const data = await dizu.getTask(accountId);
+      let data = null;
+      let targetUsername;
 
-      if (data === null) {
-        debug(`Got invalid task from Dizu`);
-        continue;
+      if (vtopeTasks > 0) {
+        isVtopeTask = true;
+        debug(`Getting task from VTope (${vtopeTasks} remaining)`);
+        data = await vtope.getTask(atoken);
+        vtopeTasks--;
+
+        if (!data.shortcode || !data.id) {
+          debug(`Got invalid task from VTope`);
+          continue;
+        }
+
+        targetUsername = data.shortcode;
+      } else {
+        isVtopeTask = false;
+        debug(`Getting task from Dizu`);
+        data = await dizu.getTask(accountId);
+
+        if (data === null) {
+          debug(`Got invalid task from Dizu`);
+          debug(`Getting 10 tasks from VTope`);
+
+          vtopeTasks = 10;
+          continue;
+        }
+
+        targetUsername = data.username;
       }
 
       try {
-        debug(`Searching ${data.username}`);
-        const {user, is_private, following} = await search(client, data.username, true, count === 0);
+        debug(`Searching ${targetUsername}`);
+        const {user, is_private, following} = await search(client, targetUsername, true, count === 0);
 
         if (!is_private && !following) {
-          debug(`Following ${data.username}`);
+          debug(`Following ${targetUsername}`);
           await follow(client, user);
-          const result = await dizu.submitTask(data.connectFormId, accountId);
-          debug(result);
+
+          let result;
+          if (isVtopeTask) {
+            result = await vtope.submitTask(data.id, atoken);
+          } else {
+            result = await dizu.submitTask(data.connectFormId, accountId);
+          }
           count++;
 
           await sleep(10000);
         } else {
-          debug(`Skipped ${data.username} isPrivate=${is_private} following=${following}`);
-          await dizu.skipTask(data.connectFormId, accountId);
+          debug(`Skipped ${targetUsername} isPrivate=${is_private} following=${following}`);
+
+          if (isVtopeTask) {
+            await vtope.skipTask(data.id, atoken);
+          } else {
+            await dizu.skipTask(data.connectFormId, accountId);
+          }
         }
       } catch (error) {
         debug(`Error when searching/following:`);
         debug(error);
 
-        await dizu.skipTask(data.connectFormId, accountId);
+        if (isVtopeTask) {
+          await vtope.skipTask(data.id, atoken);
+        } else {
+          await dizu.skipTask(data.connectFormId, accountId);
+        }
 
         if (error.message === 'challenge_required' || error.message === 'feedback_required') {
           break;

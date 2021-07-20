@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs} = require("lodash");
 
 module.exports = async (client, policy= 0) => {
-  const debug = _debug('bot:wwwgraphqlIgQuery');
+  const debug = _debug('bot:requests:wwwgraphqlIgQuery');
 
   const fbHeaders = [
     `IGFxLinkedAccountsQuery`,

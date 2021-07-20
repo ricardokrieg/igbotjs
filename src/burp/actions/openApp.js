@@ -10,7 +10,7 @@ const {
   qeSync,
 } = require('../requests/generic');
 
-const debug = _debug('bot:openApp');
+const debug = _debug('bot:actions:openApp');
 
 module.exports = async (client) => {
   debug(`Start`);

@@ -1,14 +1,14 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:fbsearchIgShopRecentSearches');
+  const debug = _debug('bot:requests:fbsearchIgShopRecentSearches');
 
   let response;
   try {
     response = await client.send({ url: `/api/v1/fbsearch/ig_shop_recent_searches/` });
     debug(response);
   } catch (response) {
-    if (response.status !== `fail` || (response.message !== `Please wait a few minutes before you try again.` && response.message !== `Aguarde alguns minutos antes de tentar novamente.`)) {
+    if (response.status !== `fail`) {
       throw response;
     }
     debug(response);

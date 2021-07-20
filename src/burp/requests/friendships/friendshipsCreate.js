@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, userId) => {
-  const debug = _debug('bot:friendshipsCreate');
+  const debug = _debug('bot:requests:friendshipsCreate');
 
   const data = {
     // _csrftoken: client.csrfToken(),

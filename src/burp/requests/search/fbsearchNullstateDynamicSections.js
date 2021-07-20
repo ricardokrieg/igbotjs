@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:fbsearchNullstateDynamicSections');
+  const debug = _debug('bot:requests:fbsearchNullstateDynamicSections');
 
   const qs = {
     type: `blended`,

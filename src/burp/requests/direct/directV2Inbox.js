@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs} = require("lodash");
 
 module.exports = async (client) => {
-  const debug = _debug('bot:directV2Inbox');
+  const debug = _debug('bot:requests:directV2Inbox');
 
   const qs = {
     visual_message_return_type: `unseen`,

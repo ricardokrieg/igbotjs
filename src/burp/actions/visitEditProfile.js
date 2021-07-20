@@ -10,7 +10,7 @@ const {
   fundraiserCanCreatePersonalFundraisers,
 } = require('../requests/generic');
 
-const debug = _debug('bot:visitEditProfile');
+const debug = _debug('bot:actions:visitEditProfile');
 
 module.exports = async (client) => {
   debug(`Start`);

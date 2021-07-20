@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, prefix, phoneNumber) => {
-  const debug = _debug('bot:accountsSendSignupSmsCode');
+  const debug = _debug('bot:requests:accountsSendSignupSmsCode');
 
   const phone_number = `${prefix}${phoneNumber}`.replace(/[^\+0-9]/g, '');
   debug(`prefix=${prefix} phoneNumber=${phoneNumber} phone_number=${phone_number}`);

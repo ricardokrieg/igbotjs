@@ -86,16 +86,16 @@ class SMSHubService {
     return Promise.resolve(response);
   }
 
-  async setStatusReady(id) {
-    return this.setStatus(id, `1`);
+  async setStatusReady() {
+    return this.setStatus(this.currentNumber.id, `1`);
   }
 
-  async setStatusDone(id) {
-    return this.setStatus(id, `6`);
+  async setStatusDone() {
+    return this.setStatus(this.currentNumber.id, `6`);
   }
 
-  async setStatusCancel(id) {
-    return this.setStatus(id, `8`);
+  async setStatusCancel() {
+    return this.setStatus(this.currentNumber.id, `8`);
   }
 }
 

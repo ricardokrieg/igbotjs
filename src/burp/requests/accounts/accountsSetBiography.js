@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, biography) => {
-  const debug = _debug('bot:accountsSetBiography');
+  const debug = _debug('bot:requests:accountsSetBiography');
 
   const data = {
     _uid: client.getUserId(),

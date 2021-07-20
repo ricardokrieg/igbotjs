@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:nuxNewAccountNuxSeen');
+  const debug = _debug('bot:requests:nuxNewAccountNuxSeen');
 
   const data = {
     is_fb4a_installed: `false`,

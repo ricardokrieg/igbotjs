@@ -1,5 +1,5 @@
 const Chance = require('chance');
-const { toPairs, sampleSize, sample } = require('lodash');
+const { toPairs, sampleSize, sample, defaults } = require('lodash');
 const crypto = require('crypto');
 const fs = require('fs');
 
@@ -147,6 +147,29 @@ const randomFilesFromPath = (path, count) => {
   return sampleSize(files, count).map(file => `${path}${file}`);
 };
 
+const randomUserAgent = (country) => {
+  let data;
+  let userAgent;
+
+  switch (country) {
+    case 'BR':
+      data = fs.readFileSync('./src/burp/res/user-agents_instagram-app_application_android_pt-br.txt', 'utf8');
+      userAgent = sample(data.split("\n"));
+      break;
+    case 'RU':
+      data = fs.readFileSync('./src/burp/res/user-agents_instagram-app_application_android_ru-ru.txt', 'utf8');
+      userAgent = sample(data.split("\n"));
+      break;
+  }
+
+  if (userAgent) {
+    const match = /.*?Android \((.*)\)/.exec(userAgent);
+    return `(${match[1]})`;
+  }
+
+  throw new Error(`Invalid country: ${country}`);
+}
+
 const generateName = () => {
   const firstNameData = fs.readFileSync('./src/burp/res/female_first_name.txt', 'utf8');
   const lastNameData = fs.readFileSync('./src/burp/res/last_name.txt', 'utf8');
@@ -154,10 +177,52 @@ const generateName = () => {
   const firstName = sample(firstNameData.split("\n"));
   const lastName = sample(lastNameData.split("\n"));
 
+  const suggestedUsername = ``;
+
   return {
     first_name: firstName,
     last_name: lastName,
+    suggested_username: suggestedUsername,
   };
+};
+
+const randomReelsTitle = () => {
+  return sample([`😊`, `🎉`, `✨`, `😀`, `😁`, `😍`, `😘`, `🥰`, `😚`, `🥳`, `😻`, `💋`, `💅`]);
+};
+
+const generateAttrs = (country) => {
+  const attrs = {
+    igWwwClaim: 0,
+    phoneId: getRandomId(),
+    uuid: getRandomId(),
+    androidId: getRandomAndroidId(),
+    mid: 0,
+    familyDeviceId: getRandomId(),
+    waterfallId: getRandomId(),
+  };
+
+  switch (country) {
+  case 'BR':
+    return defaults(attrs, {
+      proxy: 'http://hjraz:eBTeYwiM@conn4.trs.ai:56807',
+      locale: `pt_BR`,
+      language: `pt-BR`,
+      country: `BR`,
+      timezoneOffset: String(180 * -60),
+      userAgent: `Instagram 187.0.0.32.120 Android ${randomUserAgent(country)}`,
+    });
+  case 'RU':
+    return defaults(attrs, {
+      proxy: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10380',
+      locale: `ru_RU`,
+      language: `ru-RU`,
+      country: `RU`,
+      timezoneOffset: String(180 * 60),
+      userAgent: `Instagram 187.0.0.32.120 Android ${randomUserAgent(country)}`,
+    });
+  }
+
+  throw new Error(`Invalid country: ${country}`);
 };
 
 module.exports = {
@@ -172,5 +237,8 @@ module.exports = {
   stringifyForGzip,
   sleep,
   randomFilesFromPath,
+  randomUserAgent,
   generateName,
+  generateAttrs,
+  randomReelsTitle,
 };

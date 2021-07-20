@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:discoverAyml');
+  const debug = _debug('bot:requests:discoverAyml');
 
   const form = {
     phone_id: client.getFamilyDeviceId(),

@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs} = require("lodash");
 
 module.exports = async (client, surfacesType) => {
-  const debug = _debug('bot:qpBatchFetch');
+  const debug = _debug('bot:requests:qpBatchFetch');
 
   let surfaces_to_triggers;
   let surfaces_to_queries;

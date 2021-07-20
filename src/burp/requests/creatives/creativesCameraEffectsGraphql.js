@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:creativesCameraEffectsGraphql');
+  const debug = _debug('bot:requests:creativesCameraEffectsGraphql');
 
   const data = {
     query_id: `4079337308755298`,

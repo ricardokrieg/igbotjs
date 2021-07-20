@@ -5,7 +5,7 @@ const { map, uniq } = require('lodash');
 
 
 const feedInjectedReelsMedia = async (client, traySessionId, feedReelsTray = {}) => {
-  const debug = _debug('bot:feedInjectedReelsMedia');
+  const debug = _debug('bot:requests:feedInjectedReelsMedia');
 
   const trayUserIds = uniq([
     client.getUserId(),

@@ -85,7 +85,8 @@
     "vtope/playground": "npx @babel/node old/vtope/playground.js",
     "soctool/import": "npx @babel/node old/soctool/import.js",
     "soctool/run": "npx @babel/node old/soctool/run.js",
-    "burp": "npx @babel/node src/burp/commands/createAndRunDizu.js"
+    "burp": "npx @babel/node src/burp/commands/createAndRunDizu.js",
+    "burp/vtope": "npx @babel/node src/burp/commands/createAndRunVtope.js"
   },
   "devDependencies": {
     "@types/node": "^14.14.37",

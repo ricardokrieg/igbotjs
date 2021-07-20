@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:zrTokenResult');
+  const debug = _debug('bot:requests:zrTokenResult');
 
   const qs = {
     device_id: client.getAndroidId(),

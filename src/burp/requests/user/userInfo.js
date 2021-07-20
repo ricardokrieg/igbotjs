@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, userId, module = null) => {
-  const debug = _debug('bot:userInfo');
+  const debug = _debug('bot:requests:userInfo');
 
   const qs = {
     from_module: module,

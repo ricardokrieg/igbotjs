@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 const discoverChaining = async (client, userId) => {
-  const debug = _debug('bot:discoverChaining');
+  const debug = _debug('bot:requests:discoverChaining');
 
   const qs = {
     module: `profile`,

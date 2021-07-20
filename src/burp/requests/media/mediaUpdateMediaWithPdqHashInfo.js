@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, pdqHash, uploadId) => {
-  const debug = _debug('bot:mediaUpdateMediaWithPdqHashInfo');
+  const debug = _debug('bot:requests:mediaUpdateMediaWithPdqHashInfo');
 
   const data = {
     pdq_hash_info: `[{\"pdq_hash\":\"${pdqHash}:100\",\"frame_time\":0}]`,

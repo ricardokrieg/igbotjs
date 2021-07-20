@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, usage) => {
-  const debug = _debug('bot:accountsContactPrefill');
+  const debug = _debug('bot:requests:accountsContactPrefill');
 
   let data;
   const userId = client.getUserId() || null;

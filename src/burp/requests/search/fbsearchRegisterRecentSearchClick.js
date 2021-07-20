@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, userId) => {
-  const debug = _debug('bot:fbsearchRegisterRecentSearchClick');
+  const debug = _debug('bot:requests:fbsearchRegisterRecentSearchClick');
 
   const form = {
     entity_id: userId,

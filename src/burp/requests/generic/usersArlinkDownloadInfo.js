@@ -2,7 +2,7 @@ const _debug = require('debug');
 const {toPairs} = require("lodash");
 
 module.exports = async (client) => {
-  const debug = _debug('bot:usersArlinkDownloadInfo');
+  const debug = _debug('bot:requests:usersArlinkDownloadInfo');
 
   const qs = {
     version_override: `2.2.1`,

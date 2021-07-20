@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client, userId) => {
-  const debug = _debug('bot:feedUser');
+  const debug = _debug('bot:requests:feedUser');
 
   const qs = {
     exclude_comment: true,

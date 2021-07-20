@@ -51,17 +51,18 @@ module.exports = class Client {
       headers: appendDefaultHeaders(headers, options.method),
     };
 
-    let response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
+    const response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
 
     this.parseHeaders(response);
-    response = JSON.parse(response.body);
+    const body = JSON.parse(response.body);
 
-    if (response.status === 'fail') {
-      debug(response);
-      return Promise.reject(response);
+    if (body.status === 'fail') {
+      debug(options.url);
+      debug(body);
+      return Promise.reject(body);
     }
 
-    return Promise.resolve(response);
+    return Promise.resolve(body);
   }
 
   async sendGzip(options) {
@@ -72,17 +73,17 @@ module.exports = class Client {
       headers: appendDefaultHeaders(headers, options.method, true),
     };
 
-    let response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
+    const response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
 
     this.parseHeaders(response);
-    response = JSON.parse(response.body);
+    const body = JSON.parse(response.body);
 
-    if (response.status === 'fail') {
-      debug(response);
+    if (body.status === 'fail') {
+      debug(body);
       return Promise.reject(response);
     }
 
-    return Promise.resolve(response);
+    return Promise.resolve(body);
   }
 
   defaultOptions() {
@@ -196,7 +197,7 @@ module.exports = class Client {
       }
     }
 
-    debug(this.attrs);
+    // debug(this.attrs);
   }
 
   generateTemporaryGuid(seed, lifetime, deviceId) {

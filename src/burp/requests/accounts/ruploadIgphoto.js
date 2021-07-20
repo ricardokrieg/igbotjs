@@ -3,7 +3,7 @@ const { random } = require('lodash');
 const {getRandomId} = require("../../utils");
 
 module.exports = async (client, uploadFile) => {
-  const debug = _debug('bot:ruploadIgphoto');
+  const debug = _debug('bot:requests:ruploadIgphoto');
 
   const uploadId = Date.now();
   const name = `${uploadId}_0_${random(1000000000, 9999999999)}`;

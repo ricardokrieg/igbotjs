@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:igFbXpostingAccountLinkingUserXpostingDestination');
+  const debug = _debug('bot:requests:igFbXpostingAccountLinkingUserXpostingDestination');
 
   const qs = {
     signed_body: `SIGNATURE.{}`

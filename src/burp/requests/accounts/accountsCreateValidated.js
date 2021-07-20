@@ -7,7 +7,7 @@ const {
 } = require('../../utils');
 
 module.exports = async (client, prefix, phoneNumber, verificationCode, name, username, password, day, month, year) => {
-  const debug = _debug('bot:accountsCreateValidated');
+  const debug = _debug('bot:requests:accountsCreateValidated');
 
   const data = {
     is_secondary_account_creation: `false`,

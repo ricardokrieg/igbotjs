@@ -1,7 +1,7 @@
 const _debug = require('debug');
 
 module.exports = async (client) => {
-  const debug = _debug('bot:notificationsStoreClientPushPermissions');
+  const debug = _debug('bot:requests:notificationsStoreClientPushPermissions');
 
   const form = {
     enabled: true,
