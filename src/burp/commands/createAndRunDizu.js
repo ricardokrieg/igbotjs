@@ -21,6 +21,7 @@ const {
   generateAttrs,
   randomFilesFromPath,
   generateName,
+  generateBirthday,
   randomReelsTitle,
 } = require('../utils');
 
@@ -76,23 +77,22 @@ const confirmSMS = async (country) => {
 (async () => {
   try {
     const attrs = generateAttrs(`RU`);
-    // attrs.proxy = `http://192.168.15.30:8888`;
     debug(attrs);
 
     const client = new Client(attrs);
     const images = randomFilesFromPath(`/Users/wolf/Downloads/cats/fitchicksinworkoutgear/`, 10);
 
-    const { first_name, last_name, suggested_username } = generateName();
+    const { first_name, last_name } = generateName();
+    const { day, month, year } = generateBirthday();
 
     const userInfo = {
       first_name,
       last_name,
       name: `${first_name} ${last_name}`,
-      suggestedUsername: suggested_username,
       password: 'xxx123xxx',
-      day: 10,
-      month: 7,
-      year: 1999,
+      day,
+      month,
+      year,
       profileImage: images[0],
       shareToFeed: true,
       followRecommendedCount: 3,

@@ -190,12 +190,22 @@ const generateName = () => {
   const firstName = sample(firstNameData.split("\n"));
   const lastName = sample(lastNameData.split("\n"));
 
-  const suggestedUsername = ``;
-
   return {
     first_name: firstName,
     last_name: lastName,
-    suggested_username: suggestedUsername,
+  };
+};
+
+const generateBirthday = () => {
+  const chance = new Chance();
+
+  const birthday = chance.birthday({ type: 'adult' });
+  const [year, month, day] = birthday.toISOString().split('T')[0].split('-');
+
+  return {
+    day: parseInt(day),
+    month: parseInt(month),
+    year: parseInt(year),
   };
 };
 
@@ -304,6 +314,7 @@ module.exports = {
   randomFilesFromPath,
   randomUserAgent,
   generateName,
+  generateBirthday,
   generateAttrs,
   randomReelsTitle,
   generateUsernames,
