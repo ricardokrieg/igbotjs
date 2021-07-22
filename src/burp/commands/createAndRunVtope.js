@@ -85,6 +85,8 @@ const confirmSMS = async (country) => {
     const { first_name, last_name, suggested_username } = generateName();
 
     const userInfo = {
+      first_name,
+      last_name,
       name: `${first_name} ${last_name}`,
       suggestedUsername: suggested_username,
       password: 'xxx123xxx',
@@ -178,11 +180,11 @@ const confirmSMS = async (country) => {
     while (count < 6000) {
       debug(`Follow #${count + 1}`);
 
-      // const data = await dizu.getTask(accountId);
       const data = await vtope.getTask(atoken);
 
       if (!data.shortcode || !data.id) {
         debug(`Got invalid task from VTope`);
+        await sleep(10000);
         continue;
       }
 
@@ -193,11 +195,8 @@ const confirmSMS = async (country) => {
         if (!is_private && !following) {
           debug(`Following ${data.shortcode}`);
           await follow(client, user);
-          const result = await vtope.submitTask(data.id, atoken);
-          debug(result);
+          await vtope.submitTask(data.id, atoken);
           count++;
-
-          await sleep(10000);
         } else {
           debug(`Skipped ${data.shortcode} isPrivate=${is_private} following=${following}`);
           await vtope.skipTask(data.id, atoken);
@@ -212,6 +211,8 @@ const confirmSMS = async (country) => {
           break;
         }
       }
+
+      await sleep(10000);
     }
   } catch (err) {
     console.error(err);

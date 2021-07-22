@@ -1,5 +1,7 @@
 const _debug = require('debug');
-const {map} = require('lodash');
+const {map, filter, isEmpty} = require('lodash');
+
+const {generateUsernames} = require('../utils');
 
 const {
   accountsCheckPhoneNumber,
@@ -18,6 +20,10 @@ const {
   consentCheckAgeEligibility,
   consentNewUserFlowBegins,
 } = require('../requests/consent');
+
+const {
+  usersCheckUsername,
+} = require('../requests/users');
 
 const debug = _debug('bot:actions:signUp');
 
@@ -42,11 +48,34 @@ module.exports = async (client, userInfo, getPrefix, getPhoneNumber, getVerifica
 
   await siFetchHeaders(client);
 
-  let usernameSuggestions = await accountsUsernameSuggestions(client, userInfo.name);
+  const usernameSuggestions = await accountsUsernameSuggestions(client, userInfo.name);
   const usernames = map(usernameSuggestions.suggestions_with_metadata.suggestions, 'username');
   debug(`Username suggestions: ${usernames.join(', ')}`);
 
-  const username = usernameSuggestions.suggestions_with_metadata.suggestions[0].username;
+  let username;
+  const validUsernames = filter(usernames, (username) => !/\d/.exec(username));
+  debug(`Valid Usernames: ${validUsernames}`);
+
+  if (!isEmpty(validUsernames)) {
+    username = validUsernames[0];
+  } else {
+    const customUsernames = generateUsernames(userInfo.first_name, userInfo.last_name);
+    for (let customUsername of customUsernames) {
+      debug(`Checking username: ${customUsername}`);
+      const { available, existing_user_password, status } = await usersCheckUsername(client, customUsername);
+
+      if (status === 'ok' && !existing_user_password && available) {
+        username = customUsername;
+        break;
+      }
+    }
+  }
+
+  if (!username) {
+    username = usernames[0];
+  }
+
+  debug(`Username: ${username}`);
 
   await consentCheckAgeEligibility(client, userInfo.day, userInfo.month, userInfo.year);
   await consentNewUserFlowBegins(client);

@@ -85,6 +85,8 @@ const confirmSMS = async (country) => {
     const { first_name, last_name, suggested_username } = generateName();
 
     const userInfo = {
+      first_name,
+      last_name,
       name: `${first_name} ${last_name}`,
       suggestedUsername: suggested_username,
       password: 'xxx123xxx',
@@ -212,11 +214,10 @@ const confirmSMS = async (country) => {
           debug(`Following ${targetUsername}`);
           await follow(client, user);
 
-          let result;
           if (isVtopeTask) {
-            result = await vtope.submitTask(data.id, atoken);
+            await vtope.submitTask(data.id, atoken);
           } else {
-            result = await dizu.submitTask(data.connectFormId, accountId);
+            await dizu.submitTask(data.connectFormId, accountId);
           }
           count++;
 

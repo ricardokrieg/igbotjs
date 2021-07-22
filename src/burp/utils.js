@@ -1,5 +1,14 @@
 const Chance = require('chance');
-const { toPairs, sampleSize, sample, defaults } = require('lodash');
+const { toPairs,
+  sampleSize,
+  sample,
+  defaults,
+  sortBy,
+  map,
+  flatten,
+  compact,
+  uniq,
+} = require('lodash');
 const crypto = require('crypto');
 const fs = require('fs');
 
@@ -160,6 +169,10 @@ const randomUserAgent = (country) => {
       data = fs.readFileSync('./src/burp/res/user-agents_instagram-app_application_android_ru-ru.txt', 'utf8');
       userAgent = sample(data.split("\n"));
       break;
+    case 'FR':
+      data = fs.readFileSync('./src/burp/res/user-agents_instagram-app_application_android_fr-fr.txt', 'utf8');
+      userAgent = sample(data.split("\n"));
+      break;
   }
 
   if (userAgent) {
@@ -220,9 +233,61 @@ const generateAttrs = (country) => {
       timezoneOffset: String(180 * 60),
       userAgent: `Instagram 187.0.0.32.120 Android ${randomUserAgent(country)}`,
     });
+  case 'FR':
+    return defaults(attrs, {
+      proxy: 'socks5://37.1.216.47:10024',
+      locale: `fr_FR`,
+      language: `fr-FR`,
+      country: `FR`,
+      timezoneOffset: String(180 * 60),
+      userAgent: `Instagram 187.0.0.32.120 Android ${randomUserAgent(country)}`,
+    });
   }
 
   throw new Error(`Invalid country: ${country}`);
+};
+
+const generateUsernames = (firstName, lastName) => {
+  firstName = firstName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z ]/gi, '')
+    .toLowerCase()
+    .replace(/ /g, '');
+  lastName = lastName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z ]/gi, '')
+    .toLowerCase();
+
+  const patterns = [
+    `${firstName}${lastName}`,
+    `${firstName}${lastName[0]}`,
+    `${firstName[0]}${lastName}`,
+  ];
+  let usernames = [];
+
+  for (let pattern of patterns) {
+    usernames.push(map(pattern, (letter, i) => {
+      // if (!/[aeiou]/.exec(letter)) return null;
+
+      return [pattern.slice(0, i), letter, letter, pattern.slice(i + 1)].join('');
+    }));
+  }
+
+  usernames = uniq(compact(flatten(usernames)));
+
+  // usernames.push(`eu${firstName}${lastName}`);
+  // usernames.push(`${firstName}${lastName}oficial`);
+  // usernames.push(`${firstName}.${lastName}`);
+  // usernames.push(`${firstName}_${lastName}`);
+  // usernames.push(`${firstName}__${lastName}`);
+  // usernames.push(`_${firstName}${lastName}`);
+  // usernames.push(`${firstName}${lastName}_`);
+  // usernames.push(`_${firstName}${lastName}_`);
+  // usernames.push(`_${firstName}${lastName}_`);
+
+  return sortBy(usernames, 'length');
 };
 
 module.exports = {
@@ -241,4 +306,5 @@ module.exports = {
   generateName,
   generateAttrs,
   randomReelsTitle,
+  generateUsernames,
 };

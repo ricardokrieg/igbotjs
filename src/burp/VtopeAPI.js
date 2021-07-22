@@ -7,6 +7,17 @@ class VtopeAPI {
   constructor() {
     this.utoken = `UhSzNaGpEgIpCavG`;
     this.btoken = `nvpcbsFllv5sxGyZCZL6iEjaIpBkPxfd`;
+
+    this.attemptOptions = {
+      maxAttempts: 100,
+      delay: 3000,
+      factor: 1.2,
+      handleError: (error, context, options) => {
+        console.error(error);
+        console.error(context);
+        console.error(options);
+      }
+    };
   }
 
   async send(options = {}) {

@@ -68,14 +68,15 @@ const getVerificationCode = async (country) => {
 };
 
 const confirmSMS = async (country) => {
-  if (country === 'RU') {
+  if (country === 'RU' || country === 'FR') {
     return smsService.setStatusDone();
   }
 };
 
 (async () => {
   try {
-    const attrs = generateAttrs(`BR`);
+    const attrs = generateAttrs(`RU`);
+    // attrs.proxy = `http://192.168.15.30:8888`;
     debug(attrs);
 
     const client = new Client(attrs);
@@ -84,6 +85,8 @@ const confirmSMS = async (country) => {
     const { first_name, last_name, suggested_username } = generateName();
 
     const userInfo = {
+      first_name,
+      last_name,
       name: `${first_name} ${last_name}`,
       suggestedUsername: suggested_username,
       password: 'xxx123xxx',
@@ -125,33 +128,26 @@ const confirmSMS = async (country) => {
     const orderInfo = await subscriptionService.order(username);
     const orderId = orderInfo.order;
 
-    await addPost(client, images[1]);
-    await sleep(60000);
-    await addPost(client, images[2]);
-    await sleep(60000);
-    await addPost(client, images[3]);
-    await sleep(60000);
-    await addPost(client, images[4]);
-    await sleep(60000);
-    await addPost(client, images[5]);
-    await sleep(60000);
-    await addPost(client, images[6]);
-    await sleep(60000);
+    let n = 1;
+    for (let i = 0; i < 6; i++) {
+      await addPost(client, images[n]);
+      await sleep(60000);
+      n++;
+    }
 
-    await addStory(client, images[7], randomReelsTitle());
-    await sleep(60000);
-    await addStory(client, images[8], randomReelsTitle());
-    await sleep(60000);
-    await addStory(client, images[9], randomReelsTitle());
-    await sleep(60000);
+    for (let i = 0; i < 3; i++) {
+      await addStory(client, images[n], randomReelsTitle());
+      await sleep(60000);
+      n++;
+    }
 
     const accountId = client.getUserId();
     const dizu = new DizuAPI();
 
     const orderStatus = await subscriptionService.status(orderId);
-    // if (orderStatus.status !== 'Completed') {
-    //   await getInput(`Account ${username} is ready to be added to Dizu?`);
-    // }
+    if (orderStatus.status !== 'Completed') {
+      // await getInput(`Account ${username} is ready to be added to Dizu?`);
+    }
 
     await dizu.addAccount(username);
     await sleep(15000);
@@ -174,8 +170,7 @@ const confirmSMS = async (country) => {
         if (!is_private && !following) {
           debug(`Following ${data.username}`);
           await follow(client, user);
-          const result = await dizu.submitTask(data.connectFormId, accountId);
-          debug(result);
+          await dizu.submitTask(data.connectFormId, accountId);
           count++;
 
           await sleep(10000);
