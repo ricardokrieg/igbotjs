@@ -59,7 +59,7 @@ class SMSHubService {
   }
 
   async waitForCode(id) {
-    let tries = 10;
+    let tries = 7;
 
     while (tries > 0) {
       const status = await this.getStatus(id);
@@ -74,7 +74,8 @@ class SMSHubService {
       tries--;
     }
 
-    return Promise.reject();
+    await this.setStatusCancel();
+    return Promise.reject(new Error(`SMS didn't arrive`));
   }
 
   async setStatus(id, status) {

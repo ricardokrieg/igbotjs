@@ -28,6 +28,7 @@ const {
 const debug = _debug('bot:dizu');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+process.env.TZ = 'America/Fortaleza';
 
 const smsService = new SMSService();
 const subscriptionService = new SubscriptionService();
@@ -75,7 +76,13 @@ const confirmSMS = async (country) => {
 };
 
 (async () => {
+  const start = new Date();
+  let username;
+  let count = 0;
+
   try {
+    debug(`Start: ${start.toLocaleTimeString()}`);
+
     const attrs = generateAttrs(`RU`);
     debug(attrs);
 
@@ -105,7 +112,7 @@ const confirmSMS = async (country) => {
     await openApp(client);
     await sleep(2000);
 
-    const username = await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode, confirmSMS);
+    username = await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode, confirmSMS);
     debug(`Username: ${username}`);
     client.setUsername(username);
     await sleep(2000);
@@ -152,7 +159,6 @@ const confirmSMS = async (country) => {
     await dizu.addAccount(username);
     await sleep(15000);
 
-    let count = 0;
     while (count < 6000) {
       debug(`Follow #${count + 1}`);
 
@@ -192,4 +198,9 @@ const confirmSMS = async (country) => {
   } catch (err) {
     console.error(err);
   }
+
+  debug(`Start: ${start.toLocaleTimeString()}`);
+  debug(`End: ${new Date().toLocaleTimeString()}`);
+  debug(`Username: ${username}`);
+  debug(`Follows: ${count}`);
 })();

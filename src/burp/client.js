@@ -1,4 +1,4 @@
-const { defaults, toPairs } = require('lodash');
+const { defaults, toPairs, get } = require('lodash');
 const request = require('request-promise');
 const { retry } = require('@lifeomic/attempt');
 const { jar } = require('request');
@@ -32,6 +32,21 @@ module.exports = class Client {
         cookieJar.setCookie(cookie, `https://b.i.instagram.com/`);
       }
     }
+
+    this.attemptOptions = {
+      maxAttempts: 30,
+      delay: 3000,
+      factor: 1.2,
+      handleError: (error, context, options) => {
+        // console.error(error);
+        // console.error(context);
+        // console.error(options);
+
+        debug(`Error: ${get(error, 'error.message')}`);
+        debug(get(error, 'options.url'));
+        debug(`Attempt ${context.attemptNum + 1} of ${options.maxAttempts}`);
+      }
+    };
   }
 
   getCsrfToken() {
@@ -51,7 +66,7 @@ module.exports = class Client {
       headers: appendDefaultHeaders(headers, options.method),
     };
 
-    const response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
+    const response = await retry(async () => request(defaults(options, this.defaultOptions())), this.attemptOptions);
 
     this.parseHeaders(response);
     const body = JSON.parse(response.body);
@@ -73,7 +88,7 @@ module.exports = class Client {
       headers: appendDefaultHeaders(headers, options.method, true),
     };
 
-    const response = await retry(async () => request(defaults(options, this.defaultOptions())), { maxAttempts: 10, delay: 10000 });
+    const response = await retry(async () => request(defaults(options, this.defaultOptions())), this.attemptOptions);
 
     this.parseHeaders(response);
     const body = JSON.parse(response.body);

@@ -36,7 +36,7 @@ module.exports = async (client, userInfo, getPrefix, getPhoneNumber, getVerifica
   debug(`Checking phone number: ${phoneNumber}`);
   await accountsCheckPhoneNumber(client, phoneNumber);
   debug(`Sending SMS code to ${prefix} ${phoneNumber}`);
-  await accountsSendSignupSmsCode(client, prefix, phoneNumber);
+  // await accountsSendSignupSmsCode(client, prefix, phoneNumber);
 
   const verificationCode = await getVerificationCode(client.getCountry());
   if (confirmSMS) {
