@@ -8,9 +8,11 @@ const { toPairs,
   flatten,
   compact,
   uniq,
+  filter,
 } = require('lodash');
 const crypto = require('crypto');
 const fs = require('fs');
+const request = require('request-promise');
 
 const extractCookie = (cookieJar, key) => {
   const cookies = cookieJar.getCookies(`https://i.instagram.com`);
@@ -152,7 +154,7 @@ const sleep = (ms) => {
 };
 
 const randomFilesFromPath = (path, count) => {
-  const files = fs.readdirSync(path);
+  const files = filter(fs.readdirSync(path), (file) => file.endsWith('.jpg'));
   return sampleSize(files, count).map(file => `${path}${file}`);
 };
 
@@ -187,8 +189,8 @@ const generateName = () => {
   const firstNameData = fs.readFileSync('./src/burp/res/female_first_name.txt', 'utf8');
   const lastNameData = fs.readFileSync('./src/burp/res/last_name.txt', 'utf8');
 
-  const firstName = sample(firstNameData.split("\n"));
-  const lastName = sample(lastNameData.split("\n"));
+  const firstName = sample(compact(firstNameData.split("\n")));
+  const lastName = sample(compact(lastNameData.split("\n")));
 
   return {
     first_name: firstName,
@@ -245,7 +247,7 @@ const generateAttrs = (country) => {
     });
   case 'FR':
     return defaults(attrs, {
-      proxy: 'socks5://37.1.216.47:10024',
+      proxy: 'socks5://37.1.216.47:10001',
       locale: `fr_FR`,
       language: `fr-FR`,
       country: `FR`,
@@ -271,15 +273,20 @@ const generateUsernames = (firstName, lastName) => {
     .toLowerCase();
 
   const patterns = [
-    `${firstName}${lastName}`,
-    `${firstName}${lastName[0]}`,
-    `${firstName[0]}${lastName}`,
+    `${firstName}.${lastName}`,
+    `${firstName}_${lastName}`,
+    `${lastName}.${firstName}`,
+    `${lastName}_${firstName}`,
+    `${firstName}.${lastName[0]}`,
+    `${firstName}_${lastName[0]}`,
+    `${firstName[0]}.${lastName}`,
+    `${firstName[0]}_${lastName}`,
   ];
   let usernames = [];
 
   for (let pattern of patterns) {
     usernames.push(map(pattern, (letter, i) => {
-      // if (!/[aeiou]/.exec(letter)) return null;
+      if (!/[aeiou]/.exec(letter)) return null;
 
       return [pattern.slice(0, i), letter, letter, pattern.slice(i + 1)].join('');
     }));
@@ -300,6 +307,10 @@ const generateUsernames = (firstName, lastName) => {
   return sortBy(usernames, 'length');
 };
 
+const getIP = async (client) => {
+  return request.get('https://ifconfig.me', { proxy: client.attrs.proxy });
+};
+
 module.exports = {
   extractCookieValue,
   getRandomId,
@@ -318,4 +329,5 @@ module.exports = {
   generateAttrs,
   randomReelsTitle,
   generateUsernames,
+  getIP,
 };

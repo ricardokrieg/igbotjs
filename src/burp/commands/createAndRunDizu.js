@@ -23,6 +23,7 @@ const {
   generateName,
   generateBirthday,
   randomReelsTitle,
+  getIP,
 } = require('../utils');
 
 const debug = _debug('bot:dizu');
@@ -78,15 +79,23 @@ const confirmSMS = async (country) => {
 (async () => {
   const start = new Date();
   let username;
+  let ip;
   let count = 0;
+
+  let country = process.env.COUNTRY || `RU`;
+  debug(`Country: ${country}`);
 
   try {
     debug(`Start: ${start.toLocaleTimeString()}`);
 
-    const attrs = generateAttrs(`RU`);
+    const attrs = generateAttrs(country);
     debug(attrs);
 
     const client = new Client(attrs);
+    ip = await getIP(client);
+
+    debug(`IP (start): ${ip}`);
+
     const images = randomFilesFromPath(`/Users/wolf/Downloads/cats/fitchicksinworkoutgear/`, 10);
 
     const { first_name, last_name } = generateName();
@@ -111,6 +120,9 @@ const confirmSMS = async (country) => {
 
     await openApp(client);
     await sleep(2000);
+
+    ip = await getIP(client);
+    debug(`IP: ${ip}`);
 
     username = await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode, confirmSMS);
     debug(`Username: ${username}`);
@@ -203,4 +215,6 @@ const confirmSMS = async (country) => {
   debug(`End: ${new Date().toLocaleTimeString()}`);
   debug(`Username: ${username}`);
   debug(`Follows: ${count}`);
+  debug(`Country: ${country}`);
+  debug(`IP: ${ip}`);
 })();
