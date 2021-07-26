@@ -13,6 +13,7 @@ const { toPairs,
 const crypto = require('crypto');
 const fs = require('fs');
 const request = require('request-promise');
+const { retry } = require('@lifeomic/attempt');
 
 const extractCookie = (cookieJar, key) => {
   const cookies = cookieJar.getCookies(`https://i.instagram.com`);
@@ -165,15 +166,15 @@ const randomUserAgent = (country) => {
   switch (country) {
     case 'BR':
       data = fs.readFileSync('./src/burp/res/user-agents_instagram-app_application_android_pt-br.txt', 'utf8');
-      userAgent = sample(data.split("\n"));
+      userAgent = sample(compact(data.split("\n")));
       break;
     case 'RU':
       data = fs.readFileSync('./src/burp/res/user-agents_instagram-app_application_android_ru-ru.txt', 'utf8');
-      userAgent = sample(data.split("\n"));
+      userAgent = sample(compact(data.split("\n")));
       break;
     case 'FR':
       data = fs.readFileSync('./src/burp/res/user-agents_instagram-app_application_android_fr-fr.txt', 'utf8');
-      userAgent = sample(data.split("\n"));
+      userAgent = sample(compact(data.split("\n")));
       break;
   }
 
@@ -279,17 +280,18 @@ const generateUsernames = (firstName, lastName) => {
     `${lastName}_${firstName}`,
     `${firstName}.${lastName[0]}`,
     `${firstName}_${lastName[0]}`,
-    `${firstName[0]}.${lastName}`,
-    `${firstName[0]}_${lastName}`,
   ];
   let usernames = [];
 
   for (let pattern of patterns) {
-    usernames.push(map(pattern, (letter, i) => {
+    usernames.push(flatten(map(pattern, (letter, i) => {
       if (!/[aeiou]/.exec(letter)) return null;
 
-      return [pattern.slice(0, i), letter, letter, pattern.slice(i + 1)].join('');
-    }));
+      return [
+        [pattern.slice(0, i), letter, letter, pattern.slice(i + 1)].join(''),
+        [pattern.slice(0, i), letter, letter, letter, pattern.slice(i + 1)].join(''),
+      ];
+    })));
   }
 
   usernames = uniq(compact(flatten(usernames)));
@@ -308,8 +310,26 @@ const generateUsernames = (firstName, lastName) => {
 };
 
 const getIP = async (client) => {
-  return request.get('https://ifconfig.me', { proxy: client.attrs.proxy });
+  return await retry(async () => request.get('https://ifconfig.me', { proxy: client.attrs.proxy }), {
+    maxAttempts: 30,
+    delay: 3000,
+  });
 };
+
+const randomProfile = (gender) => {
+  switch (gender) {
+    case `female`:
+      const basePath = `./res/images/female`;
+      const profile = sample(filter(fs.readdirSync(basePath), (dir) => !dir.startsWith('.')));
+
+      return {
+        profile,
+        path: `${basePath}/${profile}/`,
+      };
+    default:
+      throw new Error(`Gender not supported: ${gender}`);
+  }
+}
 
 module.exports = {
   extractCookieValue,
@@ -330,4 +350,5 @@ module.exports = {
   randomReelsTitle,
   generateUsernames,
   getIP,
+  randomProfile,
 };

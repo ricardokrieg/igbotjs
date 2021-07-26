@@ -24,6 +24,7 @@ const {
   generateBirthday,
   randomReelsTitle,
   getIP,
+  randomProfile,
 } = require('../utils');
 
 const debug = _debug('bot:dizu');
@@ -96,7 +97,11 @@ const confirmSMS = async (country) => {
 
     debug(`IP (start): ${ip}`);
 
-    const images = randomFilesFromPath(`/Users/wolf/Downloads/cats/fitchicksinworkoutgear/`, 10);
+    const gender = 'female';
+    const { profile, path } = randomProfile(gender);
+    debug(`Using profile: ${profile}`);
+    debug(`Path: ${path}`);
+    const images = randomFilesFromPath(path, 10);
 
     const { first_name, last_name } = generateName();
     const { day, month, year } = generateBirthday();

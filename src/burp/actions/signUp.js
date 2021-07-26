@@ -1,7 +1,7 @@
 const _debug = require('debug');
 const {map, filter, isEmpty} = require('lodash');
 
-const {generateUsernames} = require('../utils');
+const {generateUsernames, sleep} = require('../utils');
 
 const {
   accountsCheckPhoneNumber,
@@ -68,6 +68,8 @@ module.exports = async (client, userInfo, getPrefix, getPhoneNumber, getVerifica
         username = customUsername;
         break;
       }
+
+      await sleep(2000);
     }
   }
 

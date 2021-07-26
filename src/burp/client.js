@@ -60,16 +60,34 @@ module.exports = class Client {
 
   async send(options) {
     const headers = options.headers || this.headers();
+    const skipRescue = options['skipRescue'];
+    delete options['skipRescue'];
 
     options = {
       ...options,
       headers: appendDefaultHeaders(headers, options.method),
     };
 
-    const response = await retry(async () => request(defaults(options, this.defaultOptions())), this.attemptOptions);
+    const body = await retry(async () => {
+      const response = await retry(async () => request(defaults(options, this.defaultOptions())), this.attemptOptions);
 
-    this.parseHeaders(response);
-    const body = JSON.parse(response.body);
+      try {
+        this.parseHeaders(response);
+
+        const body = JSON.parse(response.body);
+
+        return Promise.resolve(body);
+      } catch (error) {
+        debug(`Error when parsing response: ${error.message}`);
+        debug(response.body);
+        if (skipRescue) {
+          debug(`Skipping error rescue`);
+          return Promise.resolve(null);
+        }
+
+        throw error;
+      }
+    }, this.attemptOptions);
 
     if (body.status === 'fail') {
       debug(options.url);

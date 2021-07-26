@@ -20,7 +20,7 @@ module.exports = async (client, mediaId, title) => {
 
   let response;
   try {
-    response = await client.send({ url: `/api/v1/highlights/create_reel/`, method: 'POST', form });
+    response = await client.send({ url: `/api/v1/highlights/create_reel/`, method: 'POST', form, skipRescue: true });
     debug(response);
   } catch (response) {
     debug(response);
