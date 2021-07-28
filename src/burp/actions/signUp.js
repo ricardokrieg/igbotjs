@@ -86,7 +86,7 @@ module.exports = async (client, userInfo, getPrefix, getPhoneNumber, getVerifica
   debug(`Creating account with username ${username}...`);
   await accountsCreateValidated(client, prefix, phoneNumber, verificationCode,
     userInfo.name, username, userInfo.password, userInfo.day, userInfo.month, userInfo.year);
-  debug(`Success!`);
+  debug(`Success! ${username}`);
 
   debug(`End`);
 

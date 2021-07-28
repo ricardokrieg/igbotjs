@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const _debug = require('debug');
+const chance = require('chance').Chance();
 
 const Client = require('../client');
 const openApp = require("../actions/openApp");
@@ -31,6 +32,21 @@ const debug = _debug('bot:dizu');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.TZ = 'America/Fortaleza';
+
+const minFollows = process.env.MIN;
+if (!minFollows) {
+  throw new Error(`MIN is required`);
+}
+
+const maxFollows = process.env.MAX;
+if (!maxFollows) {
+  throw new Error(`MAX is required`);
+}
+
+const proxy = process.env.PROXY;
+if (!proxy) {
+  throw new Error(`PROXY is required`);
+}
 
 const smsService = new SMSService();
 const subscriptionService = new SubscriptionService();
@@ -81,6 +97,8 @@ const confirmSMS = async (country) => {
   const start = new Date();
   let username;
   let ip;
+  let total = chance.integer({ min: parseInt(minFollows), max: parseInt(maxFollows) });
+  debug(`Going to follow ${total}`);
   let count = 0;
 
   let country = process.env.COUNTRY || `RU`;
@@ -90,6 +108,7 @@ const confirmSMS = async (country) => {
     debug(`Start: ${start.toLocaleTimeString()}`);
 
     const attrs = generateAttrs(country);
+    attrs.proxy = proxy;
     debug(attrs);
 
     const client = new Client(attrs);
@@ -126,11 +145,22 @@ const confirmSMS = async (country) => {
     await openApp(client);
     await sleep(2000);
 
-    ip = await getIP(client);
-    debug(`IP: ${ip}`);
+    // TODO test automator
+    // if (chance.bool({ likelihood: 70 })) {
+    //   debug(`Account Created: username=${chance.string({ length: 8, alpha: true })} ip=${ip}`);
+    //   await sleep(10 * 1000);
+    //   for (let count = 1; count <= total; count++) {
+    //     debug(`Follow ${count}`);
+    //     await sleep(1000);
+    //   }
+    //   throw new Error(`OK`);
+    // } else {
+    //   throw new Error(`challenge_required`);
+    // }
 
     username = await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode, confirmSMS);
-    debug(`Username: ${username}`);
+    ip = await getIP(client);
+    debug(`Account Created: username=${username} ip=${ip}`);
     client.setUsername(username);
     await sleep(2000);
 
@@ -154,13 +184,13 @@ const confirmSMS = async (country) => {
 
     let n = 1;
     for (let i = 0; i < 6; i++) {
-      await addPost(client, images[n]);
+      await addPost(client, i+1, images[n]);
       await sleep(60000);
       n++;
     }
 
     for (let i = 0; i < 3; i++) {
-      await addStory(client, images[n], randomReelsTitle());
+      await addStory(client, i+1, images[n], randomReelsTitle());
       await sleep(60000);
       n++;
     }
@@ -176,7 +206,7 @@ const confirmSMS = async (country) => {
     await dizu.addAccount(username);
     await sleep(15000);
 
-    while (count < 6000) {
+    while (count < total) {
       debug(`Follow #${count + 1}`);
 
       const data = await dizu.getTask(accountId);
@@ -213,6 +243,7 @@ const confirmSMS = async (country) => {
       }
     }
   } catch (err) {
+    debug(err);
     console.error(err);
   }
 
@@ -220,6 +251,7 @@ const confirmSMS = async (country) => {
   debug(`End: ${new Date().toLocaleTimeString()}`);
   debug(`Username: ${username}`);
   debug(`Follows: ${count}`);
+  debug(`Total: ${total}`);
   debug(`Country: ${country}`);
   debug(`IP: ${ip}`);
 })();

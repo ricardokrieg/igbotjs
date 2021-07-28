@@ -239,7 +239,8 @@ const generateAttrs = (country) => {
     });
   case 'RU':
     return defaults(attrs, {
-      proxy: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10380',
+      proxy: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10528', // Moscow
+      // proxy: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10175', // St Petersburg
       locale: `ru_RU`,
       language: `ru-RU`,
       country: `RU`,

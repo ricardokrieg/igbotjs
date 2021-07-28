@@ -43,8 +43,8 @@ const {
 
 const debug = _debug('bot:actions:addStory');
 
-module.exports = async (client, photoPath, reelTitle = ``) => {
-  debug(`Start`);
+module.exports = async (client, i, photoPath, reelTitle = ``) => {
+  debug(`Start ${i}`);
 
   debug(`Loading photo from disk: ${photoPath}`);
   const photo = await readFileAsync(photoPath);
