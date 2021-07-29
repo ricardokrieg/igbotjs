@@ -26,6 +26,7 @@ const {
   randomReelsTitle,
   getIP,
   randomProfile,
+  getProxy,
 } = require('../utils');
 
 const debug = _debug('bot:dizu');
@@ -43,9 +44,9 @@ if (!maxFollows) {
   throw new Error(`MAX is required`);
 }
 
-const proxy = process.env.PROXY;
-if (!proxy) {
-  throw new Error(`PROXY is required`);
+const proxyIndex = process.env.PROXY_INDEX;
+if (!proxyIndex) {
+  throw new Error(`PROXY_INDEX is required`);
 }
 
 const smsService = new SMSService();
@@ -108,7 +109,7 @@ const confirmSMS = async (country) => {
     debug(`Start: ${start.toLocaleTimeString()}`);
 
     const attrs = generateAttrs(country);
-    attrs.proxy = proxy;
+    attrs.proxy = getProxy(proxyIndex).address;
     debug(attrs);
 
     const client = new Client(attrs);

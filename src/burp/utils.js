@@ -317,6 +317,13 @@ const getIP = async (client) => {
   });
 };
 
+const getProxy = (index) => {
+  return [
+    { name: 'RSocks RU Moscow Tele2', address: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10528' },
+    { name: 'RSocks RU St. Petersburg Yota', address: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10175' },
+  ][index];
+};
+
 const randomProfile = (gender) => {
   switch (gender) {
     case `female`:
@@ -352,4 +359,5 @@ module.exports = {
   generateUsernames,
   getIP,
   randomProfile,
+  getProxy,
 };

@@ -3,11 +3,12 @@ const clc = require('cli-color');
 const { spawn } = require('child_process');
 const { createWriteStream } = require('fs');
 const chance = require('chance').Chance();
-const {last, get, compact, map} = require('lodash');
+const {last, get, compact, map, filter, reduce} = require('lodash');
 
 const {
   sleep,
   getIP,
+  getProxy,
 } = require('../utils');
 
 const minFollows = process.env.MIN;
@@ -20,9 +21,9 @@ if (!maxFollows) {
   throw new Error(`MAX is required`);
 }
 
-const proxy = process.env.PROXY;
-if (!proxy) {
-  throw new Error(`PROXY is required`);
+const proxyIndex = process.env.PROXY_INDEX;
+if (!proxyIndex) {
+  throw new Error(`PROXY_INDEX is required`);
 }
 
 const getColor = (thread) => {
@@ -34,11 +35,47 @@ const getColor = (thread) => {
     return clc.red;
   }
 
+  if (thread.warning) {
+    return clc.yellow;
+  }
+
   return clc.green;
 };
 
-const update = (outputBuffer, threads) => {
+const update = (outputBuffer, threads, config) => {
   outputBuffer.lines = [];
+
+  new Line(outputBuffer)
+    .column(`Proxy: ${config.proxyName} ${config.proxyAddress}`, outputBuffer.width())
+    .fill()
+    .store();
+
+  const activeThreadsCount = filter(threads, 'running').length;
+  new Line(outputBuffer)
+    .column(`Threads: ${threads.length}`, 20)
+    .column(`Active: ${activeThreadsCount}`, 10)
+    .fill()
+    .store();
+
+  let status = config.status;
+  if (status === `Done` && activeThreadsCount > 0) {
+    status = `Waiting for threads`
+  }
+  const follows = reduce(threads, (sum, t) => sum + t.follows, 0);
+  new Line(outputBuffer)
+    .column(`Status: ${status}`, 20)
+    .column(`Follows: ${follows}`, 20)
+    .fill()
+    .store();
+
+  const cost = reduce(threads, (sum, t) => sum + t.cost, 0);
+  const income = follows * 0.01 * 0.6;
+  new Line(outputBuffer)
+    .column(`Cost: ${(cost).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}`, 20)
+    .column(`Income: ${(income).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}`, 20)
+    .column(`Profit: ${(income - cost).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}`, 20)
+    .fill()
+    .store();
 
   new Line(outputBuffer)
     .column(`ID`, 10, [clc.cyan])
@@ -46,6 +83,7 @@ const update = (outputBuffer, threads) => {
     .column(`IP`, 20, [clc.cyan])
     .column(`Username`, 20, [clc.cyan])
     .column(`Follows`, 10, [clc.cyan])
+    .column(`Total`, 10, [clc.cyan])
     .column(`Active?`, 10, [clc.cyan])
     .column(`Ready?`, 10, [clc.cyan])
     .column(`Status`, 20, [clc.cyan])
@@ -61,6 +99,7 @@ const update = (outputBuffer, threads) => {
       .column(thread.ip, 20, [color])
       .column(thread.username, 20, [color])
       .column(String(thread.follows), 10, [color])
+      .column(String(thread.total), 10, [color])
       .column(thread.running ? 'Yes' : 'No', 10, [color])
       .column(thread.ready ? 'Yes' : 'No', 10, [color])
       .column(thread.status, 20, [color])
@@ -71,9 +110,9 @@ const update = (outputBuffer, threads) => {
   outputBuffer.output();
 };
 
-const startUpdateThread = async (outputBuffer, threads) => {
+const startUpdateThread = async (outputBuffer, threads, config) => {
   while (true) {
-    update(outputBuffer, threads);
+    update(outputBuffer, threads, config);
     await sleep(1000);
   }
 };
@@ -91,6 +130,10 @@ const getStatus = (data) => {
     return { status: `Login Required`, ready: true, error: true };
   }
 
+  if (/bot:sms ACCESS_CANCEL/.exec(data)) {
+    return { status: `SMS didn't arrive`, ready: true, warning: true };
+  }
+
   if (/bot:actions:openApp/.exec(data)) {
     return { status: `Open App` };
   }
@@ -101,6 +144,10 @@ const getStatus = (data) => {
 
   if (match = /bot:dizu IP \(start\): (.*)/.exec(data)) {
     return { ip: match[1] };
+  }
+
+  if (/bot:actions:signUp Validating SMS Code/.exec(data)) {
+    return { cost: 0.35 };
   }
 
   if (match = /bot:dizu Account Created: username=(.*?) ip=(.*)/.exec(data)) {
@@ -134,8 +181,12 @@ const getStatus = (data) => {
     return { status: `Add Story ${match[1]}` };
   }
 
-  if (match = /bot:dizu Follow (.*)/.exec(data)) {
-    return { status: `Follow ${match[1]}`, follows: match[1] };
+  if (match = /bot:dizu Follow #(.*)/.exec(data)) {
+    return { status: `Follow ${match[1]}`, follows: parseInt(match[1]) };
+  }
+
+  if (match = /bot:dizu Going to follow (.*)/.exec(data)) {
+    return { total: parseInt(match[1]) };
   }
 
   return { status: null, username: null };
@@ -157,9 +208,12 @@ const createThread = () => {
     ip: '',
     username: '',
     follows: 0,
+    total: 0,
     running: true,
     ready: false,
     error: false,
+    warning: false,
+    cost: 0,
     command,
     args,
     stream,
@@ -172,7 +226,7 @@ const execute = (thread) => {
   cmd.stderr.on('data', async (data) => {
     thread.stream.write(data);
 
-    const { status, username, follows, ip, ready, error } = getStatus(data);
+    const { status, username, follows, total, ip, ready, error, warning, cost } = getStatus(data);
     if (status) {
       thread.status = status;
     }
@@ -181,6 +235,9 @@ const execute = (thread) => {
     }
     if (follows) {
       thread.follows = follows;
+    }
+    if (total) {
+      thread.total = total;
     }
     if (ip) {
       thread.ip = ip;
@@ -191,6 +248,12 @@ const execute = (thread) => {
     if (error) {
       thread.error = error;
     }
+    if (warning) {
+      thread.warning = warning;
+    }
+    if (cost) {
+      thread.cost = cost;
+    }
   });
 
   cmd.on('close', (code) => {
@@ -200,6 +263,14 @@ const execute = (thread) => {
 };
 
 (async () => {
+  const proxy = getProxy(proxyIndex);
+
+  const config = {
+    proxyName: proxy.name,
+    proxyAddress: proxy.address,
+    status: `Running`,
+  };
+
   const threads = [];
   const logStream = createWriteStream(`log/auto.log`, { flags: 'a' });
 
@@ -212,7 +283,7 @@ const execute = (thread) => {
     });
 
     outputBuffer.fill(new Line().fill()).output();
-    const updateThread = startUpdateThread(outputBuffer, threads);
+    const updateThread = startUpdateThread(outputBuffer, threads, config);
 
     let pause = false;
     while (!pause) {
@@ -227,7 +298,7 @@ const execute = (thread) => {
 
         lastIp = get(last(threads), 'ip', '');
         lastReady = get(last(threads), 'ready', true);
-        ip = await getIP({ attrs: { proxy } });
+        ip = await getIP({ attrs: { proxy: proxy.address } });
 
         logStream.write(`IP=${ip} LAST_IP=${lastIp} LAST_READY=${lastReady}\n`);
         wait = true;
@@ -243,16 +314,17 @@ const execute = (thread) => {
       await sleep(5 * 60 * 1000);
 
       logStream.write(`Threads: ${threads.length}\n`);
-      // if (threads.length >= 10) {
-      //   pause = true;
-      // }
+
       const errorCount = compact(map(threads, 'error')).length;
-      logStream.write(`Error count: ${errorCount}\n`);
-      if (errorCount >= 3) {
+      const errorCountLast3 = compact(map(threads, 'error').slice(-3)).length;
+
+      logStream.write(`Error count: ${errorCount}; Error last three: ${errorCountLast3}\n`);
+      if (errorCount >= 10 || errorCountLast3 === 3) {
         pause = true;
       }
     }
 
+    config.status = `Done`;
     logStream.write(`Done!\n`);
   } catch (error) {
     console.error(error);
