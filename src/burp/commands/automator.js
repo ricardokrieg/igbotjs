@@ -94,7 +94,7 @@ const update = (outputBuffer, threads, config) => {
     const color = getColor(thread);
 
     new Line(outputBuffer)
-      .column(thread.id, 10, [color])
+      .column(thread.id.split('-')[0], 10, [color])
       .column(String(thread.start).split(' ')[4].split(':').slice(0, 2).join(':'), 10, [color])
       .column(thread.ip, 20, [color])
       .column(thread.username, 20, [color])
@@ -113,7 +113,7 @@ const update = (outputBuffer, threads, config) => {
 const startUpdateThread = async (outputBuffer, threads, config) => {
   while (true) {
     update(outputBuffer, threads, config);
-    await sleep(1000);
+    await sleep(5 * 1000);
   }
 };
 
@@ -193,7 +193,7 @@ const getStatus = (data) => {
 };
 
 const createThread = () => {
-  const id = chance.string({ length: 4, pool: '0123456789ABCDEF' });
+  const id = chance.guid();
   const start = new Date();
   const status = `Start`;
   const stream = createWriteStream(`log/${id}.log`, { flags: 'a' });
@@ -279,7 +279,7 @@ const execute = (thread) => {
       x: 0,
       y: 0,
       width: `console`,
-      height: `console`,
+      height: 200,
     });
 
     outputBuffer.fill(new Line().fill()).output();
@@ -287,7 +287,7 @@ const execute = (thread) => {
 
     let pause = false;
     while (!pause) {
-      let lastIp, lastReady, ip;
+      let lastIp, lastReady, lastActive, ip;
       let wait = false;
 
       do {
@@ -298,11 +298,16 @@ const execute = (thread) => {
 
         lastIp = get(last(threads), 'ip', '');
         lastReady = get(last(threads), 'ready', true);
+        lastActive = get(last(threads), 'running', false);
         ip = await getIP({ attrs: { proxy: proxy.address } });
 
         logStream.write(`IP=${ip} LAST_IP=${lastIp} LAST_READY=${lastReady}\n`);
         wait = true;
-      } while (ip === lastIp || !lastReady);
+
+        if (ip !== lastIp && (lastReady || !lastActive)) {
+          break;
+        }
+      } while (true);
 
       const thread = createThread();
       logStream.write(`Added thread ${thread.id}\n`);

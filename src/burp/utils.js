@@ -321,6 +321,7 @@ const getProxy = (index) => {
   return [
     { name: 'RSocks RU Moscow Tele2', address: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10528' },
     { name: 'RSocks RU St. Petersburg Yota', address: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10175' },
+    { name: 'AllProxy BR 4G Claro', address: 'http://zvesq:TgTXGzUx@conn4.trs.ai:25520' },
   ][index];
 };
 
