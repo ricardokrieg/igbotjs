@@ -76,6 +76,14 @@ module.exports = class Client {
 
         const body = JSON.parse(response.body);
 
+        if (body.status === 'fail' && body.message === 'Unknown Server Error.') {
+          debug(options.url);
+          debug(body);
+          debug(`Try again...`);
+
+          throw new Error(`Instagram: Unknown Server Error`);
+        }
+
         return Promise.resolve(body);
       } catch (error) {
         debug(`Error when parsing response: ${error.message}`);

@@ -46,6 +46,10 @@ class SMSHubService {
 
     const match = /ACCESS_NUMBER:(\d+):(\d+)/.exec(response);
 
+    if (!match) {
+      return Promise.reject(new Error(`No numbers available`));
+    }
+
     return Promise.resolve({ id: match[1], number: match[2] });
   }
 

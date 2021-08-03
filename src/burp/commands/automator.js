@@ -134,6 +134,10 @@ const getStatus = (data) => {
     return { status: `SMS didn't arrive`, ready: true, warning: true };
   }
 
+  if (/bot:dizu No numbers available/.exec(data)) {
+    return { status: `No numbers available`, ready: true, warning: true };
+  }
+
   if (/bot:actions:openApp/.exec(data)) {
     return { status: `Open App` };
   }
