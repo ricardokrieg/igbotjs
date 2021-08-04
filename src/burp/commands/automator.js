@@ -3,6 +3,7 @@ const clc = require('cli-color');
 const { spawn } = require('child_process');
 const { createWriteStream } = require('fs');
 const chance = require('chance').Chance();
+const moment = require('moment');
 const {last, get, compact, map, filter, reduce} = require('lodash');
 
 const {
@@ -87,6 +88,7 @@ const update = (outputBuffer, threads, config) => {
     .column(`Active?`, 10, [clc.cyan])
     .column(`Ready?`, 10, [clc.cyan])
     .column(`Status`, 20, [clc.cyan])
+    .column(`Activity`, 20, [clc.cyan])
     .fill()
     .store();
 
@@ -103,6 +105,7 @@ const update = (outputBuffer, threads, config) => {
       .column(thread.running ? 'Yes' : 'No', 10, [color])
       .column(thread.ready ? 'Yes' : 'No', 10, [color])
       .column(thread.status, 20, [color])
+      .column(moment(thread.lastActivity).fromNow(), 20, [color])
       .fill()
       .store();
   }
@@ -134,8 +137,8 @@ const getStatus = (data) => {
     return { status: `SMS didn't arrive`, ready: true, warning: true };
   }
 
-  if (/bot:dizu No numbers available/.exec(data)) {
-    return { status: `No numbers available`, ready: true, warning: true };
+  if (/bot:sms NO_NUMBERS/.exec(data)) {
+    return { status: `No Numbers`, ready: true, warning: true };
   }
 
   if (/bot:actions:openApp/.exec(data)) {
@@ -151,7 +154,11 @@ const getStatus = (data) => {
   }
 
   if (/bot:actions:signUp Validating SMS Code/.exec(data)) {
-    return { cost: 0.35 };
+    return { cost: 0.4 };
+  }
+
+  if (/bot:subscription { order: .*? }/.exec(data)) {
+    return { cost: 0.1 };
   }
 
   if (match = /bot:dizu Account Created: username=(.*?) ip=(.*)/.exec(data)) {
@@ -207,6 +214,7 @@ const createThread = () => {
 
   return {
     id,
+    lastActivity: Date.now(),
     start,
     status,
     ip: '',
@@ -229,6 +237,8 @@ const execute = (thread) => {
 
   cmd.stderr.on('data', async (data) => {
     thread.stream.write(data);
+
+    thread.lastActivity = Date.now();
 
     const { status, username, follows, total, ip, ready, error, warning, cost } = getStatus(data);
     if (status) {
@@ -256,7 +266,7 @@ const execute = (thread) => {
       thread.warning = warning;
     }
     if (cost) {
-      thread.cost = cost;
+      thread.cost += cost;
     }
   });
 

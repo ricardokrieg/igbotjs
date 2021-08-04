@@ -4,12 +4,14 @@ const { toPairs,
   sample,
   defaults,
   sortBy,
+  shuffle,
   map,
   flatten,
   compact,
   uniq,
   filter,
 } = require('lodash');
+const parse = require('csv-parse/lib/sync');
 const crypto = require('crypto');
 const fs = require('fs');
 const request = require('request-promise');
@@ -186,12 +188,30 @@ const randomUserAgent = (country) => {
   throw new Error(`Invalid country: ${country}`);
 }
 
-const generateName = () => {
-  const firstNameData = fs.readFileSync('./src/burp/res/female_first_name.txt', 'utf8');
-  const lastNameData = fs.readFileSync('./src/burp/res/last_name.txt', 'utf8');
+const generateName = (gender) => {
+  const chance = new Chance();
+  let firstNameContent;
 
-  const firstName = sample(compact(firstNameData.split("\n")));
-  const lastName = sample(compact(lastNameData.split("\n")));
+  const lastNameContent = fs.readFileSync(`./src/burp/res/sobrenomes.csv`, `utf8`);
+  const lastNameColumns = [`sobrenome`, ``];
+  const lastNameRecords = parse(lastNameContent, { delimiter: `,`, quote: `"`, lastNameColumns });
+  const lastName = chance.pickone(lastNameRecords)[0];
+
+  const firstNameColumns = [`KeyYear-Gender`,`NOME`,`TOTAL`];
+
+  switch (gender) {
+    case `female`:
+      firstNameContent = fs.readFileSync(`./src/burp/res/nomesfeminino.up.csv`, `latin1`);
+      break;
+    case `male`:
+      firstNameContent = fs.readFileSync(`./src/burp/res/nomesmasculino.up.csv`, `latin1`);
+      break;
+    default:
+      throw new Error(`Gender not supported: ${gender}`);
+  }
+
+  const firstNameRecords = parse(firstNameContent, { delimiter: `,`, quote: `"`, firstNameColumns });
+  const firstName = chance.pickone(filter(firstNameRecords, (record) => parseInt(record[2]) >= 5))[1];
 
   return {
     first_name: firstName,
@@ -275,12 +295,18 @@ const generateUsernames = (firstName, lastName) => {
     .toLowerCase();
 
   const patterns = [
+    `${firstName}${lastName}`,
     `${firstName}.${lastName}`,
     `${firstName}_${lastName}`,
+    `${lastName}${firstName}`,
     `${lastName}.${firstName}`,
     `${lastName}_${firstName}`,
+    `${firstName}${lastName[0]}`,
     `${firstName}.${lastName[0]}`,
     `${firstName}_${lastName[0]}`,
+    `${lastName[0]}${firstName}`,
+    `${lastName[0]}.${firstName}`,
+    `${lastName[0]}_${firstName}`,
   ];
   let usernames = [];
 
@@ -290,7 +316,7 @@ const generateUsernames = (firstName, lastName) => {
 
       return [
         [pattern.slice(0, i), letter, letter, pattern.slice(i + 1)].join(''),
-        [pattern.slice(0, i), letter, letter, letter, pattern.slice(i + 1)].join(''),
+        // [pattern.slice(0, i), letter, letter, letter, pattern.slice(i + 1)].join(''),
       ];
     })));
   }
@@ -307,7 +333,8 @@ const generateUsernames = (firstName, lastName) => {
   // usernames.push(`_${firstName}${lastName}_`);
   // usernames.push(`_${firstName}${lastName}_`);
 
-  return sortBy(usernames, 'length');
+  // return sortBy(usernames, 'length');
+  return shuffle(usernames);
 };
 
 const getIP = async (client) => {
@@ -319,8 +346,8 @@ const getIP = async (client) => {
 
 const getProxy = (index) => {
   return [
-    { name: 'RSocks RU Moscow Tele2', address: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10528' },
-    { name: 'RSocks RU St. Petersburg Yota', address: 'socks5://ricardokrieg:xxx123xxx@5.61.56.223:10175' },
+    { name: 'RSocks RU St. Petersburg Tele2', address: 'socks5://5.61.56.223:10458' },
+    { name: 'RSocks RU St. Petersburg Beeline', address: 'socks5://5.61.56.223:10627' },
     { name: 'AllProxy BR 4G Claro', address: 'http://zvesq:TgTXGzUx@conn4.trs.ai:25520' },
   ][index];
 };
@@ -337,6 +364,26 @@ const randomProfile = (gender) => {
       };
     default:
       throw new Error(`Gender not supported: ${gender}`);
+  }
+}
+
+const getRandomBiography = () => {
+  const chance = new Chance();
+
+  const type = chance.weighted([`blank`, `phrase`, `emoji`], [4, 2, 1]);
+
+  switch (type) {
+    case `blank`:
+      return ``;
+    case `phrase`:
+      const phraseData = fs.readFileSync('./src/burp/res/frases.txt', 'utf8');
+      return sample(filter(compact(phraseData.split("\n\n")), (phrase) => phrase.length <= 150));
+    case `emoji`:
+      const n = chance.integer({ min: 1, max: 3 });
+      const emojis = chance.pickset([`🙈`, `😁`, `🙃`, `😛`, `😎`, `🥳`, `🥶`, `🤠`, `😼`, `🙌`, `🤛`, `🙏`, `👀`], n);
+      return emojis.join(` `);
+    default:
+      return ``;
   }
 }
 
@@ -361,4 +408,5 @@ module.exports = {
   getIP,
   randomProfile,
   getProxy,
+  getRandomBiography,
 };

@@ -27,6 +27,7 @@ const {
   getIP,
   randomProfile,
   getProxy,
+  getRandomBiography,
 } = require('../utils');
 
 const debug = _debug('bot:dizu');
@@ -123,7 +124,7 @@ const confirmSMS = async (country) => {
     debug(`Path: ${path}`);
     const images = randomFilesFromPath(path, 10);
 
-    const { first_name, last_name } = generateName();
+    const { first_name, last_name } = generateName(gender);
     const { day, month, year } = generateBirthday();
 
     const userInfo = {
@@ -177,7 +178,8 @@ const confirmSMS = async (country) => {
     await visitEditProfile(client);
     await sleep(2000);
 
-    await updateBiography(client, `815904`);
+    const dizu = new DizuAPI();
+    await updateBiography(client, dizu.getCode());
     await sleep(2000);
 
     const orderInfo = await subscriptionService.order(username);
@@ -197,7 +199,6 @@ const confirmSMS = async (country) => {
     }
 
     const accountId = client.getUserId();
-    const dizu = new DizuAPI();
 
     const orderStatus = await subscriptionService.status(orderId);
     if (orderStatus.status !== 'Completed') {
@@ -206,6 +207,9 @@ const confirmSMS = async (country) => {
 
     await dizu.addAccount(username);
     await sleep(15000);
+
+    await updateBiography(client, getRandomBiography(gender));
+    await sleep(2000);
 
     while (count < total) {
       debug(`Follow #${count + 1}`);

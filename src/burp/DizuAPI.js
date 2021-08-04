@@ -59,6 +59,10 @@ class DizuAPI {
     };
   }
 
+  getCode() {
+    return `815904`;
+  }
+
   async send(options) {
     return retry(async () => request(defaultsDeep({}, options, defaultOptions(this.cookieJar, headers))), this.attemptOptions);
   }
