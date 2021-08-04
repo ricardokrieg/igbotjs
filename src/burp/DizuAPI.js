@@ -67,7 +67,7 @@ class DizuAPI {
     return retry(async () => request(defaultsDeep({}, options, defaultOptions(this.cookieJar, headers))), this.attemptOptions);
   }
 
-  async addAccount(username) {
+  async addAccount(username, gender) {
     // fetch("https://dizu.com.br/painel/cadastrar_conta", {
     //   "headers": {
     //     "accept": "*/*",
@@ -97,8 +97,8 @@ class DizuAPI {
     const form = {
       site: 1,
       conta: username,
-      gender: 2,
-      perfil_texto: `815904`,
+      gender: gender === `male` ? 1 : 2,
+      perfil_texto: this.getCode(),
       conta20: 1,
     };
 

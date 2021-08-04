@@ -50,6 +50,14 @@ if (!proxyIndex) {
   throw new Error(`PROXY_INDEX is required`);
 }
 
+let gender = process.env.GENDER;
+if (!gender) {
+  gender = chance.weighted([`male`, `female`], [1, 2]);
+}
+if (![`male`, `female`].includes(gender)) {
+  throw new Error(`Invalid gender: ${gender}`);
+}
+
 const smsService = new SMSService();
 const subscriptionService = new SubscriptionService();
 
@@ -118,7 +126,6 @@ const confirmSMS = async (country) => {
 
     debug(`IP (start): ${ip}`);
 
-    const gender = 'female';
     const { profile, path } = randomProfile(gender);
     debug(`Using profile: ${profile}`);
     debug(`Path: ${path}`);

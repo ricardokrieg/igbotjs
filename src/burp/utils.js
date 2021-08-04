@@ -347,7 +347,7 @@ const getIP = async (client) => {
 const getProxy = (index) => {
   return [
     { name: 'RSocks RU St. Petersburg Tele2', address: 'socks5://5.61.56.223:10458' },
-    { name: 'RSocks RU St. Petersburg Beeline', address: 'socks5://5.61.56.223:10627' },
+    { name: 'RSocks RU St. Petersburg Yota', address: 'socks5://5.61.56.223:10627' },
     { name: 'AllProxy BR 4G Claro', address: 'http://zvesq:TgTXGzUx@conn4.trs.ai:25520' },
   ][index];
 };
