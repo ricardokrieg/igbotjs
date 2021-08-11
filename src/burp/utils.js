@@ -194,8 +194,8 @@ const generateName = (gender) => {
 
   const lastNameContent = fs.readFileSync(`./src/burp/res/sobrenomes.csv`, `utf8`);
   const lastNameColumns = [`sobrenome`, ``];
-  const lastNameRecords = parse(lastNameContent, { delimiter: `,`, quote: `"`, lastNameColumns });
-  const lastName = chance.pickone(lastNameRecords)[0];
+  const lastNameRecords = parse(lastNameContent, { delimiter: `,`, quote: `"`, columns: lastNameColumns });
+  const lastName = chance.pickone(lastNameRecords)['sobrenome'];
 
   const firstNameColumns = [`KeyYear-Gender`,`NOME`,`TOTAL`];
 
@@ -210,8 +210,8 @@ const generateName = (gender) => {
       throw new Error(`Gender not supported: ${gender}`);
   }
 
-  const firstNameRecords = parse(firstNameContent, { delimiter: `,`, quote: `"`, firstNameColumns });
-  const firstName = chance.pickone(filter(firstNameRecords, (record) => parseInt(record[2]) >= 5))[1];
+  const firstNameRecords = parse(firstNameContent, { delimiter: `,`, quote: `"`, columns: firstNameColumns });
+  const firstName = chance.pickone(filter(firstNameRecords, (record) => parseInt(record['TOTAL']) >= 5))['NOME'];
 
   return {
     first_name: firstName,
@@ -355,7 +355,8 @@ const getProxy = (index) => {
 const randomProfile = (gender) => {
   switch (gender) {
     case `female`:
-      const basePath = `./res/images/female`;
+    case `male`:
+      const basePath = `./res/images/${gender}`;
       const profile = sample(filter(fs.readdirSync(basePath), (dir) => !dir.startsWith('.')));
 
       return {
@@ -387,6 +388,20 @@ const getRandomBiography = () => {
   }
 }
 
+const promiseTimeout = (ms, promise) => {
+  const timeout = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(new Error('Timed out in '+ ms + 'ms.'));
+    }, ms);
+  });
+
+  return Promise.race([
+    promise,
+    timeout
+  ]);
+};
+
 module.exports = {
   extractCookieValue,
   getRandomId,
@@ -409,4 +424,5 @@ module.exports = {
   randomProfile,
   getProxy,
   getRandomBiography,
+  promiseTimeout,
 };

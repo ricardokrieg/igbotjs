@@ -2264,6 +2264,11 @@ decode-uri-component@^0.2.0:
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
   integrity sha1-6zkTMzRYd1y4TNGh+uBiEGu4dUU=
 
+deeks@2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/deeks/-/deeks-2.4.1.tgz#81bf1814035f34dce9739a52bbed8aaaf56dccbb"
+  integrity sha512-18Zd9f6dqyAFDoPttDdD8w5u7xy9M1IoxhpSsaatFwI4O+wZyUK+rDtwul4s6iYSfUfZBXPfUbxZrKHDqpEQYA==
+
 deep-equal@^2.0.0:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-2.0.5.tgz#55cd2fe326d83f9cbf7261ef0e060b3f724c5cb9"
@@ -2355,6 +2360,11 @@ diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
+
+doc-path@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/doc-path/-/doc-path-3.0.1.tgz#81c10f2f5b2178e59d8777f693b24d26e0e1f670"
+  integrity sha512-Z7yrgf71bNXFK7dHqanaJO6QOkDsIemcxQqEyhIVY/Jfcwm8mMmCHV/w7UZyr9NzTFFbo698TFiLc5exfHNvog==
 
 dom-serializer@^1.0.1, dom-serializer@~1.2.0:
   version "1.2.0"
@@ -4226,6 +4236,14 @@ jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
   integrity sha1-597mbjXW/Bb3EP6R1c9p9w8IkR0=
+
+json-2-csv@^3.14.1:
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/json-2-csv/-/json-2-csv-3.14.1.tgz#87f7efb3d633bd6f486cf9f6597432574e6e4284"
+  integrity sha512-Nx84ZyolEOVoft43ztfzmC7fETUo/+6dDlKTLZXPd+hVYHP1YTeE/K6Axx4ipofwywpR6iwMLtKQ9EZwBYWD+A==
+  dependencies:
+    deeks "2.4.1"
+    doc-path "3.0.1"
 
 json-bigint@^0.3.0:
   version "0.3.1"

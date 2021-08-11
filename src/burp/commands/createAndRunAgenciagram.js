@@ -30,7 +30,7 @@ const {
   getRandomBiography,
 } = require('../utils');
 
-const debug = _debug('bot:dizu');
+const debug = _debug('bot:agenciagram');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.TZ = 'America/Fortaleza';

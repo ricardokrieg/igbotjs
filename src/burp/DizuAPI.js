@@ -186,8 +186,76 @@ class DizuAPI {
     return response.body;
   }
 
+  async hideOrRemoveProfile(username) {
+    const stats = await this.getProfileStats(username);
+    debug(stats);
+
+    if (stats.active) {
+      await this.removeProfile(stats.dataId);
+      await this.hideProfile(stats.dataId);
+    } else {
+      await this.hideProfile(stats.dataId);
+    }
+  }
+
+  async hideProfile(id) {
+    const form = { conta_id: id, acao: 4 };
+    const response = await this.send({ url: '/painel/atualiza_perfil', method: 'POST', form });
+    debug(response.body);
+  }
+
+  async removeProfile(id) {
+    const form = { conta_id: id, acao: 2 };
+    const response = await this.send({ url: '/painel/atualiza_perfil', method: 'POST', form });
+    debug(response.body);
+  }
+
+  async getProfileStats(username) {
+    debug(`Getting Status for ${username}`);
+
+    const body = await this.getProfileList();
+    const $ = cheerio.load(body);
+
+    const content = $(`[data-perfil="${username}"]`);
+
+    let match;
+    let active = false;
+    let income = 0;
+    let follows = 0;
+
+    const activeInfo = content.children(`div:nth-child(3)`).html();
+    const followInfo = content.children(`div:nth-child(4)`).html();
+    const dataId = content.children(`div:nth-child(5)`).find('[data-id]').attr('data-id');
+
+    if (/Perfil Ativo/.exec(activeInfo)) {
+      active = true;
+    }
+
+    if (match = /30 dias: R\$ (.*?)\)/.exec(activeInfo)) {
+      income = parseFloat(match[1].replace(',', '.'));
+    }
+
+    if (match = /Seguir: (.*?) \//.exec(followInfo)) {
+      follows = parseInt(match[1]);
+    }
+
+    return { active, income, follows, dataId };
+  }
+
   getTaskUrl(accountId) {
     return `/painel/listar_pedido/?&conta_id=${accountId}&twitter_id=Twitter&tiktok_id=TikTok&tarefa10=0&curtida05=0&acoesmg=0`;
+  }
+
+  async getProfileList() {
+    if (this.profileListBody) {
+      return this.profileListBody;
+    }
+
+    debug(`Getting "perfis_list" page`);
+    const response = await this.send({ url: '/painel/perfis_lista' });
+
+    this.profileListBody = response.body;
+    return this.profileListBody;
   }
 }
 
