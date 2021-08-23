@@ -15,7 +15,7 @@ const debug = _debug('bot:actions:visitEditProfile');
 module.exports = async (client) => {
   debug(`Start`);
 
-  await accountsCurrentUser(client, true);
+  const response = await accountsCurrentUser(client, true);
 
   let requests = [
     () => accountsContactPointPrefill(client, `prefill`),
@@ -25,4 +25,6 @@ module.exports = async (client) => {
   await Bluebird.map(requests, request => request());
 
   debug(`End`);
+
+  return response;
 };

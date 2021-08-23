@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
+const {reject, isEmpty, map} = require('lodash');
 const _debug = require('debug');
 const chance = require('chance').Chance();
+const request = require('request-promise');
 
 const Client = require('../client');
 const openApp = require("../actions/openApp");
@@ -10,25 +12,27 @@ const feedSignup = require("../actions/feedSignUp");
 const visitSelfProfile = require("../actions/visitSelfProfile");
 const visitEditProfile = require("../actions/visitEditProfile");
 const updateBiography = require("../actions/updateBiography");
+const editProfile = require("../actions/editProfile");
 const addPost = require("../actions/addPost");
 const addStory = require("../actions/addStory");
 const search = require("../actions/search");
-const follow = require("../actions/follow");
-const DizuAPI = require('../DizuAPI');
 const SMSService = require('../SMSService');
 const SubscriptionService = require('../SubscriptionService');
 const {
   sleep,
   generateAttrs,
-  randomFilesFromPath,
   generateName,
   generateBirthday,
   randomReelsTitle,
   getIP,
-  randomProfile,
   getProxy,
-  getRandomBiography,
+  randomFilesFromPath,
 } = require('../utils');
+const {
+  friendshipsCreate,
+  friendshipsFollowers,
+  friendshipsShowMany,
+} = require('../requests/friendships');
 
 const debug = _debug('bot:agenciagram');
 
@@ -50,12 +54,12 @@ if (!proxyIndex) {
   throw new Error(`PROXY_INDEX is required`);
 }
 
-let gender = process.env.GENDER;
-if (!gender) {
-  gender = chance.weighted([`male`, `female`], [1, 2]);
+const profileType = process.env.PROFILE_TYPE;
+if (!profileType) {
+  throw new Error(`PROFILE_TYPE is required`);
 }
-if (![`male`, `female`].includes(gender)) {
-  throw new Error(`Invalid gender: ${gender}`);
+if (![`delphine1`, `belle.delphine_2021`].includes(profileType)) {
+  throw new Error(`Invalid profileType: ${profileType}`);
 }
 
 const smsService = new SMSService();
@@ -110,6 +114,9 @@ const confirmSMS = async (country) => {
   let total = chance.integer({ min: parseInt(minFollows), max: parseInt(maxFollows) });
   debug(`Going to follow ${total}`);
   let count = 0;
+  const gender = `female`;
+  const biography = `Quer ser influencer no insta?\nClique e saiba como`
+  const urls = [`https://bit.ly/3AVLi2L`, `https://bit.ly/3D47Ikj`];
 
   const country = process.env.COUNTRY || `RU`;
   debug(`Country: ${country}`);
@@ -129,10 +136,18 @@ const confirmSMS = async (country) => {
 
     debug(`IP (start): ${ip}`);
 
-    const { profile, path } = randomProfile(gender);
-    debug(`Using profile: ${profile}`);
+    let profileImage;
+
+    const path = `./res/images/${profileType}`;
+    debug(`Using profile: ${profileType}`);
     debug(`Path: ${path}`);
-    const images = randomFilesFromPath(path, 10);
+    const images = randomFilesFromPath(`${path}/`, 10);
+
+    if (profileType === `delphine1`) {
+      profileImage = `${path}/profile.jpg`;
+    } else {
+      profileImage = images[0];
+    }
 
     const { first_name, last_name } = generateName(gender);
     const { day, month, year } = generateBirthday();
@@ -145,8 +160,8 @@ const confirmSMS = async (country) => {
       day,
       month,
       year,
-      profileImage: images[0],
-      shareToFeed: true,
+      profileImage,
+      shareToFeed: profileType !== `delphine1`,
       followRecommendedCount: 3,
     };
     debug(userInfo);
@@ -156,19 +171,6 @@ const confirmSMS = async (country) => {
 
     await openApp(client);
     await sleep(2000);
-
-    // TODO test automator
-    // if (chance.bool({ likelihood: 70 })) {
-    //   debug(`Account Created: username=${chance.string({ length: 8, alpha: true })} ip=${ip}`);
-    //   await sleep(10 * 1000);
-    //   for (let count = 1; count <= total; count++) {
-    //     debug(`Follow ${count}`);
-    //     await sleep(1000);
-    //   }
-    //   throw new Error(`OK`);
-    // } else {
-    //   throw new Error(`challenge_required`);
-    // }
 
     username = await signUp(client, userInfo, getPrefix, getPhoneNumber, getVerificationCode, confirmSMS);
     ip = await getIP(client);
@@ -188,75 +190,124 @@ const confirmSMS = async (country) => {
     await visitEditProfile(client);
     await sleep(2000);
 
-    const dizu = new DizuAPI();
-    await updateBiography(client, dizu.getCode());
+    await updateBiography(client, biography);
     await sleep(2000);
 
-    const orderInfo = await subscriptionService.order(username);
-    const orderId = orderInfo.order;
-
-    let n = 1;
-    for (let i = 0; i < 6; i++) {
-      await addPost(client, i+1, images[n]);
-      await sleep(60000);
-      n++;
-    }
-
-    for (let i = 0; i < 3; i++) {
-      await addStory(client, i+1, images[n], randomReelsTitle());
-      await sleep(60000);
-      n++;
-    }
-
-    const accountId = client.getUserId();
-
-    const orderStatus = await subscriptionService.status(orderId);
-    if (orderStatus.status !== 'Completed') {
-      // await getInput(`Account ${username} is ready to be added to Dizu?`);
-    }
-
-    await dizu.addAccount(username);
-    await sleep(15000);
-
-    await updateBiography(client, getRandomBiography(gender));
+    const profileData = await visitEditProfile(client);
     await sleep(2000);
 
-    while (count < total) {
-      debug(`Follow #${count + 1}`);
+    let url;
+    if (profileType === `delphine1`) {
+      url = urls[0];
+    } else {
+      url = urls[1];
+    }
 
-      const data = await dizu.getTask(accountId);
+    await editProfile(client, { ...profileData.user, external_url: url });
+    await sleep(2000);
 
-      if (data === null) {
-        debug(`Got invalid task from Dizu`);
-        continue;
+    // const orderInfo = await subscriptionService.order(username);
+    // const orderId = orderInfo.order;
+
+    if (profileType === `delphine1`) {
+      await addPost(client, 1, `${path}/row-3-column-3.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 2, `${path}/row-3-column-2.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 3, `${path}/row-3-column-1.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 4, `${path}/row-2-column-3.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 5, `${path}/row-2-column-2.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 6, `${path}/row-2-column-1.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 7, `${path}/row-1-column-3.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 8, `${path}/row-1-column-2.jpg`);
+      await sleep(60000);
+
+      await addPost(client, 9, `${path}/row-1-column-1.jpg`);
+      await sleep(60000);
+    } else {
+      let n = 1;
+      for (let i = 0; i < 8; i++) {
+        await addPost(client, i+1, images[n]);
+        await sleep(60000);
+        n++;
       }
+    }
 
-      try {
-        debug(`Searching ${data.username}`);
-        const {user, is_private, following} = await search(client, data.username, true, count === 0);
+    // await addStory(client, i+1, images[n], randomReelsTitle());
+    // await sleep(60000);
 
-        if (!is_private && !following) {
-          debug(`Following ${data.username}`);
-          await follow(client, user);
-          await dizu.submitTask(data.connectFormId, accountId);
-          count++;
+    let sourceId;
+    let targets = [];
+    let nextMaxId = null;
+    const rankToken = chance.guid();
+    let lastFollow = -1;
 
-          await sleep(10000);
-        } else {
-          debug(`Skipped ${data.username} isPrivate=${is_private} following=${following}`);
-          await dizu.skipTask(data.connectFormId, accountId);
+    const { source } = await request({ url: 'http://localhost:3000/source', method: 'GET', json: true });
+
+    try {
+      debug(`Searching ${source}`);
+      const {user} = await search(client, source, true, true);
+
+      sourceId = user.pk;
+
+      await sleep(5000);
+    } catch (error) {
+      debug(`Error when searching/following:`);
+      debug(error);
+
+      process.exit(1);
+    }
+
+    do {
+      const response = await friendshipsFollowers(client, sourceId, rankToken, nextMaxId);
+      await friendshipsShowMany(client, map(response.users, 'pk'));
+
+      targets = reject(response.users, `has_anonymous_profile_picture`);
+      nextMaxId = response.next_max_id;
+
+      while (!isEmpty(targets)) {
+        const user = targets.shift();
+
+        const { blacklisted } = await request({ url: `http://localhost:3000/target/${user.username}`, method: 'GET', json: true });
+        if (blacklisted) {
+          debug(`${user.username} is blacklisted. Skipping.`);
+          continue;
         }
-      } catch (error) {
-        debug(`Error when searching/following:`);
-        debug(error);
 
-        await dizu.skipTask(data.connectFormId, accountId);
+        debug(`Follow #${count + 1}`);
+        debug(`Following ${user.username}`);
 
-        if (error.message === 'challenge_required' || error.message === 'feedback_required') {
+        const delay = chance.integer({ min: 15000, max: 25000 });
+        const waitTime = delay - (Date.now() - lastFollow);
+        debug(`Wait ${waitTime / 1000} seconds`);
+        if (waitTime > 0) {
+          await sleep(waitTime);
+        }
+
+        await friendshipsCreate(client, user.pk);
+        lastFollow = Date.now();
+        count++;
+
+        if (count >= total) {
+          nextMaxId = null;
           break;
         }
+
+        await sleep(10000);
       }
-    }
+    } while (nextMaxId);
   } catch (err) {
     debug(err);
     console.error(err);

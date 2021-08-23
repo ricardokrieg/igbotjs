@@ -16,6 +16,7 @@
     "crypto": "^1.0.1",
     "csv-parse": "^4.16.0",
     "debug": "^4.2.0",
+    "express": "^4.17.1",
     "firebase": "^7.20.0",
     "firebase-admin": "^8.10.0",
     "geolib": "^3.0.4",
@@ -94,7 +95,8 @@
     "burp/vtope": "npx @babel/node src/burp/commands/createAndRunVtope.js",
     "burp/bans": "npx @babel/node src/burp/commands/checkBans.js",
     "burp/report": "npx @babel/node src/burp/commands/report.js",
-    "burp/agenciagram": "npx @babel/node src/burp/commands/createAndRunAgenciagram.js"
+    "burp/agenciagram": "npx @babel/node src/burp/commands/createAndRunAgenciagram.js",
+    "source-coordinator": "npx @babel/node src/SourceCoordinator.js"
   },
   "devDependencies": {
     "@types/node": "^14.14.37",

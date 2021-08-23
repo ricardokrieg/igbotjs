@@ -3,6 +3,7 @@ const accountsCheckPhoneNumber = require('./accountsCheckPhoneNumber');
 const accountsContactPointPrefill = require('./accountsContactPointPrefill');
 const accountsCreateValidated = require('./accountsCreateValidated');
 const accountsCurrentUser = require('./accountsCurrentUser');
+const accountsEditProfile = require('./accountsEditProfile');
 const accountsFetchOnetap = require('./accountsFetchOnetap');
 const accountsGetPrefillCandidates = require('./accountsGetPrefillCandidates');
 const accountsGetPresenceDisabled = require('./accountsGetPresenceDisabled');
@@ -19,6 +20,7 @@ module.exports = {
   accountsContactPointPrefill,
   accountsCreateValidated,
   accountsCurrentUser,
+  accountsEditProfile,
   accountsFetchOnetap,
   accountsGetPrefillCandidates,
   accountsGetPresenceDisabled,
